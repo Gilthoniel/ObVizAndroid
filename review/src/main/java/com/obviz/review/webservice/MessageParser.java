@@ -1,6 +1,8 @@
 package com.obviz.review.webservice;
 
+import android.util.Log;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.lang.reflect.Type;
 
@@ -14,6 +16,11 @@ public class MessageParser {
 
     public static <T> T fromJson(String json, Type type) {
 
-        return gson.fromJson(json, type);
+        try {
+            return gson.fromJson(json, type);
+        } catch (JsonSyntaxException e) {
+            Log.e("Json", e.getMessage());
+            return null;
+        }
     }
 }

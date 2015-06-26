@@ -1,20 +1,15 @@
 package com.obviz.review.webservice;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -23,18 +18,21 @@ import java.util.concurrent.ExecutionException;
  */
 public class ConnectionService {
 
-    public static String get(String url, List<NameValuePair> params) {
+    public static final String URL = "http://vps40100.vps.ovh.ca/ObVizServiceAdmin";
+
+    public static String get(String url, Map<String,String> params) {
         try {
-            URIBuilder builder = new URIBuilder(url);
-            builder.addParameters(params);
+            // Create the url
+            Uri.Builder builder = new Uri.Builder();
+            builder.encodedPath(url);
+            for (String key : params.keySet()) {
+                builder.appendQueryParameter(key, params.get(key));
+            }
 
             GetHTTPRequest task = new GetHTTPRequest();
-            AsyncTask<URI, Integer, String> resultTask = task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, builder.build());
+            AsyncTask<Uri, Integer, String> resultTask = task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, builder.build());
             return resultTask.get();
 
-        } catch (URISyntaxException e) {
-            Log.e("URI Exception", e.getMessage());
-            return "null";
         } catch (InterruptedException | ExecutionException e) {
             Log.e("Concurrent error", e.getMessage());
             return "null";
@@ -43,35 +41,26 @@ public class ConnectionService {
 
     /* Private class */
 
-    private static class GetHTTPRequest extends AsyncTask<URI, Integer, String> {
+    private static class GetHTTPRequest extends AsyncTask<Uri, Integer, String> {
 
         @Override
-        protected String doInBackground(URI... urls) {
+        protected String doInBackground(Uri... urls) {
 
-            try {
-                if (urls.length > 0) {
+            if (urls.length > 0) {
 
-                    HttpGet request = new HttpGet(urls[0].toASCIIString());
-                    HttpClient client = new DefaultHttpClient();
-                    HttpResponse response = client.execute(request);
+                try {
+                    URL url = new URL(urls[0].toString());
+                    Log.i("URL", url.toString());
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-                    int status = response.getStatusLine().getStatusCode();
+                    InputStream in = connection.getInputStream();
+                    return IOUtils.toString(in, "utf-8");
 
-                    if (status == 200) {
-                        HttpEntity entity = response.getEntity();
-                        return EntityUtils.toString(entity);
-                    } else {
-
-                        Log.e("Bad status code", "Code " + status);
-                        return "null";
-                    }
-
-                } else {
+                } catch (IOException e) {
+                    Log.e("IO Exception", e.getMessage());
                     return "null";
                 }
-
-            } catch (IOException e) {
-                Log.e("IO Exception", e.getMessage());
+            } else {
                 return "null";
             }
         }
