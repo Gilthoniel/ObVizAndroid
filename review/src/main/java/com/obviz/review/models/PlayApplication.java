@@ -6,9 +6,9 @@ package com.obviz.review.models;
  */
 public class PlayApplication {
 
-    private String CoverImgUrl;
+    private String coverImgURL;
 
     public String getImage() {
-        return CoverImgUrl;
+        return coverImgURL;
     }
 }

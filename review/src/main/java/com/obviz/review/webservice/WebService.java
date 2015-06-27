@@ -1,26 +1,55 @@
 package com.obviz.review.webservice;
 
-import com.obviz.review.models.PlayApplication;
-
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Created by gaylor on 26.06.15.
- * Requests to get information
+ * Created by gaylor on 27.06.15.
+ * Base of a web service implementation
  */
-public class WebService {
+public abstract class WebService {
+    private List<ConnectionService.HttpTask<?>> tasks;
+    private String baseURL;
 
-    private static final String GET_APP = "Get_App";
+    public WebService() {
+        tasks = new ArrayList<>();
+        baseURL = ConnectionService.URL;
+    }
 
-    public static PlayApplication getApp(String id) {
+    /**
+     * Change the url of the requests
+     * @param url the enw URL
+     */
+    public void setBaseURL(String url) {
+        baseURL = url;
+    }
 
-        Map<String, String> params = new HashMap<>();
-        params.put("cmd", GET_APP);
-        params.put("weight", "LIGHT");
-        params.put("id", id);
+    /**
+     * GET HTTP request
+     * @param params queries parameter
+     * @param callback call when the request is over
+     * @param <T> Type of the object requested
+     */
+    public <T> void get(Map<String, String> params, RequestCallback<T> callback) {
 
-        String result = ConnectionService.get(ConnectionService.URL, params);
-        return MessageParser.fromJson(result, PlayApplication.class);
+        ConnectionService.HttpTask<T> task = ConnectionService.execute(baseURL, params, callback, false);
+        tasks.add(task);
+    }
+
+    /**
+     * Remove all the tasks currently running
+     */
+    public void cancel() {
+        Iterator<ConnectionService.HttpTask<?>> iterator = tasks.iterator();
+        while (iterator.hasNext()) {
+            ConnectionService.HttpTask<?> task = iterator.next();
+            if (!task.isCancelled()) {
+                task.cancel(true);
+            }
+
+            iterator.remove();
+        }
     }
 }

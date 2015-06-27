@@ -5,64 +5,105 @@ import android.os.AsyncTask;
 import android.util.Log;
 import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by gaylor on 26.06.15.
- * Asynchronous tasks to get information from the Back-End
+ * Asynchronous tasks to interact with the back-end
  */
 public class ConnectionService {
 
+    enum TypeRequest { GET, POST }
+
     public static final String URL = "http://vps40100.vps.ovh.ca/ObVizServiceAdmin";
+    private static ExecutorService executor = Executors.newCachedThreadPool();
 
-    public static String get(String url, Map<String,String> params) {
-        try {
-            // Create the url
-            Uri.Builder builder = new Uri.Builder();
-            builder.encodedPath(url);
-            for (String key : params.keySet()) {
-                builder.appendQueryParameter(key, params.get(key));
-            }
+    public static <T> HttpTask<T> execute(String url, Map<String, String> params, RequestCallback<T> callback,
+                                          boolean isPostRequest) {
 
-            GetHTTPRequest task = new GetHTTPRequest();
-            AsyncTask<Uri, Integer, String> resultTask = task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, builder.build());
-            return resultTask.get();
-
-        } catch (InterruptedException | ExecutionException e) {
-            Log.e("Concurrent error", e.getMessage());
-            return "null";
+        // Create the url
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(url);
+        for (String key : params.keySet()) {
+            builder.appendQueryParameter(key, params.get(key));
         }
+
+        HttpTask<T> task = new HttpTask<>(callback, isPostRequest);
+        return (HttpTask<T>) task.executeOnExecutor(executor, builder.build());
     }
 
-    /* Private class */
+    /* Public class */
 
-    private static class GetHTTPRequest extends AsyncTask<Uri, Integer, String> {
+    public static class HttpTask<T> extends AsyncTask<Uri, Integer, T> {
+
+        private RequestCallback<T> callback;
+        private TypeRequest type;
+
+        public HttpTask(RequestCallback<T> callback, boolean isPostRequest) {
+            this.callback = callback;
+
+            if (isPostRequest) {
+                type = TypeRequest.POST;
+            } else {
+                type = TypeRequest.GET;
+            }
+        }
 
         @Override
-        protected String doInBackground(Uri... urls) {
+        protected T doInBackground(Uri... urls) {
 
             if (urls.length > 0) {
 
+                Uri uri = urls[0];
+                HttpURLConnection connection = null;
+
                 try {
-                    URL url = new URL(urls[0].toString());
-                    Log.i("URL", url.toString());
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    URL url;
+                    if (type == TypeRequest.POST) {
+                        url = new URL(uri.getPath());
+                    } else {
+                        url = new URL(uri.toString());
+                    }
+                    connection = (HttpURLConnection) url.openConnection();
+
+                    if (type == TypeRequest.POST) {
+                        String body = uri.getEncodedQuery();
+                        connection.setDoOutput(true);
+                        connection.setFixedLengthStreamingMode(body.length());
+
+                        OutputStream out = new BufferedOutputStream(connection.getOutputStream());
+                        IOUtils.write(body, out);
+                    }
 
                     InputStream in = connection.getInputStream();
-                    return IOUtils.toString(in, "utf-8");
+                    String body = IOUtils.toString(in, "utf-8");
+
+                    connection.disconnect();
+
+                    return MessageParser.fromJson(body, callback.getType());
 
                 } catch (IOException e) {
                     Log.e("IO Exception", e.getMessage());
-                    return "null";
+                } finally {
+
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
                 }
-            } else {
-                return "null";
             }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(T result) {
+
+            callback.execute(result);
         }
     }
 }
