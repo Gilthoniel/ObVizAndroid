@@ -39,6 +39,17 @@ public abstract class WebService {
     }
 
     /**
+     * POST HTTP request
+     * @param params query parameters
+     * @param callback callback function
+     * @param <T> type of the return
+     */
+    public <T> void post(Map<String, String> params, RequestCallback<T> callback) {
+
+        ConnectionService.HttpTask<T> task = ConnectionService.execute(baseURL, params, callback, true);
+    }
+
+    /**
      * Remove all the tasks currently running
      */
     public void cancel() {

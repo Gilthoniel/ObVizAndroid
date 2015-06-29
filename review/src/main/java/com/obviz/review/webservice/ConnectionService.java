@@ -3,6 +3,7 @@ package com.obviz.review.webservice;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -23,6 +24,15 @@ public class ConnectionService {
     public static final String URL = "http://vps40100.vps.ovh.ca/ObVizServiceAdmin";
     private static ExecutorService executor = Executors.newCachedThreadPool();
 
+    /**
+     * Execute an HTTP request
+     * @param url URL of the request
+     * @param params Queries of the request
+     * @param callback callback function when the request is over
+     * @param isPostRequest True if the request is a POST request
+     * @param <T> Type of the return object
+     * @return An instance of the task (cancellable)
+     */
     public static <T> HttpTask<T> execute(String url, Map<String, String> params, RequestCallback<T> callback,
                                           boolean isPostRequest) {
 
@@ -39,10 +49,15 @@ public class ConnectionService {
 
     /* Public class */
 
+    /**
+     * Task that will be executed in another Thread
+     * @param <T> Type of the JSON gotten by the request
+     */
     public static class HttpTask<T> extends AsyncTask<Uri, Integer, T> {
 
         private RequestCallback<T> callback;
         private TypeRequest type;
+        private RequestCallback.Errors error;
 
         public HttpTask(RequestCallback<T> callback, boolean isPostRequest) {
             this.callback = callback;
@@ -52,6 +67,8 @@ public class ConnectionService {
             } else {
                 type = TypeRequest.GET;
             }
+
+            error = RequestCallback.Errors.SUCCESS;
         }
 
         @Override
@@ -66,6 +83,7 @@ public class ConnectionService {
                     URL url;
                     if (type == TypeRequest.POST) {
                         url = new URL(uri.getPath());
+                        Log.i("URL", url.toString());
                     } else {
                         url = new URL(uri.toString());
                     }
@@ -76,19 +94,22 @@ public class ConnectionService {
                         connection.setDoOutput(true);
                         connection.setFixedLengthStreamingMode(body.length());
 
-                        OutputStream out = new BufferedOutputStream(connection.getOutputStream());
-                        IOUtils.write(body, out);
+                        IOUtils.write(body, connection.getOutputStream());
                     }
 
                     InputStream in = connection.getInputStream();
                     String body = IOUtils.toString(in, "utf-8");
 
-                    connection.disconnect();
-
                     return MessageParser.fromJson(body, callback.getType());
 
                 } catch (IOException e) {
+
+                    error = RequestCallback.Errors.CONNECTION;
                     Log.e("IO Exception", e.getMessage());
+                } catch (JsonSyntaxException e) {
+
+                    error = RequestCallback.Errors.JSON;
+                    Log.e("Json error", e.getMessage());
                 } finally {
 
                     if (connection != null) {
@@ -103,7 +124,12 @@ public class ConnectionService {
         @Override
         protected void onPostExecute(T result) {
 
-            callback.execute(result);
+            // Use the callback here, because this function is executed in the UI Thread !
+            if (result != null) {
+                callback.onSuccess(result);
+            } else {
+                callback.onFailure(error);
+            }
         }
     }
 }

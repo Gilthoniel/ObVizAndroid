@@ -14,13 +14,8 @@ public class MessageParser {
 
     private static Gson gson = new Gson();
 
-    public static <T> T fromJson(String json, Type type) {
+    public static <T> T fromJson(String json, Type type) throws JsonSyntaxException {
 
-        try {
-            return gson.fromJson(json, type);
-        } catch (JsonSyntaxException e) {
-            Log.e("Json", e.getMessage());
-            return null;
-        }
+        return gson.fromJson(json, type);
     }
 }
