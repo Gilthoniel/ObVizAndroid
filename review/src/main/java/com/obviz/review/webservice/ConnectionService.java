@@ -1,15 +1,28 @@
 package com.obviz.review.webservice;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.LruCache;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
+import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.webservice.tasks.HttpTask;
+import com.obviz.review.webservice.tasks.ImageTask;
+import com.obviz.review.webservice.tasks.JsonTask;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,10 +32,45 @@ import java.util.concurrent.Executors;
  */
 public class ConnectionService {
 
-    enum TypeRequest { GET, POST }
+    public enum TypeRequest { GET, POST }
 
-    public static final String URL = "http://vps40100.vps.ovh.ca/ObVizServiceAdmin";
-    private static ExecutorService executor = Executors.newCachedThreadPool();
+    public static final ConnectionService instance = new ConnectionService();
+
+    private ExecutorService executor;
+    private Set<HttpTask<?>> requests;
+
+    private ConnectionService() {
+        executor = Executors.newCachedThreadPool();
+        requests = new HashSet<>();
+    }
+
+    /**
+     * Change the implementation of the stack of requests
+     * @param set the set
+     */
+    public synchronized void setRequestsSet(Set<HttpTask<?>> set) {
+        requests = set;
+    }
+
+    public synchronized void addRequest(HttpTask<?> task) {
+        requests.add(task);
+    }
+
+    public synchronized void removeRequest(HttpTask<?> task) {
+        requests.remove(task);
+    }
+
+    /**
+     * Cancel running requests
+     */
+    public void cancel() {
+        for (HttpTask<?> task : requests) {
+            task.closeStream();
+            task.cancel(true);
+        }
+
+        requests.clear();
+    }
 
     /**
      * Execute an HTTP request
@@ -33,7 +81,7 @@ public class ConnectionService {
      * @param <T> Type of the return object
      * @return An instance of the task (cancellable)
      */
-    public static <T> HttpTask<T> execute(String url, Map<String, String> params, RequestCallback<T> callback,
+    public <T> HttpTask<T> execute(String url, Map<String, String> params, RequestCallback<T> callback,
                                           boolean isPostRequest) {
 
         // Create the url
@@ -43,93 +91,25 @@ public class ConnectionService {
             builder.appendQueryParameter(key, params.get(key));
         }
 
-        HttpTask<T> task = new HttpTask<>(callback, isPostRequest);
-        return (HttpTask<T>) task.executeOnExecutor(executor, builder.build());
+        HttpTask<T> task = new JsonTask<>(callback, isPostRequest);
+        requests.add(task);
+
+        return (HttpTask<T>) task.executeOnExecutor(executor, builder);
     }
 
-    /* Public class */
-
     /**
-     * Task that will be executed in another Thread
-     * @param <T> Type of the JSON gotten by the request
+     * Load an image from the url
+     * @param url URL of the image
+     * @return Task
      */
-    public static class HttpTask<T> extends AsyncTask<Uri, Integer, T> {
+    public ImageTask loadImage(String url) {
 
-        private RequestCallback<T> callback;
-        private TypeRequest type;
-        private RequestCallback.Errors error;
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(url);
 
-        public HttpTask(RequestCallback<T> callback, boolean isPostRequest) {
-            this.callback = callback;
+        ImageTask task = new ImageTask();
+        requests.add(task);
 
-            if (isPostRequest) {
-                type = TypeRequest.POST;
-            } else {
-                type = TypeRequest.GET;
-            }
-
-            error = RequestCallback.Errors.SUCCESS;
-        }
-
-        @Override
-        protected T doInBackground(Uri... urls) {
-
-            if (urls.length > 0) {
-
-                Uri uri = urls[0];
-                HttpURLConnection connection = null;
-
-                try {
-                    URL url;
-                    if (type == TypeRequest.POST) {
-                        url = new URL(uri.getPath());
-                        Log.i("URL", url.toString());
-                    } else {
-                        url = new URL(uri.toString());
-                    }
-                    connection = (HttpURLConnection) url.openConnection();
-
-                    if (type == TypeRequest.POST) {
-                        String body = uri.getEncodedQuery();
-                        connection.setDoOutput(true);
-                        connection.setFixedLengthStreamingMode(body.length());
-
-                        IOUtils.write(body, connection.getOutputStream());
-                    }
-
-                    InputStream in = connection.getInputStream();
-                    String body = IOUtils.toString(in, "utf-8");
-
-                    return MessageParser.fromJson(body, callback.getType());
-
-                } catch (IOException e) {
-
-                    error = RequestCallback.Errors.CONNECTION;
-                    Log.e("IO Exception", e.getMessage());
-                } catch (JsonSyntaxException e) {
-
-                    error = RequestCallback.Errors.JSON;
-                    Log.e("Json error", e.getMessage());
-                } finally {
-
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(T result) {
-
-            // Use the callback here, because this function is executed in the UI Thread !
-            if (result != null) {
-                callback.onSuccess(result);
-            } else {
-                callback.onFailure(error);
-            }
-        }
+        return (ImageTask) task.executeOnExecutor(executor, builder);
     }
 }

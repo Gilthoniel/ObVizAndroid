@@ -1,0 +1,46 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.obviz.review.ComparisonActivity">
+
+    <include layout="@layout/toolbar"
+             android:id="@+id/toolbar" />
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbar" android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" android:id="@+id/linearLayout">
+        <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/app_logo" android:padding="5dp" android:background="#ff505050"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="App Name"
+                android:id="@+id/app_name" android:gravity="center_vertical" android:layout_weight="1"
+                android:background="#ff505050" android:textColor="#ffcbcbcb"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="App Name"
+                android:id="@+id/comparison_name" android:layout_weight="1" android:gravity="center_vertical|right"
+                android:background="#ff357bce" android:textColor="#ffcbcbcb"/>
+        <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/comparison_logo" android:layout_weight="0" android:padding="5dp"
+                android:background="#ff357bce"/>
+    </LinearLayout>
+
+    <fragment android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:name="android.app.ListFragment"
+              android:id="@+id/fragment"
+              tools:layout="@layout/list_fragment" android:layout_below="@+id/linearLayout"
+              android:layout_alignParentLeft="true" android:layout_alignParentStart="true"/>
+
+</RelativeLayout>

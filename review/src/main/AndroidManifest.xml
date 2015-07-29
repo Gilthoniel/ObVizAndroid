@@ -1,28 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.obviz.reviews">
+    package="com.obviz.reviews" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application android:label="@string/app_name"
-                 android:icon="@drawable/favicon"
-                 android:allowBackup="true">
-
-        <activity android:name="com.obviz.review.HomeActivity"
-                  android:label="@string/app_name"
-                  android:launchMode="singleTop">
-
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/favicon"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.obviz.review.HomeActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="com.obviz.review.ActivitySearch" />
+        </activity>
+        <activity
+            android:name="com.obviz.review.ActivitySearch"
+            android:label="@string/title_activity_activity_search"
+            android:parentActivityName="com.obviz.review.HomeActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
-            <meta-data android:name="android.app.searchable"
-                       android:resource="@xml/searchable" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.obviz.review.HomeActivity" />
         </activity>
-
+        <activity
+            android:name="com.obviz.review.DetailsActivity"
+            android:label="@string/title_activity_details"
+            android:parentActivityName="com.obviz.review.HomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.obviz.review.HomeActivity" />
+        </activity>
+        <activity
+            android:name="com.obviz.review.ReviewsActivity"
+            android:label="@string/title_activity_reviews"
+            android:parentActivityName="com.obviz.review.DetailsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.obviz.review.DetailsActivity" />
+        </activity>
+        <activity
+            android:name="com.obviz.review.ComparisonActivity"
+            android:label="@string/title_activity_comparison" >
+        </activity>
+        <activity
+            android:name="com.obviz.review.ReviewsComparisonActivity"
+            android:label="@string/title_activity_reviews_comparison" >
+        </activity>
     </application>
+
 </manifest>

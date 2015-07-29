@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId "com.obviz.review"
-        minSdkVersion 17
+        minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -29,12 +29,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
+    compile 'org.apache.commons:commons-io:1.3.2'
     compile 'com.google.code.gson:gson:2.3.1'
-    androidTestCompile 'junit:junit:4.12'
+    compile 'de.hdodenhof:circleimageview:1.3.0'
+    compile 'com.github.lecho:hellocharts-library:1.5.5@aar'
+    compile 'com.jakewharton:disklrucache:2.0.2'
+    testCompile 'junit:junit:4.12'
 }

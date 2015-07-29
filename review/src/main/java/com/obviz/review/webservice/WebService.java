@@ -1,8 +1,8 @@
 package com.obviz.review.webservice;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import android.util.Log;
+import com.obviz.review.Constants;
+
 import java.util.Map;
 
 /**
@@ -10,12 +10,10 @@ import java.util.Map;
  * Base of a web service implementation
  */
 public abstract class WebService {
-    private List<ConnectionService.HttpTask<?>> tasks;
     private String baseURL;
 
     public WebService() {
-        tasks = new ArrayList<>();
-        baseURL = ConnectionService.URL;
+        baseURL = Constants.URL;
     }
 
     /**
@@ -34,8 +32,7 @@ public abstract class WebService {
      */
     public <T> void get(Map<String, String> params, RequestCallback<T> callback) {
 
-        ConnectionService.HttpTask<T> task = ConnectionService.execute(baseURL, params, callback, false);
-        tasks.add(task);
+        ConnectionService.instance.execute(baseURL, params, callback, false);
     }
 
     /**
@@ -46,21 +43,17 @@ public abstract class WebService {
      */
     public <T> void post(Map<String, String> params, RequestCallback<T> callback) {
 
-        ConnectionService.HttpTask<T> task = ConnectionService.execute(baseURL, params, callback, true);
+        ConnectionService.instance.execute(baseURL, params, callback, true);
     }
 
     /**
-     * Remove all the tasks currently running
+     * Load an image and populate the targeted view
+     * @param url of the image
      */
-    public void cancel() {
-        Iterator<ConnectionService.HttpTask<?>> iterator = tasks.iterator();
-        while (iterator.hasNext()) {
-            ConnectionService.HttpTask<?> task = iterator.next();
-            if (!task.isCancelled()) {
-                task.cancel(true);
-            }
+    public void loadImage(String url) {
 
-            iterator.remove();
-        }
+        Log.i("__IMAGE__", "Try to acquire image");
+
+        ConnectionService.instance.loadImage(url);
     }
 }
