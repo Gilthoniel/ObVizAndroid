@@ -3,4 +3,10 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.obviz.review.DetailsActivity">
 
+    <item
+        android:id="@+id/action_install"
+        android:title="@string/action_install"
+        android:icon="@drawable/action_install"
+        app:showAsAction="ifRoom|withText" />
+
 </menu>

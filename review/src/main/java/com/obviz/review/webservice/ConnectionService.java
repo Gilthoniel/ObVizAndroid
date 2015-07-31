@@ -81,7 +81,7 @@ public class ConnectionService {
      * @param <T> Type of the return object
      * @return An instance of the task (cancellable)
      */
-    public <T> HttpTask<T> execute(String url, Map<String, String> params, RequestCallback<T> callback,
+    public <T> HttpTask<T> execute(String url, Map<String, String> params, RequestCallback<T> callback, String cacheKey,
                                           boolean isPostRequest) {
 
         // Create the url
@@ -91,7 +91,7 @@ public class ConnectionService {
             builder.appendQueryParameter(key, params.get(key));
         }
 
-        HttpTask<T> task = new JsonTask<>(callback, isPostRequest);
+        HttpTask<T> task = new JsonTask<>(callback, isPostRequest, cacheKey);
         requests.add(task);
 
         return (HttpTask<T>) task.executeOnExecutor(executor, builder);

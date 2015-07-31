@@ -1,15 +1,21 @@
 package com.obviz.review.webservice;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Toast;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
 import com.obviz.review.adapters.ResultsAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
+import com.obviz.review.managers.CacheManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.Review;
 import com.obviz.review.models.TopicTitle;
+import com.obviz.reviews.R;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -25,9 +31,7 @@ public class GeneralWebService extends WebService {
 
     private static final GeneralWebService instance = new GeneralWebService();
 
-    private GeneralWebService() {
-        loadTopicTitles();
-    }
+    private GeneralWebService() {}
 
     public static GeneralWebService getInstance() {
         return instance;
@@ -40,20 +44,26 @@ public class GeneralWebService extends WebService {
      */
     public void getApp(String id, RequestCallback<AndroidApp> callback) {
 
+        // Key for the cache
+        final String key = CacheManager.KeyBuilder.forApps(id);
+
         Map<String, String> params = new HashMap<>();
         params.put("cmd", Constants.GET_APP);
         params.put("weight", "LIGHT");
         params.put("id", id);
 
-        get(params, callback);
+        get(params, callback, key);
     }
 
     /**
      * Execute a research in the database
      * @param query of the search
-     * @param adapter where sent the results
+     * @param view where sent the results
      */
-    public void searchApp(String query, final ResultsAdapter adapter) {
+    public void searchApp(String query, final ListView view) {
+
+        // Key for the cache
+        final String key = CacheManager.KeyBuilder.forSearch(query);
 
         Map<String, String> params = new HashMap<>();
         params.put("cmd", Constants.SEARCH_APP);
@@ -62,13 +72,25 @@ public class GeneralWebService extends WebService {
         RequestCallback<List<AndroidApp>> callback = new RequestCallback<List<AndroidApp>>() {
             @Override
             public void onSuccess(List<AndroidApp> result) {
+
+                ResultsAdapter adapter = (ResultsAdapter) view.getAdapter();
+
                 adapter.clear();
+                if (result.size() == 0) {
+                    view.getEmptyView().findViewById(R.id.progressBar).setVisibility(View.GONE);
+                    view.getEmptyView().findViewById(R.id.empty_text).setVisibility(View.VISIBLE);
+                }
                 adapter.addAll(result);
             }
 
             @Override
             public void onFailure(Errors error) {
                 Log.e("--SEARCH--", "An error occurred during a search");
+
+                view.getEmptyView().findViewById(R.id.progressBar).setVisibility(View.GONE);
+                view.getEmptyView().findViewById(R.id.error_message).setVisibility(View.VISIBLE);
+
+                Toast.makeText(view.getContext(), "Check you internet connection", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -77,7 +99,7 @@ public class GeneralWebService extends WebService {
             }
         };
 
-        get(params, callback);
+        get(params, callback, key);
     }
 
     /**
@@ -86,6 +108,10 @@ public class GeneralWebService extends WebService {
      * @param adapter where to populate
      */
     public void getReviews(final String appID, final ReviewsAdapter adapter) {
+
+        // Key for the cache
+        final String key = CacheManager.KeyBuilder.forReviews(appID);
+
         Map<String, String> params = new HashMap<>();
         params.put("cmd", Constants.GET_REVIEWS);
         params.put("id", appID);
@@ -93,6 +119,7 @@ public class GeneralWebService extends WebService {
         get(params, new RequestCallback<List<Review>>() {
             @Override
             public void onSuccess(List<Review> result) {
+
                 adapter.addAll(result);
             }
 
@@ -105,12 +132,10 @@ public class GeneralWebService extends WebService {
             public Type getType() {
                 return new TypeToken<List<Review>>(){}.getType();
             }
-        });
+        }, key);
     }
 
-    /** PRIVATE **/
-
-    private void loadTopicTitles() {
+    public void loadTopicTitles() {
 
         Map<String, String> params = new HashMap<>();
         params.put("cmd", Constants.GET_TOPIC_TITLES);
@@ -118,6 +143,8 @@ public class GeneralWebService extends WebService {
         get(params, new RequestCallback<List<TopicTitle>>() {
             @Override
             public void onSuccess(List<TopicTitle> result) {
+
+                Log.d("__TOPICS__", result.size() + " topics loaded");
                 TopicsManager.instance.setTopicTitles(result);
             }
 
@@ -130,6 +157,6 @@ public class GeneralWebService extends WebService {
             public Type getType() {
                 return new TypeToken<List<TopicTitle>>(){}.getType();
             }
-        });
+        }, null); // Cache is useless because we load that on starting and no more after that
     }
 }

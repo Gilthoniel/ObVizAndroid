@@ -6,13 +6,16 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by gaylor on 24.07.15.
  *
  */
-public class Review {
+public class Review implements Serializable {
+
+    private static final long serialVersionUID = -5938468708180459968L;
 
     private ID _id;
     private String permalink;

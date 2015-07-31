@@ -8,33 +8,42 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/review_content"
                 android:layout_alignParentTop="false" android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" android:layout_below="@+id/title" android:layout_margin="10dp"/>
+                android:layout_alignParentStart="true" android:layout_below="@+id/title"
+                android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_marginRight="5dp"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Author"
             android:id="@+id/author" android:layout_below="@+id/review_content" android:layout_alignParentLeft="false"
             android:layout_alignParentStart="false" android:textColor="#ff333333"
-            android:layout_alignLeft="@+id/review_content"/>
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp" android:layout_marginLeft="5dp"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Date"
-            android:id="@+id/date" android:layout_alignTop="@+id/author" android:layout_toRightOf="@+id/author"
-            android:layout_toEndOf="@+id/author" android:layout_marginLeft="10dp" android:textColor="#ff2f2f2f"/>
+            android:id="@+id/date"
+            android:textColor="#ff2f2f2f"
+            android:layout_toLeftOf="@+id/rating"
+            android:layout_toStartOf="@+id/rating"
+            android:layout_marginRight="5dp"
+            android:textSize="12sp"
+            android:layout_alignTop="@+id/author" android:layout_alignBottom="@+id/author"
+            android:gravity="center_vertical" android:textStyle="italic"/>
     <RatingBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/rating" android:layout_alignTop="@+id/date" android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             style="?android:ratingBarStyleSmall" android:numStars="5" android:rating="2.5"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="5dp"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Title"
             android:id="@+id/title" android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" android:textStyle="bold" android:textColor="#ff1c1c1c"
-            android:layout_margin="5dp"/>
+            android:layout_marginLeft="5dp" android:layout_marginTop="5dp" android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
 
 </RelativeLayout>

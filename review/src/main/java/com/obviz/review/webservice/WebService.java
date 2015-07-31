@@ -30,9 +30,9 @@ public abstract class WebService {
      * @param callback call when the request is over
      * @param <T> Type of the object requested
      */
-    public <T> void get(Map<String, String> params, RequestCallback<T> callback) {
+    public <T> void get(Map<String, String> params, RequestCallback<T> callback, String cacheKey) {
 
-        ConnectionService.instance.execute(baseURL, params, callback, false);
+        ConnectionService.instance.execute(baseURL, params, callback, cacheKey, false);
     }
 
     /**
@@ -43,7 +43,8 @@ public abstract class WebService {
      */
     public <T> void post(Map<String, String> params, RequestCallback<T> callback) {
 
-        ConnectionService.instance.execute(baseURL, params, callback, true);
+        // POST request without caching
+        ConnectionService.instance.execute(baseURL, params, callback, null, true);
     }
 
     /**

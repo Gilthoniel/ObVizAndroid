@@ -18,7 +18,10 @@
     <string name="list_empty">There\'s nothing here</string>
     <string name="title_activity_reviews">ReviewsActivity</string>
     <string name="title_activity_comparison">ComparisonActivity</string>
-    <string name="loading">Loading ...</string>
+    <string name="loading">Loading …</string>
     <string name="spinner">Topics</string>
     <string name="title_activity_reviews_comparison">Comparison reviews</string>
+    <string name="action_install">Install</string>
+    <string name="go_to">See more</string>
+    <string name="title_activity_package">PackageActivity</string>
 </resources>

@@ -9,16 +9,6 @@ import com.obviz.reviews.R;
  */
 public class Constants {
 
-    // Those two must have the same size
-    public static final String[] DRAWER_TITLES = new String[] {
-            "Home",
-            "My Applications"
-    };
-    public static final int[] DRAWER_ICONS = new int[] {
-            R.drawable.home,
-            R.drawable.myapp
-    };
-
     /** Commands **/
     public static final String URL = "http://vps186042.ovh.net/ObVizService";
 

@@ -4,8 +4,8 @@
               android:layout_height="match_parent">
 
     <lecho.lib.hellocharts.view.PieChartView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:id="@+id/pie_app" />
 
     <TextView
@@ -15,11 +15,11 @@
             android:layout_toRightOf="@+id/pie_app"
             android:layout_alignBottom="@+id/pie_app" android:layout_toLeftOf="@+id/pie_comparison"
             android:layout_toStartOf="@+id/pie_comparison" android:gravity="center" android:textColor="#ff2b2b2b"
-            android:textSize="20sp" android:padding="10dp"/>
+            android:textSize="16sp" android:padding="10dp"/>
 
     <lecho.lib.hellocharts.view.PieChartView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:id="@+id/pie_comparison" android:layout_alignParentTop="true" android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"/>
 

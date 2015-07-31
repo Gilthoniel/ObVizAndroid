@@ -1,5 +1,6 @@
 package com.obviz.review;
 
+import android.app.ListFragment;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,13 +13,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import com.obviz.review.adapters.ResultsAdapter;
+import com.obviz.review.webservice.ConnectionService;
+import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
-
+/**
+ * Display the results of a search for an app
+ */
 public class ActivitySearch extends AppCompatActivity {
 
-    private Toolbar mToolbar;
-    private ListView mListView;
     private ResultsAdapter mAdapter;
 
     @Override
@@ -26,17 +29,18 @@ public class ActivitySearch extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
 
+        ListFragment fragment = (ListFragment) getFragmentManager().findFragmentById(R.id.fragment);
+
         mAdapter = new ResultsAdapter(getApplicationContext());
-        mListView = (ListView) findViewById(R.id.list_results);
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        fragment.setListAdapter(mAdapter);
+        fragment.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent intent = new Intent(ActivitySearch.this, DetailsActivity.class);
@@ -53,7 +57,7 @@ public class ActivitySearch extends AppCompatActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
-            mAdapter.search(query);
+            GeneralWebService.getInstance().searchApp(query, fragment.getListView());
         }
     }
 
@@ -61,7 +65,11 @@ public class ActivitySearch extends AppCompatActivity {
     public void onPause() {
         super.onPause();
 
-        mAdapter.clearImages();
+        // Stop all the possible web requests
+        ConnectionService.instance.cancel();
+
+        // Clear to free the memory of the images
+        mAdapter.onPause();
     }
 
 

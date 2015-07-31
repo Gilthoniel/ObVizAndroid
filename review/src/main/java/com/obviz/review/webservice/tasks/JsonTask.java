@@ -3,6 +3,7 @@ package com.obviz.review.webservice.tasks;
 import android.net.Uri;
 import android.util.Log;
 import com.google.gson.JsonSyntaxException;
+import com.obviz.review.managers.CacheManager;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.MessageParser;
 import com.obviz.review.webservice.RequestCallback;
@@ -22,8 +23,9 @@ public class JsonTask<T> extends HttpTask<T> {
     private RequestCallback<T> callback;
     private ConnectionService.TypeRequest type;
     private RequestCallback.Errors error;
+    private String mKey;
 
-    public JsonTask(RequestCallback<T> callback, boolean isPostRequest) {
+    public JsonTask(RequestCallback<T> callback, boolean isPostRequest, String cacheKey) {
         this.callback = callback;
 
         if (isPostRequest) {
@@ -33,10 +35,19 @@ public class JsonTask<T> extends HttpTask<T> {
         }
 
         error = RequestCallback.Errors.SUCCESS;
+        mKey = cacheKey;
     }
 
     @Override
     protected T doInBackground(Uri.Builder... builders) {
+        // Try to acquire from the cache
+        if (mKey != null) {
+            T object = CacheManager.instance.get(mKey);
+            if (object != null) {
+                return object;
+            }
+        }
+
         if (builders.length <= 0) {
             return null;
         }
@@ -52,6 +63,7 @@ public class JsonTask<T> extends HttpTask<T> {
                 url = new URL(uri.toString());
             }
             connection = (HttpURLConnection) url.openConnection();
+            Log.d("__INTERNET__", "Connection open");
 
             // In case of POST request, we write the information before getting the result
             if (type == ConnectionService.TypeRequest.POST) {
@@ -65,9 +77,15 @@ public class JsonTask<T> extends HttpTask<T> {
             stream = connection.getInputStream();
             if (!isCancelled()) {
                 // If this is launched, cancel the task will close the stream and interrupt this
-                return MessageParser.fromJson(new InputStreamReader(stream), callback.getType());
-            } else {
-                return null;
+                T object = MessageParser.fromJson(new InputStreamReader(stream), callback.getType());
+                if (object != null && mKey != null) {
+                    CacheManager.instance.add(mKey, object);
+
+                    return object;
+                } else {
+
+                    return object;
+                }
             }
 
         } catch (IOException e) {

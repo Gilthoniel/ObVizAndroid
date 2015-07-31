@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
+import com.obviz.review.managers.CacheManager;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.webservice.ConnectionService;
 
@@ -23,8 +24,17 @@ public class ImageTask extends HttpTask<Bitmap> {
         url = urls[0].toString();
 
         try {
-            InputStream in = new URL(url).openStream();
-            return BitmapFactory.decodeStream(in);
+            // Take the image with a square size of 100px
+            String littleSizeUrl = url.replaceFirst("\\d+$", "100");
+
+            InputStream in = new URL(littleSizeUrl).openStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(in);
+
+            // Put in disk cache
+            String key = CacheManager.KeyBuilder.forImage(url);
+            CacheManager.instance.add(key, bitmap);
+
+            return bitmap;
 
         } catch (Exception e) {
             Log.e("-- Image Loading --", e.getMessage());

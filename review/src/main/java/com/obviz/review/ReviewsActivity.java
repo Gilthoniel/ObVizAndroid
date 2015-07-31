@@ -59,9 +59,13 @@ public class ReviewsActivity extends AppCompatActivity {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, spinnerItems);
             adapter.setDropDownViewResource(R.layout.spinner_item);
             spinner.setAdapter(adapter);
+            spinner.setSelection(adapter.getPosition(TopicsManager.instance.getTopicTitle(topicID)));
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                    // Stop the current requests
+                    ConnectionService.instance.cancel();
+
                     // Get the good topic id related to the position of the item
                     mAdapter.setTopicID(TopicsManager.instance.getIDs().get(position));
 
@@ -83,7 +87,6 @@ public class ReviewsActivity extends AppCompatActivity {
         super.onPause();
 
         ConnectionService.instance.cancel();
-        Log.i("__REQUESTS__", "Requests cancelled");
         mAdapter.clear();
     }
 

@@ -2,8 +2,11 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.obviz.review.ComparisonActivity">
-    <item android:id="@+id/action_settings"
-          android:title="@string/action_settings"
-          android:orderInCategory="100"
-          app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_go_to"
+        android:title="@string/go_to"
+        android:icon="@drawable/action_goto"
+        app:showAsAction="ifRoom|withText" />
+
 </menu>

@@ -3,29 +3,27 @@ package com.obviz.review;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import com.obviz.review.adapters.DrawerAdapter;
-import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.adapters.HomePagerAdapter;
+import com.obviz.review.managers.CacheManager;
+import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
 public class HomeActivity extends AppCompatActivity {
 
     private Toolbar mToolbar;
-    private RecyclerView mRecycler;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mManager;
+    private ListView mListView;
+    private DrawerAdapter mAdapter;
     private MenuItem mItemSearchView;
     private DrawerLayout mDrawer;
 
@@ -42,14 +40,25 @@ public class HomeActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
-        mRecycler = (RecyclerView) findViewById(R.id.recyclerView);
-        mRecycler.setHasFixedSize(true);
+        /* Init View Pager */
+        final ViewPager pager = (ViewPager) findViewById(R.id.home_pager);
+        pager.setAdapter(new HomePagerAdapter(getSupportFragmentManager()));
+
+        /* Init Drawer Menu */
+        mListView = (ListView) findViewById(R.id.nav_list);
+        mListView.addHeaderView(LayoutInflater.from(getApplicationContext()).inflate(R.layout.drawer_header, mListView, false));
 
         mAdapter = new DrawerAdapter(getApplicationContext());
-        mRecycler.setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                setTitle((String) mAdapter.getItem(position - 1));
 
-        mManager = new LinearLayoutManager(this);
-        mRecycler.setLayoutManager(mManager);
+                pager.setCurrentItem(position - 1);
+                mDrawer.closeDrawers();
+            }
+        });
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawerLayout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close) {
@@ -65,9 +74,13 @@ public class HomeActivity extends AppCompatActivity {
         };
         mDrawer.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+        setTitle((String) mAdapter.getItem(0));
 
-        /** -- INIT DISK CACHE -- **/
-        ImagesManager.getInstance().initCacheDisk(getApplicationContext());
+        /* -- INIT DISK CACHE -- */
+        CacheManager.instance.initCacheDisk(getApplicationContext());
+
+        /* -- INIT TOPICS -- */
+        GeneralWebService.getInstance().loadTopicTitles();
     }
 
     /**

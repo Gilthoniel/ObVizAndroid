@@ -74,6 +74,12 @@ public class ComparisonAdapter extends BaseAdapter {
 
         TextView topicTitle = (TextView) layout.findViewById(R.id.topic_title);
         topicTitle.setText(TopicsManager.instance.getTopicTitle(Integer.parseInt(topicID)));
+        // Set the color of the most appreciate app
+        if (mApplication.getTopics().getInt(topicID) > mComparison.getTopics().getInt(topicID)) {
+            topicTitle.setTextColor(parent.getResources().getColor(R.color.appColor));
+        } else {
+            topicTitle.setTextColor(parent.getResources().getColor(R.color.comparisonColor));
+        }
 
         return layout;
     }
@@ -93,7 +99,7 @@ public class ComparisonAdapter extends BaseAdapter {
         data.setHasLabels(false);
         data.setHasCenterCircle(true);
         data.setSlicesSpacing(3);
-        data.setCenterCircleScale(0.8f);
+        data.setCenterCircleScale(0.9f);
 
         chart.setPieChartData(data);
         chart.setCircleFillRatio(0.8f);

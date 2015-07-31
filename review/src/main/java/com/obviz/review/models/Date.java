@@ -3,6 +3,7 @@ package com.obviz.review.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -10,9 +11,10 @@ import java.util.Locale;
  * Created by gaylor on 22.07.15.
  *
  */
-public class Date implements Parcelable {
+public class Date implements Parcelable, Serializable {
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH);
+    private static final long serialVersionUID = -4761052500875181839L;
 
     private long $date;
 

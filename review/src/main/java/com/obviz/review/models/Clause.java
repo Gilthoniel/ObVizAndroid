@@ -1,10 +1,15 @@
 package com.obviz.review.models;
 
+import java.io.Serializable;
+
 /**
  * Created by gaylor on 24.07.15.
  *
  */
-public class Clause {
+public class Clause implements Serializable {
+
+    private static final long serialVersionUID = -7592305999775288161L;
+
     public enum ClauseType { CLAUSE, CONNECTOR, PUNCTUATION, PARAGRAPH }
 
     private String text;

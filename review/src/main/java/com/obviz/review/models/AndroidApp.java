@@ -6,13 +6,16 @@ import android.os.Parcelable;
 import com.obviz.review.Constants;
 import com.obviz.review.managers.TopicsManager;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by gaylor on 26.06.15.
  * Represent an application of the Google Play Store
  */
-public class AndroidApp implements Parcelable {
+public class AndroidApp implements Parcelable, Serializable {
+
+    private static final long serialVersionUID = 350181469147709951L;
 
     private String coverImgURL;
     private String appID;

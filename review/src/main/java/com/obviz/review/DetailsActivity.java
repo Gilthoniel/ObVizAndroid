@@ -1,7 +1,12 @@
 package com.obviz.review;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
@@ -13,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.obviz.review.adapters.DetailsPagerAdapter;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
@@ -22,6 +28,7 @@ import com.obviz.reviews.R;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -31,9 +38,15 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
     private DetailsPagerAdapter mAdapter;
     private Set<RequestObserver<AndroidApp>> mObservers;
     private AndroidApp mApplication;
+    private boolean isInstalled = false;
 
     public void AddRequestObserver(RequestObserver<AndroidApp> observer) {
-        mObservers.add(observer);
+
+        if (mApplication != null) {
+            observer.onSuccess(mApplication);
+        } else {
+            mObservers.add(observer);
+        }
     }
 
     @Override
@@ -78,6 +91,13 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
                 mApplication = app;
                 DetailsActivity.this.setTitle(app.getName());
 
+                List<PackageInfo> packages = getPackageManager().getInstalledPackages(0);
+                for (PackageInfo info : packages) {
+                    if (info.packageName.equals(mApplication.getAppID())) {
+                        isInstalled = true;
+                    }
+                }
+
                 TextView appDeveloper = (TextView) findViewById(R.id.app_developper);
                 appDeveloper.setText(app.getDeveloper());
 
@@ -86,9 +106,6 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
 
                 TextView appDate = (TextView) findViewById(R.id.app_date);
                 appDate.setText(app.getDate());
-
-                TextView appInstallations = (TextView) findViewById(R.id.app_installs);
-                appInstallations.setText(app.getInstallations() + " installations");
 
                 TextView appFreedom = (TextView) findViewById(R.id.app_free);
                 appFreedom.setText(app.isFree() ? "Free" : "Paid");
@@ -124,14 +141,44 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        // Stop web requests
+        ConnectionService.instance.cancel();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_details, menu);
+
+
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_install:
+
+                if (isInstalled) {
+
+                    Toast.makeText(getApplicationContext(), "Already installed!", Toast.LENGTH_LONG).show();
+                } else {
+
+                    final String packageName = mApplication.getAppID();
+
+                    // Catch if the Google Play Store isn't installed
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
+                    } catch (ActivityNotFoundException e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + packageName)));
+                    }
+                }
+        }
 
         return super.onOptionsItemSelected(item);
     }

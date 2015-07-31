@@ -4,5 +4,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@android:id/text1"
-        android:padding="10dp"
-        android:gravity="center" android:text="Test"/>
+        android:text="Test" android:textColor="#ffffffff" android:paddingLeft="20dp"
+        android:paddingTop="10dp" android:paddingRight="20dp" android:paddingBottom="10dp"
+        />

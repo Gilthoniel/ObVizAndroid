@@ -2,22 +2,31 @@
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffffffff">
+        android:layout_height="match_parent">
 
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/item_image"
-            android:src="@drawable/home" android:layout_marginLeft="10dp" android:layout_marginTop="10dp"/>
+            android:id="@+id/drawer_item_image"
+            android:src="@drawable/drawer_apps"
+            android:focusable="false"
+            android:focusableInTouchMode="false" android:padding="5dp"/>
 
     <TextView
-            android:id="@+id/item_text"
+            android:id="@+id/drawer_item_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text" android:layout_alignParentTop="false" android:layout_toEndOf="@+id/item_image"
-            android:layout_alignBottom="@+id/item_image" android:gravity="center_vertical"
-            android:layout_alignTop="@+id/item_image" android:layout_marginLeft="10dp"/>
+            android:text="Menu title"
+            android:layout_alignParentTop="false"
+            android:layout_toEndOf="@+id/drawer_item_image"
+            android:layout_toRightOf="@+id/drawer_item_image"
+            android:layout_alignBottom="@+id/drawer_item_image"
+            android:gravity="center_vertical"
+            android:layout_alignTop="@+id/drawer_item_image"
+            android:layout_marginLeft="10dp"
+            android:textColor="#ff001313"
+            android:textSize="12sp"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
 
 </RelativeLayout>

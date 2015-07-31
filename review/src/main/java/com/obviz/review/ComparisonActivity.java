@@ -10,12 +10,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.obviz.review.adapters.ComparisonAdapter;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.webservice.ConnectionService;
 import com.obviz.reviews.R;
 
 
@@ -67,7 +69,17 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Comparison");
+            getSupportActionBar().setElevation(0);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ConnectionService.instance.cancel();
     }
 
     @Override
@@ -91,10 +103,18 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_go_to:
+                Intent intent = new Intent(this, DetailsActivity.class);
+                intent.putExtra(Constants.INTENT_APP_ID, mComparison.getAppID());
+
+                startActivity(intent);
+                break;
+
+            case android.R.id.home:
+                onBackPressed();
+                break;
         }
 
         return super.onOptionsItemSelected(item);

@@ -3,11 +3,15 @@ package com.obviz.review.models;
 import com.google.gson.annotations.SerializedName;
 import lecho.lib.hellocharts.util.ChartUtils;
 
+import java.io.Serializable;
+
 /**
  * Created by gaylor on 24.07.15.
  *
  */
-public class Opinion {
+public class Opinion implements Serializable {
+
+    private static final long serialVersionUID = 8144194170894120352L;
 
     public enum Polarity {
         @SerializedName("negative")

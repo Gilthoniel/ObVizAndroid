@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.managers.Pausable;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
@@ -22,50 +23,40 @@ import java.util.*;
  * Created by gaylor on 21.07.15.
  * Adapter for the results of a search
  */
-public class ResultsAdapter extends BaseAdapter implements ImageObserver {
+public class ResultsAdapter extends BaseAdapter implements ImageObserver, Pausable {
 
     private List<AndroidApp> mApplications;
     private Map<String, Bitmap> mImages;
-    private LayoutInflater mInflater;
+    private Context mContext;
 
     public ResultsAdapter(Context context) {
         mApplications = new ArrayList<>();
         mImages = new HashMap<>();
 
-        mInflater = LayoutInflater.from(context);
+        mContext = context;
     }
 
-    /**
-     * Execute a search with the query and populate the adapter
-     * @param query the query
-     */
-    public void search(String query) {
-        GeneralWebService.getInstance().searchApp(query, this);
+    public Context getContext() {
+        return mContext;
     }
 
     public void addAll(List<AndroidApp> applications) {
         mApplications.addAll(applications);
         notifyDataSetChanged();
 
-        // Get the logo's images
-        for (AndroidApp app : mApplications) {
-            ImagesManager.getInstance().get(app.getImage(), this);
+        if (mApplications.isEmpty()) {
+
         }
     }
 
     public void add(AndroidApp app) {
         mApplications.add(app);
-        ImagesManager.getInstance().get(app.getImage(), this);
     }
 
     public void clear() {
-        clearImages();
+        mImages.clear();
         mApplications.clear();
         notifyDataSetChanged();
-    }
-
-    public void clearImages() {
-        mImages.clear();
     }
 
     public void notifyEndLoading() {
@@ -104,7 +95,7 @@ public class ResultsAdapter extends BaseAdapter implements ImageObserver {
 
         RelativeLayout layout;
         if (view == null) {
-            layout = (RelativeLayout) mInflater.inflate(R.layout.results_item, parent, false);
+            layout = (RelativeLayout) LayoutInflater.from(mContext).inflate(R.layout.results_item, parent, false);
         } else {
             layout = (RelativeLayout) view;
         }
@@ -125,6 +116,12 @@ public class ResultsAdapter extends BaseAdapter implements ImageObserver {
             logo.setImageBitmap(mImages.get(app.getImage()));
         } else {
             logo.setImageBitmap(null);
+
+            // Load the image only once to avoid infinite loop on the cache
+            if (!mImages.containsKey(app.getImage())) {
+                mImages.put(app.getImage(), null);
+                ImagesManager.getInstance().get(app.getImage(), this);
+            }
         }
 
         // TODO
@@ -145,5 +142,17 @@ public class ResultsAdapter extends BaseAdapter implements ImageObserver {
         gauge.setCircleFillRatio(0.9f);
 
         return layout;
+    }
+
+    /* Pausable implementation */
+
+    @Override
+    public void onPause() {
+        mImages.clear();
+    }
+
+    @Override
+    public void onResume() {
+
     }
 }

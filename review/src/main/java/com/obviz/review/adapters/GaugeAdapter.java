@@ -50,7 +50,7 @@ public class GaugeAdapter extends BaseAdapter implements RequestObserver<Android
         return mApplication;
     }
 
-    // RequestObserver implementation
+    /* RequestObserver implementation */
     @Override
     public void onSuccess(AndroidApp app) {
         mApplication = app;
@@ -107,11 +107,9 @@ public class GaugeAdapter extends BaseAdapter implements RequestObserver<Android
         data.setHasLabels(false);
         data.setHasCenterCircle(true);
         data.setSlicesSpacing(5);
-        data.setCenterText1(" ");
-        data.setCenterText1FontSize(20);
-        data.setCenterText2(TopicsManager.instance.getTopicTitle(topicID));
-        data.setCenterText2FontSize(14);
-        data.setCenterCircleScale(0.8f);
+        data.setCenterText1(TopicsManager.instance.getTopicTitle(topicID));
+        data.setCenterText1FontSize(12);
+        data.setCenterCircleScale(0.9f);
 
         gauge.setPieChartData(data);
         gauge.setCircleFillRatio(0.8f);

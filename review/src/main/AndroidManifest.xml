@@ -3,6 +3,8 @@
     package="com.obviz.reviews" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="ANDROID.PERMISSION.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="ANDROID.PERMISSION.DELETE_CACHE_FILES" />
 
     <application
         android:allowBackup="true"

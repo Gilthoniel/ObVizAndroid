@@ -2,8 +2,10 @@ package com.obviz.review.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,8 +57,8 @@ public class DetailsComparisonFragment extends ListFragment implements RequestOb
             AndroidApp app = (AndroidApp) mAdapter.getItem(position);
 
             Intent intent = new Intent(list.getContext(), ComparisonActivity.class);
-            intent.putExtra(Constants.INTENT_APP, mApplication);
-            intent.putExtra(Constants.INTENT_COMPARISON_APP, app);
+            intent.putExtra(Constants.INTENT_APP, (Parcelable) mApplication);
+            intent.putExtra(Constants.INTENT_COMPARISON_APP, (Parcelable) app);
 
             startActivity(intent);
         }
@@ -77,6 +79,7 @@ public class DetailsComparisonFragment extends ListFragment implements RequestOb
                     mAdapter.add(result);
 
                     if (!it.hasNext()) {
+                        // Notify only on the last elem
                         mAdapter.notifyEndLoading();
                     }
                 }

@@ -10,7 +10,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@android:id/list"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal" android:divider="@null"/>
 
     <LinearLayout
             android:id="@android:id/empty"
@@ -26,6 +26,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/progressBar" android:indeterminate="true"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/empty_text"
+                android:text="Oops, we don&apos;t have anything for that" android:gravity="center"
+                android:padding="10dp" android:visibility="gone"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="An error occured"
+                android:id="@+id/error_message" android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
+                android:textColor="#ff9a221e" android:padding="10dp" android:visibility="gone"/>
 
     </LinearLayout>
 

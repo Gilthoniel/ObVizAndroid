@@ -11,6 +11,7 @@ import com.obviz.review.adapters.ComparisonPagerAdapter;
 import com.obviz.review.fragments.ComparisonReviewsFragment;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
 import com.obviz.review.webservice.RequestObserver;
@@ -92,10 +93,17 @@ public class ReviewsComparisonActivity extends AppCompatActivity {
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
             getSupportActionBar().setElevation(0);
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ConnectionService.instance.cancel();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

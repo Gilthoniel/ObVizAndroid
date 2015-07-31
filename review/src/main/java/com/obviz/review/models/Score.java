@@ -3,11 +3,15 @@ package com.obviz.review.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
+
 /**
  * Created by gaylor on 21.07.15.
  * Score of an app in stars
  */
-public class Score implements Parcelable {
+public class Score implements Parcelable, Serializable {
+
+    private static final long serialVersionUID = -6163305678621505292L;
 
     private int count;
     private int one;

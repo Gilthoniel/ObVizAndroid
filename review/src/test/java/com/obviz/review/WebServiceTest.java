@@ -1,8 +1,8 @@
 package com.obviz.review;
 
-import android.os.AsyncTask;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.RequestCallback;
+import com.obviz.review.webservice.tasks.HttpTask;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class WebServiceTest {
 
-    Set<AsyncTask<?,?,?>> stacker = new HashSet<>();
+    Set<HttpTask<?>> stacker = new HashSet<>();
 
     @Test
     public void testRequestsSet() {
@@ -42,7 +42,7 @@ public class WebServiceTest {
             public Type getType() {
                 return Void.class;
             }
-        }, false);
+        }, null, false);
     }
 
     private void manageCounter(int counter) {
