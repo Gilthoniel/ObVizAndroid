@@ -53,6 +53,6 @@ public class ComparisonReviewsFragment extends ListFragment implements RequestOb
     @Override
     public void onSuccess(AndroidApp app) {
 
-        GeneralWebService.getInstance().getReviews(app.getAppID(), mAdapter);
+        GeneralWebService.getInstance().getReviews(app.getAppID(), getListView());
     }
 }

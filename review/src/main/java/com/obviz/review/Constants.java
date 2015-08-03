@@ -24,6 +24,7 @@ public class Constants {
     public static final String INTENT_TOPIC_ID = "com.obviz.review.INTENT_TOPIC_ID";
     public static final String INTENT_COMPARISON_APP = "com.obviz.review.INTENT_COMPARISON_APP";
     public static final String INTENT_COMPARISON_APP_ID = "com.obviz.review.INTENT_COMPARISON_APP_ID";
+    public static final String INTENT_SEARCH = "com.obviz.review.INTENT_SEARCH";
 
     /** STATES' KEYS **/
     public static final String STATE_CURRENT_TAB = "current_tab";

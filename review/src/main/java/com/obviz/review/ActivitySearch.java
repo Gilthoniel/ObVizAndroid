@@ -13,12 +13,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import com.obviz.review.adapters.ResultsAdapter;
+import com.obviz.review.database.DatabaseService;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
 /**
  * Display the results of a search for an app
+ * @intent INTENT_SEARCH value of the query if the activity is launched without the SearchView
  */
 public class ActivitySearch extends AppCompatActivity {
 
@@ -54,11 +56,19 @@ public class ActivitySearch extends AppCompatActivity {
 
         // Get the intent
         Intent intent = getIntent();
+        String query;
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
+            query = intent.getStringExtra(SearchManager.QUERY);
 
-            GeneralWebService.getInstance().searchApp(query, fragment.getListView());
+            // Add the query in the database
+            DatabaseService.instance.insertHistoryEntry(query);
+        } else {
+
+            query = intent.getStringExtra(Constants.INTENT_SEARCH);
         }
+
+        // Perform the search
+        GeneralWebService.getInstance().searchApp(query, fragment.getListView());
     }
 
     @Override
@@ -81,11 +91,6 @@ public class ActivitySearch extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

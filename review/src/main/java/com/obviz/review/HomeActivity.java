@@ -9,12 +9,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import com.obviz.review.adapters.DrawerAdapter;
 import com.obviz.review.adapters.HomePagerAdapter;
+import com.obviz.review.database.DatabaseService;
 import com.obviz.review.managers.CacheManager;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
@@ -39,10 +41,25 @@ public class HomeActivity extends AppCompatActivity {
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setElevation(0);
+        }
 
         /* Init View Pager */
         final ViewPager pager = (ViewPager) findViewById(R.id.home_pager);
         pager.setAdapter(new HomePagerAdapter(getSupportFragmentManager()));
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int index) {
+                setTitle(DrawerAdapter.TITLES[index]);
+            }
+
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {}
+
+            @Override
+            public void onPageScrollStateChanged(int i) {}
+        });
 
         /* Init Drawer Menu */
         mListView = (ListView) findViewById(R.id.nav_list);
@@ -81,6 +98,9 @@ public class HomeActivity extends AppCompatActivity {
 
         /* -- INIT TOPICS -- */
         GeneralWebService.getInstance().loadTopicTitles();
+
+        /* -- INIT DATABASE -- */
+        DatabaseService.instance.initHelper(getApplicationContext());
     }
 
     /**
@@ -114,6 +134,7 @@ public class HomeActivity extends AppCompatActivity {
         if (searchView != null) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             searchView.setSubmitButtonEnabled(true);
+            searchView.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         } else {
             Log.e("--NULL--", "SearchView is null");
         }

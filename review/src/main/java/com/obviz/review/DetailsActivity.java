@@ -31,7 +31,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
+/**
+ * Display general information about an application
+ * @intent INTENT_APP_ID id of the application
+ */
 public class DetailsActivity extends AppCompatActivity implements ImageObserver {
 
     private ViewPager mPager;
@@ -39,6 +42,7 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
     private Set<RequestObserver<AndroidApp>> mObservers;
     private AndroidApp mApplication;
     private boolean isInstalled = false;
+    private Menu mMenu;
 
     public void AddRequestObserver(RequestObserver<AndroidApp> observer) {
 
@@ -118,11 +122,16 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
                 for (RequestObserver<AndroidApp> observer : mObservers) {
                     observer.onSuccess(app);
                 }
+
+                // Enable the install action
+                if (mMenu != null) {
+                    mMenu.findItem(R.id.action_install).setEnabled(true);
+                }
             }
 
             @Override
             public void onFailure(Errors error) {
-
+                Toast.makeText(getApplicationContext(), getResources().getText(R.string.app_not_found), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -153,7 +162,10 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_details, menu);
 
-
+        mMenu = menu;
+        if (mApplication != null) {
+            mMenu.findItem(R.id.action_install).setEnabled(true);
+        }
 
         return true;
     }
@@ -167,7 +179,7 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
                 if (isInstalled) {
 
                     Toast.makeText(getApplicationContext(), "Already installed!", Toast.LENGTH_LONG).show();
-                } else {
+                } else if (mApplication != null) {
 
                     final String packageName = mApplication.getAppID();
 
@@ -178,6 +190,9 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + packageName)));
                     }
                 }
+                break;
+
+            default:
         }
 
         return super.onOptionsItemSelected(item);

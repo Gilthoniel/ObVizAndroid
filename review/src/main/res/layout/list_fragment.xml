@@ -25,17 +25,18 @@
         <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/progressBar" android:indeterminate="true"/>
+                android:id="@+id/progressBar" android:indeterminate="true"
+            android:visibility="gone" />
 
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/empty_text"
-                android:text="Oops, we don&apos;t have anything for that" android:gravity="center"
-                android:padding="10dp" android:visibility="gone"/>
+                android:text="@string/list_empty" android:gravity="center"
+                android:padding="10dp" android:visibility="visible"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="An error occured"
+                android:text="@string/list_error"
                 android:id="@+id/error_message" android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
                 android:textColor="#ff9a221e" android:padding="10dp" android:visibility="gone"/>
 

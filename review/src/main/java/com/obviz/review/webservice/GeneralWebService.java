@@ -62,6 +62,9 @@ public class GeneralWebService extends WebService {
      */
     public void searchApp(String query, final ListView view) {
 
+        // Display the loading icon
+        toggleStateList(view, 1);
+
         // Key for the cache
         final String key = CacheManager.KeyBuilder.forSearch(query);
 
@@ -73,12 +76,14 @@ public class GeneralWebService extends WebService {
             @Override
             public void onSuccess(List<AndroidApp> result) {
 
+                // Display the empty text of there's no result
+                toggleStateList(view, 0);
+
                 ResultsAdapter adapter = (ResultsAdapter) view.getAdapter();
 
                 adapter.clear();
                 if (result.size() == 0) {
-                    view.getEmptyView().findViewById(R.id.progressBar).setVisibility(View.GONE);
-                    view.getEmptyView().findViewById(R.id.empty_text).setVisibility(View.VISIBLE);
+                    toggleStateList(view, 0);
                 }
                 adapter.addAll(result);
             }
@@ -87,8 +92,7 @@ public class GeneralWebService extends WebService {
             public void onFailure(Errors error) {
                 Log.e("--SEARCH--", "An error occurred during a search");
 
-                view.getEmptyView().findViewById(R.id.progressBar).setVisibility(View.GONE);
-                view.getEmptyView().findViewById(R.id.error_message).setVisibility(View.VISIBLE);
+                toggleStateList(view, 2);
 
                 Toast.makeText(view.getContext(), "Check you internet connection", Toast.LENGTH_LONG).show();
             }
@@ -105,9 +109,12 @@ public class GeneralWebService extends WebService {
     /**
      * Get the reviews of an android app
      * @param appID ID of the App
-     * @param adapter where to populate
+     * @param view where to populate the results
      */
-    public void getReviews(final String appID, final ReviewsAdapter adapter) {
+    public void getReviews(final String appID, final ListView view) {
+
+        // Display the loading
+        toggleStateList(view, 1);
 
         // Key for the cache
         final String key = CacheManager.KeyBuilder.forReviews(appID);
@@ -120,12 +127,17 @@ public class GeneralWebService extends WebService {
             @Override
             public void onSuccess(List<Review> result) {
 
+                // Display the empty text if there is no result
+                toggleStateList(view, 0);
+
+                ReviewsAdapter adapter = (ReviewsAdapter) view.getAdapter();
+
                 adapter.addAll(result);
             }
 
             @Override
             public void onFailure(Errors error) {
-
+                toggleStateList(view, 2);
             }
 
             @Override
@@ -158,5 +170,32 @@ public class GeneralWebService extends WebService {
                 return new TypeToken<List<TopicTitle>>(){}.getType();
             }
         }, null); // Cache is useless because we load that on starting and no more after that
+    }
+
+    /* Private */
+
+    /**
+     * Display the view of the given state in a list view
+     * @param view the list
+     * @param state the state: 0 - 1 - 2
+     */
+    private void toggleStateList(ListView view, int state) {
+
+        // Hide the views
+        view.getEmptyView().findViewById(R.id.empty_text).setVisibility(View.GONE);
+        view.getEmptyView().findViewById(R.id.error_message).setVisibility(View.GONE);
+        view.getEmptyView().findViewById(R.id.progressBar).setVisibility(View.GONE);
+
+        // Display the good one
+        switch (state) {
+            case 0:
+                view.getEmptyView().findViewById(R.id.empty_text).setVisibility(View.VISIBLE);
+                break;
+            case 1:
+                view.getEmptyView().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+                break;
+            default:
+                view.getEmptyView().findViewById(R.id.error_message).setVisibility(View.VISIBLE);
+        }
     }
 }

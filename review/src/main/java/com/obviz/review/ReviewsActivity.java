@@ -4,14 +4,15 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 import com.obviz.review.adapters.ReviewsAdapter;
 import com.obviz.review.managers.TopicsManager;
@@ -27,6 +28,7 @@ public class ReviewsActivity extends AppCompatActivity {
     private String appID;
     private int topicID;
     private ReviewsAdapter mAdapter;
+    private ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class ReviewsActivity extends AppCompatActivity {
 
         // Initiate the fragment list
         ListFragment fragment = (ListFragment) getFragmentManager().findFragmentById(R.id.fragment);
+        mListView = fragment.getListView();
 
         mAdapter = new ReviewsAdapter(getApplicationContext(), topicID);
         fragment.setListAdapter(mAdapter);
@@ -71,7 +74,7 @@ public class ReviewsActivity extends AppCompatActivity {
 
                     // Clear the adapter and get the new items
                     mAdapter.clear();
-                    GeneralWebService.getInstance().getReviews(appID, mAdapter);
+                    GeneralWebService.getInstance().getReviews(appID, mListView);
                 }
 
                 @Override
@@ -94,7 +97,7 @@ public class ReviewsActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        GeneralWebService.getInstance().getReviews(appID, mAdapter);
+        GeneralWebService.getInstance().getReviews(appID, mListView);
     }
 
     @Override

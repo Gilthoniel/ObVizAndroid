@@ -47,7 +47,7 @@ public class PackageAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int i) {
-        return mPackages.get(i);
+        return mPackages.get(i).packageName;
     }
 
     @Override
