@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import com.obviz.review.fragments.HistoryFragment;
 import com.obviz.review.fragments.PackageFragment;
+import com.obviz.review.fragments.TrendingFragment;
 
 /**
  * Created by gaylor on 31.07.15.
@@ -26,7 +27,7 @@ public class HomePagerAdapter extends FragmentStatePagerAdapter {
             case 2:
                 return new HistoryFragment();
             default:
-                return new PackageFragment();
+                return new TrendingFragment();
         }
     }
 

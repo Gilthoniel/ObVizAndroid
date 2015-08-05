@@ -15,8 +15,8 @@ public class DiskTimedCache {
 
     public static final String JOURNAL_FILE_NAME = "journal";
 
-    private Map<File, Integer> mObjects;
-    private LinkedList<File> mStack;
+    private Map<CacheFile, Integer> mObjects;
+    private LinkedList<CacheFile> mStack;
     private File mDirectory;
     private File mJournal;
     private long mMaxSize;
@@ -38,7 +38,7 @@ public class DiskTimedCache {
         return mDirectory;
     }
 
-    public List<File> getStack() {
+    public List<CacheFile> getStack() {
         return mStack;
     }
 
@@ -58,10 +58,13 @@ public class DiskTimedCache {
             return null;
         }
 
-        try {
-            // File where to populate the object
-            File file = new File(mDirectory, key);
+        // File where to populate the object
+        CacheFile file = searchFileInCache(key);
 
+        // Get the write lock
+        file.getLock().writeLock().lock();
+
+        try {
             Editor editor = new Editor();
             // Stream for the user
             editor.mStream = new BufferedOutputStream(new FileOutputStream(file));
@@ -79,6 +82,9 @@ public class DiskTimedCache {
             e.printStackTrace();
 
             return null;
+        } finally {
+
+            file.getLock().writeLock().unlock();
         }
     }
 
@@ -107,7 +113,9 @@ public class DiskTimedCache {
         }
 
         Accessor accessor = new Accessor();
-        File file = new File(mDirectory, key);
+        CacheFile file = searchFileInCache(key);
+
+        file.getLock().readLock().lock();
 
         try {
             // throw exception if the key doesn't exist
@@ -142,6 +150,9 @@ public class DiskTimedCache {
 
             // This key doesn't exist so we return null
             return null;
+        } finally {
+
+            file.getLock().readLock().unlock();
         }
     }
 
@@ -158,7 +169,7 @@ public class DiskTimedCache {
         try {
 
             PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(mJournal, false)));
-            for (File file : mStack) {
+            for (CacheFile file : mStack) {
 
                 int expiration = mObjects.containsKey(file) ? mObjects.get(file) : 0;
 
@@ -173,7 +184,7 @@ public class DiskTimedCache {
         }
     }
 
-    private void updateStack(File file) {
+    private void updateStack(CacheFile file) {
 
         int index = mStack.indexOf(file);
         if (index > -1) {
@@ -181,6 +192,17 @@ public class DiskTimedCache {
         }
 
         mStack.addFirst(file);
+    }
+
+    private CacheFile searchFileInCache(String key) {
+
+        for (CacheFile file : mStack) {
+            if (file.getName().equals(key)) {
+                return file;
+            }
+        }
+
+        return new CacheFile(mDirectory, key);
     }
 
     /* Public class */
@@ -214,7 +236,7 @@ public class DiskTimedCache {
 
                 // Fix if it's too big
                 while (size > mMaxSize - mJournal.length()) {
-                    File file = mStack.removeLast();
+                    CacheFile file = mStack.removeLast();
                     long fileSize = file.length();
 
                     if (file.delete()) {
@@ -298,13 +320,13 @@ public class DiskTimedCache {
                 while ((line = stream.readLine()) != null) {
 
                     String[] parts = line.split(":");
-                    File item = new File(cache.mDirectory, parts[0]);
+                    CacheFile item = new CacheFile(cache.mDirectory, parts[0]);
 
                     cache.mStack.addLast(item);
 
                     int expiration = Integer.parseInt(parts[1]);
                     if (expiration > 0) {
-                        cache.mObjects.put(file, expiration);
+                        cache.mObjects.put(item, expiration);
                     }
                 }
                 stream.close();

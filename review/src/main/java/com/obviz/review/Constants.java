@@ -1,8 +1,5 @@
 package com.obviz.review;
 
-import android.os.Parcelable;
-import com.obviz.reviews.R;
-
 /**
  * Created by gaylor on 21.07.15.
  *
@@ -12,6 +9,7 @@ public class Constants {
     /** SETTINGS **/
 
     public static final int CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+    public static final int NUMBER_TRENDING_APPS = 12;
 
     /** Commands **/
     public static final String URL = "http://vps186042.ovh.net/ObVizService";
@@ -20,6 +18,7 @@ public class Constants {
     public static final String SEARCH_APP = "Search_Apps";
     public static final String GET_TOPIC_TITLES = "Get_App_Topics";
     public static final String GET_REVIEWS = "Get_Reviews";
+    public static final String GET_TRENDING_APPS = "Get_Trending_Apps";
 
     /** INTENTS **/
 
@@ -99,6 +98,11 @@ public class Constants {
             }
 
             return DEFAULT;
+        }
+
+        @Override
+        public String toString() {
+            return title;
         }
     }
 }

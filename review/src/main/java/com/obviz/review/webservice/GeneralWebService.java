@@ -1,8 +1,10 @@
 package com.obviz.review.webservice;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -10,6 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
 import com.obviz.review.adapters.ResultsAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
+import com.obviz.review.adapters.TrendingAdapter;
 import com.obviz.review.managers.CacheManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
@@ -18,10 +21,7 @@ import com.obviz.review.models.TopicTitle;
 import com.obviz.reviews.R;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by gaylor on 26.06.15.
@@ -147,6 +147,53 @@ public class GeneralWebService extends WebService {
         }, key);
     }
 
+    public void getTrendingApps(final AbsListView view, @NonNull String[] categories) {
+
+        toggleStateList(view, 1);
+
+        final String key = CacheManager.KeyBuilder.forTrending(categories);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("cmd", Constants.GET_TRENDING_APPS);
+        if (categories.length > 0) {
+            params.put("categories", MessageParser.toJson(categories));
+        }
+
+        get(params, new RequestCallback<List<AndroidApp>>() {
+            @Override
+            public void onSuccess(List<AndroidApp> result) {
+
+                // Display the empty text if there is no result
+                toggleStateList(view, 0);
+
+                TrendingAdapter adapter = (TrendingAdapter) view.getAdapter();
+                if (result.size() > Constants.NUMBER_TRENDING_APPS) {
+                    Random random = new Random();
+                    int index = random.nextInt(result.size() - Constants.NUMBER_TRENDING_APPS);
+
+                    adapter.clear();
+                    adapter.addAll(result.subList(index, index + Constants.NUMBER_TRENDING_APPS));
+                } else {
+                    adapter.addAll(result);
+                }
+            }
+
+            @Override
+            public void onFailure(Errors error) {
+
+                toggleStateList(view, 2);
+            }
+
+            @Override
+            public Type getType() {
+                return new TypeToken<List<AndroidApp>>(){}.getType();
+            }
+        }, key);
+    }
+
+    /**
+     * Load the list of topics for the opinions of the app
+     */
     public void loadTopicTitles() {
 
         Map<String, String> params = new HashMap<>();
@@ -179,7 +226,7 @@ public class GeneralWebService extends WebService {
      * @param view the list
      * @param state the state: 0 - 1 - 2
      */
-    private void toggleStateList(ListView view, int state) {
+    private void toggleStateList(AbsListView view, int state) {
 
         // Hide the views
         view.getEmptyView().findViewById(R.id.empty_text).setVisibility(View.GONE);

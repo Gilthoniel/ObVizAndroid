@@ -206,6 +206,17 @@ public class CacheManager {
             return "app_" + clean(appID);
         }
 
+        public static String forTrending(String[] categories) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("trending_");
+
+            for (String category : categories) {
+                builder.append(category.toLowerCase()).append("_");
+            }
+
+            return builder.toString();
+        }
+
         /**
          *
          * @param url url of the image

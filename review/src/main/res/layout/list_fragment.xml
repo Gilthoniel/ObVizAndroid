@@ -12,34 +12,7 @@
             android:id="@android:id/list"
             android:layout_gravity="center_horizontal" android:divider="@null"/>
 
-    <LinearLayout
-            android:id="@android:id/empty"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true" android:gravity="center">
-
-        <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBar" android:indeterminate="true"
-            android:visibility="gone" />
-
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/empty_text"
-                android:text="@string/list_empty" android:gravity="center"
-                android:padding="10dp" android:visibility="visible"/>
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/list_error"
-                android:id="@+id/error_message" android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
-                android:textColor="#ff9a221e" android:padding="10dp" android:visibility="gone"/>
-
-    </LinearLayout>
+    <include
+        layout="@layout/empty_view" />
 
 </RelativeLayout>

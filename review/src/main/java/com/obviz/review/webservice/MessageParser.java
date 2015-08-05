@@ -42,4 +42,9 @@ public class MessageParser {
 
         return gson.fromJson(reader, type);
     }
+
+    public static String toJson(Object object) {
+
+        return gson.toJson(object);
+    }
 }

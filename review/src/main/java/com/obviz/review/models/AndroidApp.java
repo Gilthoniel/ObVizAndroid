@@ -17,7 +17,7 @@ public class AndroidApp implements Parcelable, Serializable {
 
     private static final long serialVersionUID = 350181469147709951L;
 
-    private String coverImgURL;
+    private String coverImgUrl;
     private String appID;
     private String name;
     private Score score;
@@ -31,7 +31,7 @@ public class AndroidApp implements Parcelable, Serializable {
     private Bundle topics;
 
     public AndroidApp(Parcel parcel) {
-        coverImgURL = parcel.readString();
+        coverImgUrl = parcel.readString();
         appID = parcel.readString();
         name = parcel.readString();
         score = parcel.readParcelable(Score.class.getClassLoader());
@@ -55,7 +55,7 @@ public class AndroidApp implements Parcelable, Serializable {
     }
 
     public String getImage() {
-        return coverImgURL;
+        return coverImgUrl;
     }
 
     public String getName() {
@@ -123,7 +123,7 @@ public class AndroidApp implements Parcelable, Serializable {
      */
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(coverImgURL);
+        parcel.writeString(coverImgUrl);
         parcel.writeString(appID);
         parcel.writeString(name);
         parcel.writeParcelable(score, -1);
