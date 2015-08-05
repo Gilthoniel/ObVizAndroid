@@ -9,6 +9,10 @@ import com.obviz.reviews.R;
  */
 public class Constants {
 
+    /** SETTINGS **/
+
+    public static final int CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+
     /** Commands **/
     public static final String URL = "http://vps186042.ovh.net/ObVizService";
 
@@ -25,10 +29,6 @@ public class Constants {
     public static final String INTENT_COMPARISON_APP = "com.obviz.review.INTENT_COMPARISON_APP";
     public static final String INTENT_COMPARISON_APP_ID = "com.obviz.review.INTENT_COMPARISON_APP_ID";
     public static final String INTENT_SEARCH = "com.obviz.review.INTENT_SEARCH";
-
-    /** STATES' KEYS **/
-    public static final String STATE_CURRENT_TAB = "current_tab";
-    public static final String STATE_APP_ID = "app_id";
 
     /** Categories **/
 

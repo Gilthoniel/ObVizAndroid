@@ -1,22 +1,13 @@
 package com.obviz.review.managers;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Base64;
-import android.util.Log;
-import com.jakewharton.disklrucache.DiskLruCache;
 import com.obviz.review.webservice.GeneralWebService;
 
-import java.io.*;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by gaylor on 23.07.15.

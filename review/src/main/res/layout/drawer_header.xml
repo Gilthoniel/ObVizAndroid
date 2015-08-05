@@ -3,7 +3,15 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="178dp"
-        android:background="@drawable/header_bg"
-        android:weightSum="1">
+    android:weightSum="1">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView2"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/logo"
+            android:scaleType="centerCrop" />
 </RelativeLayout>

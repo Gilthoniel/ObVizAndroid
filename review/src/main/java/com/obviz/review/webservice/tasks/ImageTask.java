@@ -30,6 +30,8 @@ public class ImageTask extends HttpTask<Bitmap> {
             InputStream in = new URL(littleSizeUrl).openStream();
             Bitmap bitmap = BitmapFactory.decodeStream(in);
 
+            Log.d("__INTERNET__", "Image acquire from the web");
+
             // Put in disk cache
             String key = CacheManager.KeyBuilder.forImage(url);
             CacheManager.instance.add(key, bitmap);

@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
-import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.*;
 import java.util.regex.Matcher;
@@ -19,12 +18,11 @@ public class CacheManager {
 
     public static final CacheManager instance = new CacheManager();
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 20; // 20mo
-    private static final String DISK_CACHE_NAME = "";
-    private static final int DISK_CACHE_VERSION = 2;
+    private static final String DISK_CACHE_NAME = "webcache";
 
     private final Object mDiskCacheLock;
     private boolean mDiskCacheStarting;
-    private DiskLruCache mDiskCache;
+    private DiskTimedCache mDiskCache;
 
     private CacheManager() {
         mDiskCacheLock = new Object();
@@ -38,14 +36,15 @@ public class CacheManager {
      */
     public void initCacheDisk(Context context) {
 
-        final String cachePath;
-        if (context.getExternalCacheDir() != null) {
-            cachePath = context.getExternalCacheDir().getPath();
+        File external = context.getExternalCacheDir();
+        File cacheDir;
+        if (external != null && external.canWrite()) {
+            cacheDir = new File(external, DISK_CACHE_NAME);
         } else {
-            cachePath = context.getCacheDir().getPath();
+            cacheDir = new File(context.getCacheDir(), DISK_CACHE_NAME);
         }
 
-        File cacheDir = new File(cachePath + File.separator + DISK_CACHE_NAME);
+        Log.d("__CACHE__", cacheDir.getAbsolutePath());
         new InitDiskCacheTask().execute(cacheDir);
     }
 
@@ -71,13 +70,16 @@ public class CacheManager {
                     return null;
                 }
 
-                DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
+                DiskTimedCache.Accessor accessor = mDiskCache.get(key);
 
-                if (snapshot != null) {
-                    ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(snapshot.getInputStream(0)));
+                if (accessor != null) {
+                    ObjectInputStream stream = new ObjectInputStream(accessor.getStream());
 
                     // We know what we put in the cache
-                    return (T) stream.readObject();
+                    T object = (T) stream.readObject();
+                    accessor.commit();
+
+                    return object;
                 }
             } catch (IOException | ClassNotFoundException | InterruptedException e) {
 
@@ -102,26 +104,20 @@ public class CacheManager {
                 while (mDiskCacheStarting) {
                     mDiskCacheLock.wait();
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-                // Check that the cache's initialization has not failed
-                if (mDiskCache == null) {
-                    return null;
-                }
+                DiskTimedCache.Accessor accessor = mDiskCache.get(key);
 
-                DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
-
-                if (snapshot != null) {
-                    InputStream stream = new BufferedInputStream(snapshot.getInputStream(0));
+                if (accessor != null) {
+                    InputStream stream = accessor.getStream();
 
                     Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                    stream.close();
-                    snapshot.close();
+                    accessor.commit();
 
                     return bitmap;
                 }
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
         }
 
         return null;
@@ -132,7 +128,7 @@ public class CacheManager {
      * @param key Key of the entry
      * @param object Object : MUST implement Serializable
      */
-    public void add(String key, Object object) {
+    public void add(String key, Object object, int expiration) {
 
         synchronized (mDiskCacheLock) {
             try {
@@ -141,17 +137,10 @@ public class CacheManager {
                     mDiskCacheLock.wait();
                 }
 
-                // Check that the cache's initialization has not failed
-                if (mDiskCache == null) {
-                    return;
-                }
-
-                DiskLruCache.Editor editor = mDiskCache.edit(key);
+                DiskTimedCache.Editor editor = mDiskCache.edit(key, expiration);
                 if (editor != null) {
-                    ObjectOutputStream stream = new ObjectOutputStream(new BufferedOutputStream(editor.newOutputStream(0)));
+                    ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
                     stream.writeObject(object);
-                    stream.flush();
-                    stream.close();
                     editor.commit();
                 }
             } catch (IOException | InterruptedException e) {
@@ -159,6 +148,10 @@ public class CacheManager {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void add(String key, Object object) {
+        add(key, object, 0);
     }
 
     /**
@@ -174,23 +167,16 @@ public class CacheManager {
                 while (mDiskCacheStarting) {
                     mDiskCacheLock.wait();
                 }
-
-                // Check that the cache's initialization has not failed
-                if (mDiskCache == null) {
-                    return;
-                }
-
-                DiskLruCache.Editor editor = mDiskCache.edit(key);
-                if (editor != null) {
-                    OutputStream stream = new BufferedOutputStream(editor.newOutputStream(0));
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    stream.flush();
-                    stream.close();
-
-                    editor.commit();
-                }
-            } catch (IOException | InterruptedException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+
+            DiskTimedCache.Editor editor = mDiskCache.edit(key);
+            if (editor != null) {
+                OutputStream stream = editor.getStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+                editor.commit();
             }
         }
     }
@@ -255,16 +241,16 @@ public class CacheManager {
             synchronized (mDiskCacheLock) {
                 File cacheDir = params[0];
                 try {
-                    mDiskCache = DiskLruCache.open(cacheDir, DISK_CACHE_VERSION, 1, DISK_CACHE_SIZE);
-
+                    mDiskCache = DiskTimedCache.Factory.instance.open(cacheDir, 0, DISK_CACHE_SIZE);
                 } catch (IOException e) {
-                    Log.e("__CACHE__", "Error when initialize disk cache");
-                    e.printStackTrace();
-                } finally {
 
-                    mDiskCacheStarting = false;
-                    mDiskCacheLock.notifyAll();
+                    Log.e("__CACHE__", "Initialize with empty cache");
+                    Log.e("__CACHE__", "Message: " + e.getMessage());
+                    mDiskCache = DiskTimedCache.Factory.instance.empty();
                 }
+
+                mDiskCacheStarting = false;
+                mDiskCacheLock.notifyAll();
             }
 
             return null;

@@ -3,6 +3,7 @@ package com.obviz.review.webservice.tasks;
 import android.net.Uri;
 import android.util.Log;
 import com.google.gson.JsonSyntaxException;
+import com.obviz.review.Constants;
 import com.obviz.review.managers.CacheManager;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.MessageParser;
@@ -79,7 +80,7 @@ public class JsonTask<T> extends HttpTask<T> {
                 // If this is launched, cancel the task will close the stream and interrupt this
                 T object = MessageParser.fromJson(new InputStreamReader(stream), callback.getType());
                 if (object != null && mKey != null) {
-                    CacheManager.instance.add(mKey, object);
+                    CacheManager.instance.add(mKey, object, Constants.CACHE_EXPIRATION_TIME);
 
                     return object;
                 } else {
