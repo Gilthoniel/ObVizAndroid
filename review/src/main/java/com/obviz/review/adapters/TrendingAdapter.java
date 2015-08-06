@@ -7,10 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.models.AndroidApp;
@@ -44,6 +41,14 @@ public class TrendingAdapter extends BaseAdapter implements ImageObserver {
         notifyDataSetChanged();
     }
 
+    public void add(AndroidApp app) {
+        mApplications.add(app);
+    }
+
+    public void notifyDataChanged() {
+        notifyDataSetChanged();
+    }
+
     public void clear() {
         mApplications.clear();
         notifyDataSetChanged();
@@ -55,7 +60,7 @@ public class TrendingAdapter extends BaseAdapter implements ImageObserver {
     }
 
     @Override
-    public Object getItem(int i) {
+    public AndroidApp getItem(int i) {
         return mApplications.get(i);
     }
 
@@ -78,6 +83,22 @@ public class TrendingAdapter extends BaseAdapter implements ImageObserver {
 
         TextView name = (TextView) layout.findViewById(R.id.app_name);
         name.setText(app.getName());
+
+        TextView developer = (TextView) layout.findViewById(R.id.app_developer);
+        developer.setText(app.getDeveloper());
+
+        TextView category = (TextView) layout.findViewById(R.id.app_category);
+        category.setText(app.getCategory().getTitle());
+
+        RatingBar rating = (RatingBar) layout.findViewById(R.id.rating);
+        rating.setRating(app.getScore().getTotal());
+
+        TextView freedom = (TextView) layout.findViewById(R.id.app_freedom);
+        if (app.isFree()) {
+            freedom.setText("Free");
+        } else {
+            freedom.setText("Paid");
+        }
 
         ImageView logo = (ImageView) layout.findViewById(R.id.app_logo);
         if (mImages.containsKey(app.getImage())) {

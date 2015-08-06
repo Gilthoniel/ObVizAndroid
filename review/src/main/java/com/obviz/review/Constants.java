@@ -8,8 +8,8 @@ public class Constants {
 
     /** SETTINGS **/
 
-    public static final int CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
-    public static final int NUMBER_TRENDING_APPS = 12;
+    public static final int CACHE_EXPIRATION_TIME = 60 * 60 * 1000; // in ms
+    public static final int NUMBER_TRENDING_APPS = 10;
 
     /** Commands **/
     public static final String URL = "http://vps186042.ovh.net/ObVizService";

@@ -133,12 +133,6 @@ public class DiskTimedCache {
 
                 return null;
 
-            } else {
-
-                // Set the last modified date because we want to read it
-                if (!file.setLastModified(new Date().getTime())) {
-                    Log.e("__CACHE__", "Error when trying to set lastModified date");
-                }
             }
 
             // Put the file at the top of the stack if it exists

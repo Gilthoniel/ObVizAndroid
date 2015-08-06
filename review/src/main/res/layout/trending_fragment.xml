@@ -18,7 +18,8 @@
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:spinnerMode="dialog"/>
 
     </android.support.v7.widget.Toolbar>
 
@@ -35,7 +36,8 @@
         android:verticalSpacing="10dp"
         android:layout_below="@+id/toolbar"
         android:paddingTop="20dp"
-        android:clipToPadding="false"/>
+        android:clipToPadding="false"
+        android:paddingBottom="20dp"/>
 
     <include
         layout="@layout/empty_view"

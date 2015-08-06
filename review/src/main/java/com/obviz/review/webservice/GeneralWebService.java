@@ -167,13 +167,23 @@ public class GeneralWebService extends WebService {
                 toggleStateList(view, 0);
 
                 TrendingAdapter adapter = (TrendingAdapter) view.getAdapter();
-                if (result.size() > Constants.NUMBER_TRENDING_APPS) {
-                    Random random = new Random();
-                    int index = random.nextInt(result.size() - Constants.NUMBER_TRENDING_APPS);
+                adapter.clear();
 
-                    adapter.clear();
-                    adapter.addAll(result.subList(index, index + Constants.NUMBER_TRENDING_APPS));
+                if (result.size() > Constants.NUMBER_TRENDING_APPS) {
+
+                    Set<Integer> indexes = new TreeSet<>();
+                    Random random = new Random();
+                    while (indexes.size() < Constants.NUMBER_TRENDING_APPS) {
+                        indexes.add(random.nextInt(result.size()));
+                    }
+
+                    for (Integer index : indexes) {
+                        adapter.add(result.get(index));
+                    }
+                    adapter.notifyDataChanged();
+
                 } else {
+
                     adapter.addAll(result);
                 }
             }

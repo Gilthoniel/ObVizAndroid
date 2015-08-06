@@ -25,7 +25,7 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="80dp"
         android:id="@+id/app_logo"
         android:layout_alignParentTop="false"
         android:layout_alignParentLeft="true"
@@ -38,7 +38,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Application name"
+        android:text="Application name\nApplication Name"
         android:id="@+id/app_name"
         android:layout_alignParentTop="false"
         android:layout_alignParentLeft="true"
@@ -49,7 +49,64 @@
         android:padding="5dp"
         android:textColor="#ff262626"
         android:gravity="center"
-        android:minHeight="60dp"
-        android:textSize="12sp"/>
+        android:minHeight="40dp"
+        android:textSize="12sp"
+        android:maxHeight="40dp"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/app_name"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:padding="5dp"
+        android:background="#ffededed">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Developer"
+            android:id="@+id/app_developer"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:textSize="10sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:id="@+id/app_category"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/app_developer"
+            android:textSize="10sp"
+            android:textStyle="italic"/>
+
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rating"
+            style="?android:ratingBarStyleSmall"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/app_category"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Free"
+            android:id="@+id/app_freedom"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/app_developer"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:textSize="10sp"
+            android:gravity="top|right"
+            android:textColor="#ff191919"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

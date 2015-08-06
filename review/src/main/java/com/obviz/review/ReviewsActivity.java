@@ -60,7 +60,7 @@ public class ReviewsActivity extends AppCompatActivity {
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, spinnerItems);
-            adapter.setDropDownViewResource(R.layout.spinner_item);
+            adapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
             spinner.setAdapter(adapter);
             spinner.setSelection(adapter.getPosition(TopicsManager.instance.getTopicTitle(topicID)));
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
