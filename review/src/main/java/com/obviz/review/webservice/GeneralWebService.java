@@ -147,7 +147,7 @@ public class GeneralWebService extends WebService {
         }, key);
     }
 
-    public void getTrendingApps(final AbsListView view, @NonNull String[] categories) {
+    public void getTrendingApps(final AbsListView view, @NonNull List<Constants.Category> categories) {
 
         toggleStateList(view, 1);
 
@@ -155,8 +155,13 @@ public class GeneralWebService extends WebService {
 
         Map<String, String> params = new HashMap<>();
         params.put("cmd", Constants.GET_TRENDING_APPS);
-        if (categories.length > 0) {
-            params.put("categories", MessageParser.toJson(categories));
+        if (categories.size() > 0) {
+            List<String> json = new ArrayList<>();
+            for (Constants.Category category : categories) {
+                json.add(category.name());
+            }
+
+            params.put("categories", MessageParser.toJson(json));
         }
 
         get(params, new RequestCallback<List<AndroidApp>>() {

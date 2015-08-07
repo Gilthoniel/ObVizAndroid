@@ -27,7 +27,7 @@ public class AndroidApp implements Parcelable, Serializable {
     private String installations;
     private Date publicationDate;
     private Constants.Category category;
-    private List<String> relatedUrls;
+    private List<String> relatedIDs;
     private Bundle topics;
 
     public AndroidApp(Parcel parcel) {
@@ -41,8 +41,8 @@ public class AndroidApp implements Parcelable, Serializable {
         installations = parcel.readString();
         publicationDate = parcel.readParcelable(Date.class.getClassLoader());
         category = Constants.Category.fromName(parcel.readString());
-        relatedUrls = new ArrayList<>();
-        parcel.readStringList(relatedUrls);
+        relatedIDs = new ArrayList<>();
+        parcel.readStringList(relatedIDs);
         topics = parcel.readBundle();
     }
 
@@ -86,9 +86,9 @@ public class AndroidApp implements Parcelable, Serializable {
         return category;
     }
 
-    public List<String> getRelatedUrls() {
-        if (relatedUrls != null) {
-            return relatedUrls;
+    public List<String> getRelatedIDs() {
+        if (relatedIDs != null) {
+            return relatedIDs;
         } else {
             return new ArrayList<>();
         }
@@ -133,7 +133,7 @@ public class AndroidApp implements Parcelable, Serializable {
         parcel.writeString(installations);
         parcel.writeParcelable(publicationDate, -1);
         parcel.writeString(category.name());
-        parcel.writeStringList(relatedUrls);
+        parcel.writeStringList(relatedIDs);
         parcel.writeBundle(topics);
     }
 

@@ -39,7 +39,8 @@ public class ImageTask extends HttpTask<Bitmap> {
             return bitmap;
 
         } catch (Exception e) {
-            Log.e("-- Image Loading --", e.getMessage());
+            Log.e("-- Image Loading --", "With message:" + e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }

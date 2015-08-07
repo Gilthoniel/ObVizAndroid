@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import com.obviz.review.models.AndroidApp;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
 import com.obviz.review.webservice.RequestObserver;
-import com.obviz.review.webservice.WebService;
 import com.obviz.reviews.R;
 
 import java.lang.reflect.Type;
@@ -69,7 +67,7 @@ public class DetailsComparisonFragment extends ListFragment implements RequestOb
 
         mApplication = app;
 
-        final Iterator<String> it = app.getRelatedUrls().iterator();
+        final Iterator<String> it = app.getRelatedIDs().iterator();
         while (it.hasNext()) {
             String id = it.next();
 

@@ -1,25 +1,10 @@
 package com.obviz.review.webservice;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.util.LruCache;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
-import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.review.webservice.tasks.ImageTask;
 import com.obviz.review.webservice.tasks.JsonTask;
-import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -92,7 +77,7 @@ public class ConnectionService {
         }
 
         HttpTask<T> task = new JsonTask<>(callback, isPostRequest, cacheKey);
-        requests.add(task);
+        addRequest(task);
 
         return (HttpTask<T>) task.executeOnExecutor(executor, builder);
     }
