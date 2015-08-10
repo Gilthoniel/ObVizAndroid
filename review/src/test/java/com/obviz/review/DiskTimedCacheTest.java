@@ -32,7 +32,7 @@ public class DiskTimedCacheTest {
 
     @Test
     public void testOpenCloseCache() throws IOException {
-        DiskTimedCache cache = initCache();
+        DiskTimedCache cache = initCache("open_close");
 
         for (int i = 0; i < 10; i++) {
             DiskTimedCache.Editor editor = cache.edit("string-"+i);
@@ -59,7 +59,7 @@ public class DiskTimedCacheTest {
     @Test
     public void testEditKey() throws IOException {
 
-        DiskTimedCache cache = initCache();
+        DiskTimedCache cache = initCache("edit");
 
         DiskTimedCache.Editor editor = cache.edit("test-edit");
         ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
@@ -76,7 +76,7 @@ public class DiskTimedCacheTest {
     @Test
     public void testAccessKey() throws IOException, ClassNotFoundException {
 
-        DiskTimedCache cache = initCache();
+        DiskTimedCache cache = initCache("access");
 
         for (int i = 0; i < 10; i++) {
             DiskTimedCache.Editor editor = cache.edit("string-"+i);
@@ -100,7 +100,7 @@ public class DiskTimedCacheTest {
 
     @Test
     public void testStackManagement() throws IOException {
-        DiskTimedCache cache = initCache();
+        DiskTimedCache cache = initCache("stack");
 
         for (int i = 0; i < 10; i++) {
             DiskTimedCache.Editor editor = cache.edit("string-"+i);
@@ -127,7 +127,7 @@ public class DiskTimedCacheTest {
 
     @Test
     public void testCacheSize() throws IOException {
-        DiskTimedCache cache = initCache();
+        DiskTimedCache cache = initCache("size");
 
         for (int i = 0; i < 100; i++) {
             DiskTimedCache.Editor editor = cache.edit("string-"+i);
@@ -144,7 +144,7 @@ public class DiskTimedCacheTest {
 
     @Test
     public void testExpirationTime() throws IOException, InterruptedException {
-        DiskTimedCache cache = initCache();
+        DiskTimedCache cache = initCache("expiration");
 
         DiskTimedCache.Editor editor = cache.edit("test-expiration", 1000);
         ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
@@ -172,7 +172,7 @@ public class DiskTimedCacheTest {
 
     @Test
     public void testMultipleAllocation() throws IOException {
-        DiskTimedCache cache = initCache();
+        DiskTimedCache cache = initCache("allocations");
 
         DiskTimedCache.Editor editorTest = cache.edit("test-allocations");
         ObjectOutputStream s = new ObjectOutputStream(editorTest.getStream());
@@ -200,7 +200,7 @@ public class DiskTimedCacheTest {
 
     @Test
     public void testMultipleAllocationStates() throws IOException {
-        DiskTimedCache cache = initCache();
+        DiskTimedCache cache = initCache("states");
 
         for (int i = 0; i < 100; i++) {
             DiskTimedCache.Editor editor = cache.edit("string-"+i);
@@ -218,7 +218,7 @@ public class DiskTimedCacheTest {
 
     @Test
     public void testGeneralUsage() throws IOException {
-        DiskTimedCache cache = initCache();
+        DiskTimedCache cache = initCache("general");
 
         for (int i = 0; i < 10; i++) {
             DiskTimedCache.Editor editor = cache.edit("usage-"+i, 10000);
@@ -282,8 +282,8 @@ public class DiskTimedCacheTest {
         return dir.delete();
     }
 
-    private DiskTimedCache initCache() {
-        File file = new File(String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+    private DiskTimedCache initCache(String dirName) {
+        File file = new File("__" + dirName);
         file.mkdirs();
         DiskTimedCache cache;
         try {

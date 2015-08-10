@@ -2,6 +2,7 @@ package com.obviz.review.managers;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 import com.obviz.review.webservice.GeneralWebService;
 
 import java.util.ArrayList;

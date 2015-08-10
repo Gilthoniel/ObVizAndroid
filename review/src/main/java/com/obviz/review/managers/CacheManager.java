@@ -5,8 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.obviz.review.Constants;
 
 import java.io.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,26 +66,37 @@ public class CacheManager {
                 while (mDiskCacheStarting) {
                     mDiskCacheLock.wait();
                 }
+            } catch (InterruptedException ignored) {
+            }
 
-                // Check that the cache's initialization has not failed
-                if (mDiskCache == null) {
-                    return null;
-                }
 
-                DiskTimedCache.Accessor accessor = mDiskCache.get(key);
+            // Check that the cache's initialization has not failed
+            if (mDiskCache == null) {
+                return null;
+            }
 
-                if (accessor != null) {
+            DiskTimedCache.Accessor accessor = mDiskCache.get(key);
+
+            if (accessor != null) {
+
+                T object;
+                try {
                     ObjectInputStream stream = new ObjectInputStream(accessor.getStream());
 
                     // We know what we put in the cache
-                    T object = (T) stream.readObject();
+                    object = (T) stream.readObject();
+                } catch (ClassNotFoundException | IOException e) {
+
+                    e.printStackTrace();
+
+                    object = null;
+
+                } finally {
+
                     accessor.commit();
-
-                    return object;
                 }
-            } catch (IOException | ClassNotFoundException | InterruptedException e) {
 
-                e.printStackTrace();
+                return object;
             }
         }
 
@@ -108,16 +121,17 @@ public class CacheManager {
                 e.printStackTrace();
             }
 
-                DiskTimedCache.Accessor accessor = mDiskCache.get(key);
+            DiskTimedCache.Accessor accessor = mDiskCache.get(key);
 
-                if (accessor != null) {
-                    InputStream stream = accessor.getStream();
+            if (accessor != null) {
+                InputStream stream = accessor.getStream();
 
-                    Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                    accessor.commit();
+                Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                accessor.commit();
 
-                    return bitmap;
-                }
+                return bitmap;
+            }
+
         }
 
         return null;
@@ -136,17 +150,20 @@ public class CacheManager {
                 while (mDiskCacheStarting) {
                     mDiskCacheLock.wait();
                 }
+            } catch (InterruptedException ignored) {}
 
+            try {
                 DiskTimedCache.Editor editor = mDiskCache.edit(key, expiration);
                 if (editor != null) {
                     ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
                     stream.writeObject(object);
                     editor.commit();
                 }
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
 
                 e.printStackTrace();
             }
+
         }
     }
 
@@ -178,6 +195,7 @@ public class CacheManager {
 
                 editor.commit();
             }
+
         }
     }
 
@@ -206,12 +224,12 @@ public class CacheManager {
             return "app_" + clean(appID);
         }
 
-        public static String forTrending(String[] categories) {
+        public static String forTrending(List<Constants.Category> categories) {
             StringBuilder builder = new StringBuilder();
             builder.append("trending_");
 
-            for (String category : categories) {
-                builder.append(category.toLowerCase()).append("_");
+            for (Constants.Category category : categories) {
+                builder.append(category.ordinal()).append("_");
             }
 
             return builder.toString();

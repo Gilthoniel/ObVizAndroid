@@ -149,7 +149,11 @@ public class GeneralWebService extends WebService {
 
     public void getTrendingApps(final AbsListView view, @NonNull List<Constants.Category> categories) {
 
+        // Show the loading icon
         toggleStateList(view, 1);
+        // Clear the list to show the empty view
+        final TrendingAdapter adapter = (TrendingAdapter) view.getAdapter();
+        adapter.clear();
 
         final String key = CacheManager.KeyBuilder.forTrending(categories);
 
@@ -170,9 +174,6 @@ public class GeneralWebService extends WebService {
 
                 // Display the empty text if there is no result
                 toggleStateList(view, 0);
-
-                TrendingAdapter adapter = (TrendingAdapter) view.getAdapter();
-                adapter.clear();
 
                 if (result.size() > Constants.NUMBER_TRENDING_APPS) {
 
