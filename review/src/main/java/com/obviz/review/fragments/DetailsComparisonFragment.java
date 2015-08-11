@@ -71,7 +71,7 @@ public class DetailsComparisonFragment extends ListFragment implements RequestOb
         while (it.hasNext()) {
             String id = it.next();
 
-            GeneralWebService.getInstance().getApp(id, new RequestCallback<AndroidApp>() {
+            GeneralWebService.instance().getApp(id, new RequestCallback<AndroidApp>() {
                 @Override
                 public void onSuccess(AndroidApp result) {
                     mAdapter.add(result);

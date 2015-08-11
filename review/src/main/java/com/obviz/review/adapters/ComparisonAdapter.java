@@ -73,7 +73,7 @@ public class ComparisonAdapter extends BaseAdapter {
         populatePieChart(pieComparison, topicID, mComparison);
 
         TextView topicTitle = (TextView) layout.findViewById(R.id.topic_title);
-        topicTitle.setText(TopicsManager.instance.getTopicTitle(Integer.parseInt(topicID)));
+        topicTitle.setText(TopicsManager.instance().getTopicTitle(Integer.parseInt(topicID)));
         // Set the color of the most appreciate app
         if (mApplication.getTopics().getInt(topicID) > mComparison.getTopics().getInt(topicID)) {
             topicTitle.setTextColor(parent.getResources().getColor(R.color.appColor));

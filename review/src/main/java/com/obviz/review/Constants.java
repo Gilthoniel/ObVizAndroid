@@ -29,6 +29,10 @@ public class Constants {
     public static final String INTENT_COMPARISON_APP_ID = "com.obviz.review.INTENT_COMPARISON_APP_ID";
     public static final String INTENT_SEARCH = "com.obviz.review.INTENT_SEARCH";
 
+    /** STATES **/
+
+    public static final String STATE_APP = "com.obviz.review.APP";
+
     /** Categories **/
 
     /* Category */

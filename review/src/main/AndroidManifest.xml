@@ -9,7 +9,9 @@
         android:allowBackup="true"
         android:icon="@drawable/favicon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:name="com.obviz.review.ObvizApplication">
+
         <activity
             android:name="com.obviz.review.HomeActivity"
             android:label="@string/app_name"

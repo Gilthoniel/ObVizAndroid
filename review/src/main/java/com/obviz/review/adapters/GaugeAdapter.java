@@ -68,7 +68,7 @@ public class GaugeAdapter extends BaseAdapter implements RequestObserver<Android
 
     @Override
     public Object getItem(int i) {
-        int topicID = TopicsManager.instance.getIDs().get(i);
+        int topicID = TopicsManager.instance().getIDs().get(i);
 
         if (mApplication != null) {
             return mApplication.getTopics().get(String.valueOf(topicID));
@@ -79,7 +79,7 @@ public class GaugeAdapter extends BaseAdapter implements RequestObserver<Android
 
     @Override
     public long getItemId(int i) {
-        return TopicsManager.instance.getIDs().get(i);
+        return TopicsManager.instance().getIDs().get(i);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class GaugeAdapter extends BaseAdapter implements RequestObserver<Android
         data.setHasLabels(false);
         data.setHasCenterCircle(true);
         data.setSlicesSpacing(5);
-        data.setCenterText1(TopicsManager.instance.getTopicTitle(topicID));
+        data.setCenterText1(TopicsManager.instance().getTopicTitle(topicID));
         data.setCenterText1FontSize(12);
         data.setCenterCircleScale(0.9f);
 

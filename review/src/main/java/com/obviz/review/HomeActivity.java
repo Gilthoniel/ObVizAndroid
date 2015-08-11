@@ -92,15 +92,6 @@ public class HomeActivity extends AppCompatActivity {
         mDrawer.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
         setTitle((String) mAdapter.getItem(0));
-
-        /* -- INIT DISK CACHE -- */
-        CacheManager.instance.initCacheDisk(getApplicationContext());
-
-        /* -- INIT TOPICS -- */
-        GeneralWebService.getInstance().loadTopicTitles();
-
-        /* -- INIT DATABASE -- */
-        DatabaseService.instance.initHelper(getApplicationContext());
     }
 
     /**

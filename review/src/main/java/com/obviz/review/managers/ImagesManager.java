@@ -2,7 +2,6 @@ package com.obviz.review.managers;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
 import com.obviz.review.webservice.GeneralWebService;
 
 import java.util.ArrayList;
@@ -16,11 +15,20 @@ import java.util.Map;
  */
 public class ImagesManager {
 
-    private static final ImagesManager instance = new ImagesManager();
+    private static ImagesManager instance;
+
     private Map<String, List<ImageObserver>> mObservers;
 
     private ImagesManager() {
         mObservers = new HashMap<>();
+    }
+
+    public static void init() {
+        instance = new ImagesManager();
+    }
+
+    public static ImagesManager instance() {
+        return instance;
     }
 
     /**
@@ -86,7 +94,7 @@ public class ImagesManager {
             String key = keys[0];
 
             // Try to acquire from the disk cache
-            Bitmap bitmap = CacheManager.instance.getImage(key);
+            Bitmap bitmap = CacheManager.instance().getImage(key);
             if (bitmap != null) {
                 return bitmap;
             }
@@ -100,7 +108,7 @@ public class ImagesManager {
 
                 mObservers.put(key, observers);
 
-                GeneralWebService.getInstance().loadImage(mUrl);
+                GeneralWebService.instance().loadImage(mUrl);
             } else {
                 // The image is already loading
                 mObservers.get(key).add(mObserver);

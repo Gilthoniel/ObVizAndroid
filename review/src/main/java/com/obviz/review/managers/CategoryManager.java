@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class CategoryManager {
 
-    public static final CategoryManager instance = new CategoryManager();
+    private static CategoryManager instance;
 
     private List<SuperCategory> supers;
 
@@ -109,6 +109,15 @@ public class CategoryManager {
                 Constants.Category.LIFESTYLE
         });
         supers.add(others);
+    }
+
+    public static void init() {
+        instance = new CategoryManager();
+    }
+
+    public static CategoryManager instance() {
+
+        return instance;
     }
 
     public List<SuperCategory> getSupers() {

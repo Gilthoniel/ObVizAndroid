@@ -65,7 +65,7 @@ public class ReviewsComparisonActivity extends AppCompatActivity {
         String appID = intent.getStringExtra(Constants.INTENT_APP_ID);
         String comparisonID = intent.getStringExtra(Constants.INTENT_COMPARISON_APP_ID);
         mTopicID = intent.getStringExtra(Constants.INTENT_TOPIC_ID);
-        setTitle(TopicsManager.instance.getTopicTitle(Integer.parseInt(mTopicID)));
+        setTitle(TopicsManager.instance().getTopicTitle(Integer.parseInt(mTopicID)));
 
         /* Tabs initialization */
         mPager = (ViewPager) findViewById(R.id.pager);
@@ -127,7 +127,7 @@ public class ReviewsComparisonActivity extends AppCompatActivity {
 
     private void populateApp(String id, final boolean isApp) {
 
-        GeneralWebService.getInstance().getApp(id, new RequestCallback<AndroidApp>() {
+        GeneralWebService.instance().getApp(id, new RequestCallback<AndroidApp>() {
             @Override
             public void onSuccess(AndroidApp result) {
 

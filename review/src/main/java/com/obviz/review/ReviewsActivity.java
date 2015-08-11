@@ -56,13 +56,13 @@ public class ReviewsActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
 
-            List<String> spinnerItems = TopicsManager.instance.getTopicsTitle();
+            List<String> spinnerItems = TopicsManager.instance().getTopicsTitle();
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, spinnerItems);
             adapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
             spinner.setAdapter(adapter);
-            spinner.setSelection(adapter.getPosition(TopicsManager.instance.getTopicTitle(topicID)));
+            spinner.setSelection(adapter.getPosition(TopicsManager.instance().getTopicTitle(topicID)));
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
@@ -70,11 +70,11 @@ public class ReviewsActivity extends AppCompatActivity {
                     ConnectionService.instance.cancel();
 
                     // Get the good topic id related to the position of the item
-                    mAdapter.setTopicID(TopicsManager.instance.getIDs().get(position));
+                    mAdapter.setTopicID(TopicsManager.instance().getIDs().get(position));
 
                     // Clear the adapter and get the new items
                     mAdapter.clear();
-                    GeneralWebService.getInstance().getReviews(appID, mListView);
+                    GeneralWebService.instance().getReviews(appID, mListView);
                 }
 
                 @Override
@@ -97,7 +97,7 @@ public class ReviewsActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        GeneralWebService.getInstance().getReviews(appID, mListView);
+        GeneralWebService.instance().getReviews(appID, mListView);
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class TopicsManager {
 
-    public static final TopicsManager instance = new TopicsManager();
+    private static TopicsManager instance;
 
     private Map<Integer, List<String>> topicTitles;
     private List<Integer> ids;
@@ -19,6 +19,17 @@ public class TopicsManager {
     private TopicsManager() {
         topicTitles = new HashMap<>();
         ids = new ArrayList<>();
+
+        GeneralWebService.instance().loadTopicTitles();
+    }
+
+    public static void init() {
+        instance = new TopicsManager();
+    }
+
+    public static TopicsManager instance() {
+
+        return instance;
     }
 
     public void setTopicTitles(Collection<TopicTitle> collection) {

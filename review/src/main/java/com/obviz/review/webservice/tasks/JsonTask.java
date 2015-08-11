@@ -43,7 +43,7 @@ public class JsonTask<T> extends HttpTask<T> {
     protected T doInBackground(Uri.Builder... builders) {
         // Try to acquire from the cache
         if (mKey != null) {
-            T object = CacheManager.instance.get(mKey);
+            T object = CacheManager.instance().get(mKey);
             if (object != null) {
                 return object;
             }
@@ -80,7 +80,7 @@ public class JsonTask<T> extends HttpTask<T> {
                 // If this is launched, cancel the task will close the stream and interrupt this
                 T object = MessageParser.fromJson(new InputStreamReader(stream), callback.getType());
                 if (object != null && mKey != null) {
-                    CacheManager.instance.add(mKey, object, Constants.CACHE_EXPIRATION_TIME);
+                    CacheManager.instance().add(mKey, object, Constants.CACHE_EXPIRATION_TIME);
 
                     return object;
                 } else {

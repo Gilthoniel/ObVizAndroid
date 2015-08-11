@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import com.obviz.review.adapters.ResultsAdapter;
 import com.obviz.review.database.DatabaseService;
 import com.obviz.review.webservice.ConnectionService;
@@ -61,14 +59,14 @@ public class ActivitySearch extends AppCompatActivity {
             query = intent.getStringExtra(SearchManager.QUERY);
 
             // Add the query in the database
-            DatabaseService.instance.insertHistoryEntry(query);
+            DatabaseService.instance().insertHistoryEntry(query);
         } else {
 
             query = intent.getStringExtra(Constants.INTENT_SEARCH);
         }
 
         // Perform the search
-        GeneralWebService.getInstance().searchApp(query, fragment.getListView());
+        GeneralWebService.instance().searchApp(query, fragment.getListView());
     }
 
     @Override

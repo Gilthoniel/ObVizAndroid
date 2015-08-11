@@ -21,9 +21,23 @@ import java.util.Date;
  */
 public class DatabaseService {
 
-    public static final DatabaseService instance = new DatabaseService();
+    private static DatabaseService instance;
 
     private DatabaseHelper helper;
+
+    private DatabaseService() {}
+    
+    public static void init(Context context) {
+
+        instance = new DatabaseService();
+
+        instance.initHelper(context);
+    }
+
+    public static DatabaseService instance() {
+
+        return instance;
+    }
 
     public void initHelper(Context context) {
         helper = new DatabaseHelper(context);

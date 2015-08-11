@@ -41,7 +41,7 @@ public class HistoryFragment extends ListFragment {
                 switch (menuItem.getItemId()) {
                     // Clear the adapter and the database
                     case R.id.action_clear:
-                        DatabaseService.instance.dropHistory();
+                        DatabaseService.instance().dropHistory();
 
                         HistoryAdapter adapter = (HistoryAdapter) getListAdapter();
                         adapter.clear();
@@ -59,7 +59,7 @@ public class HistoryFragment extends ListFragment {
         super.onResume();
 
         if (mAdapter != null) {
-            Cursor cursor = DatabaseService.instance.selectHistory();
+            Cursor cursor = DatabaseService.instance().selectHistory();
             if (cursor != null && cursor.getCount() > 0) {
                 mAdapter.clear();
 

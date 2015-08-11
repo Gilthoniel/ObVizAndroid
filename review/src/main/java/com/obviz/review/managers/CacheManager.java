@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  */
 public class CacheManager {
 
-    public static final CacheManager instance = new CacheManager();
+    private static CacheManager instance;
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 20; // 20mo
     private static final String DISK_CACHE_NAME = "webcache";
 
@@ -30,6 +30,16 @@ public class CacheManager {
         mDiskCacheLock = new Object();
 
         mDiskCacheStarting = true;
+    }
+
+    public static void init(Context context) {
+        instance = new CacheManager();
+
+        instance.initCacheDisk(context);
+    }
+
+    public static CacheManager instance() {
+        return instance;
     }
 
     /**

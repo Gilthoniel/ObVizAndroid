@@ -99,7 +99,7 @@ public class AndroidApp implements Parcelable, Serializable {
             // TODO
             topics = new Bundle();
             Random random = new Random();
-            for (Integer id : TopicsManager.instance.getIDs()) {
+            for (Integer id : TopicsManager.instance().getIDs()) {
                 topics.putInt(String.valueOf(id), random.nextInt(100));
             }
         }

@@ -34,7 +34,7 @@ public class ImageTask extends HttpTask<Bitmap> {
 
             // Put in disk cache
             String key = CacheManager.KeyBuilder.forImage(url);
-            CacheManager.instance.add(key, bitmap);
+            CacheManager.instance().add(key, bitmap);
 
             return bitmap;
 

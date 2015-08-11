@@ -3,7 +3,6 @@ package com.obviz.review.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +18,6 @@ import com.obviz.review.managers.CategoryManager.*;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
-
-import java.util.ArrayList;
 
 /**
  * Created by gaylor on 05-Aug-15.
@@ -56,7 +53,7 @@ public class TrendingFragment extends Fragment {
 
             /* Categories selection */
             Spinner spinner = (Spinner) getView().findViewById(R.id.spinner);
-            final ArrayAdapter<SuperCategory> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, CategoryManager.instance.getSupers());
+            final ArrayAdapter<SuperCategory> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, CategoryManager.instance().getSupers());
             adapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
 
             spinner.setAdapter(adapter);
@@ -65,7 +62,7 @@ public class TrendingFragment extends Fragment {
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
                     ConnectionService.instance.cancel();
-                    GeneralWebService.getInstance().getTrendingApps(grid, adapter.getItem(i).getCategories());
+                    GeneralWebService.instance().getTrendingApps(grid, adapter.getItem(i).getCategories());
                 }
 
                 @Override

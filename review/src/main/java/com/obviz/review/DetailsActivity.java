@@ -2,17 +2,13 @@ package com.obviz.review;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v4.app.NavUtils;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -23,7 +19,10 @@ import com.obviz.review.adapters.DetailsPagerAdapter;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.models.AndroidApp;
-import com.obviz.review.webservice.*;
+import com.obviz.review.webservice.ConnectionService;
+import com.obviz.review.webservice.GeneralWebService;
+import com.obviz.review.webservice.RequestCallback;
+import com.obviz.review.webservice.RequestObserver;
 import com.obviz.reviews.R;
 
 import java.lang.reflect.Type;
@@ -37,8 +36,6 @@ import java.util.Set;
  */
 public class DetailsActivity extends AppCompatActivity implements ImageObserver {
 
-    private ViewPager mPager;
-    private DetailsPagerAdapter mAdapter;
     private Set<RequestObserver<AndroidApp>> mObservers;
     private AndroidApp mApplication;
     private boolean isInstalled = false;
@@ -66,16 +63,25 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
         super.onCreate(states);
         setContentView(R.layout.activity_details);
 
+        mObservers = new HashSet<>();
+
+        /* Init the toolbar */
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setElevation(0);
+        }
+
+        /* Intent */
         Intent intent = getIntent();
         String appID = intent.getStringExtra(Constants.INTENT_APP_ID);
 
-        mObservers = new HashSet<>();
+        /* Tabs */
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        DetailsPagerAdapter adapter = new DetailsPagerAdapter(getSupportFragmentManager());
 
-        // Tabs
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mAdapter = new DetailsPagerAdapter(getSupportFragmentManager());
-
-        mPager.setAdapter(mAdapter);
+        pager.setAdapter(adapter);
 
         SlidingTabLayout tabs = (SlidingTabLayout) findViewById(R.id.tabs);
         tabs.setDistributeEvenly(true);
@@ -85,7 +91,7 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
                 return getResources().getColor(R.color.tabsScrollColor);
             }
         });
-        tabs.setViewPager(mPager);
+        tabs.setViewPager(pager);
 
         /* Get the app information */
         RequestCallback<AndroidApp> callback = new RequestCallback<AndroidApp>() {
@@ -139,13 +145,15 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
                 return AndroidApp.class;
             }
         };
-        GeneralWebService.getInstance().getApp(appID, callback);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setElevation(0);
+        // Check if we have an old state before trying to get the application informations
+        if (states != null) {
+
+            mApplication = states.getParcelable(Constants.STATE_APP);
+            callback.onSuccess(mApplication);
+        } else if (appID != null) {
+
+            GeneralWebService.instance().getApp(appID, callback);
         }
     }
 
@@ -155,6 +163,14 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
 
         // Stop web requests
         ConnectionService.instance.cancel();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle states) {
+
+        states.putParcelable(Constants.STATE_APP, mApplication);
+
+        super.onSaveInstanceState(states);
     }
 
     @Override
