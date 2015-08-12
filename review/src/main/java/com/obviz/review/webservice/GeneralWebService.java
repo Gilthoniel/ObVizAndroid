@@ -238,6 +238,32 @@ public class GeneralWebService extends WebService {
         }, null); // Cache is useless because we load that on starting and no more after that
     }
 
+    /* POST requests */
+
+    public void markAsViewed(String appID) {
+
+        Map<String, String> params = new HashMap<>();
+        params.put("cmd", Constants.APP_VIEWED);
+        params.put("id", appID);
+
+        post(params, new RequestCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                Log.d("__MARK_VIEWED__", "Mark as viewwed successfully: "+result);
+            }
+
+            @Override
+            public void onFailure(Errors error) {
+                Log.e("__MARK_VIEWED__", "An error occurred during the request: "+error.name());
+            }
+
+            @Override
+            public Type getType() {
+                return Boolean.class;
+            }
+        });
+    }
+
     /* Private */
 
     /**

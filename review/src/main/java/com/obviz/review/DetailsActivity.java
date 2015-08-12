@@ -151,9 +151,15 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
 
             mApplication = states.getParcelable(Constants.STATE_APP);
             callback.onSuccess(mApplication);
+
+            // Add a seen to the app
+            GeneralWebService.instance().markAsViewed(mApplication.getAppID());
         } else if (appID != null) {
 
             GeneralWebService.instance().getApp(appID, callback);
+
+            // Add a seen to the app
+            GeneralWebService.instance().markAsViewed(appID);
         }
     }
 

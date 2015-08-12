@@ -20,6 +20,8 @@ public class Constants {
     public static final String GET_REVIEWS = "Get_Reviews";
     public static final String GET_TRENDING_APPS = "Get_Trending_Apps";
 
+    public static final String APP_VIEWED = "App_Viewed";
+
     /** INTENTS **/
 
     public static final String INTENT_APP_ID = "com.obviz.review.INTENT_APP_ID";
