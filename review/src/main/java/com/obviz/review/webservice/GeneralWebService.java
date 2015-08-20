@@ -4,13 +4,14 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
-import com.obviz.review.adapters.ResultsAdapter;
+import com.obviz.review.adapters.BaseAppAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
-import com.obviz.review.adapters.TrendingAdapter;
+import com.obviz.review.adapters.BoxAppAdapter;
 import com.obviz.review.managers.CacheManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
@@ -63,7 +64,7 @@ public class GeneralWebService extends WebService {
      * @param query of the search
      * @param view where sent the results
      */
-    public void searchApp(String query, final ListView view) {
+    public void searchApp(String query, final AbsListView view) {
 
         // Display the loading icon
         toggleStateList(view, 1);
@@ -82,7 +83,7 @@ public class GeneralWebService extends WebService {
                 // Display the empty text of there's no result
                 toggleStateList(view, 0);
 
-                ResultsAdapter adapter = (ResultsAdapter) view.getAdapter();
+                BaseAppAdapter adapter = (BaseAppAdapter) view.getAdapter();
 
                 adapter.clear();
                 if (result.size() == 0) {
@@ -114,7 +115,7 @@ public class GeneralWebService extends WebService {
      * @param appID ID of the App
      * @param view where to populate the results
      */
-    public void getReviews(final String appID, final ListView view) {
+    public void getReviews(final String appID, final int topicID, final int page, final int size, final AbsListView view) {
 
         // Display the loading
         toggleStateList(view, 1);
@@ -125,17 +126,20 @@ public class GeneralWebService extends WebService {
         Map<String, String> params = new HashMap<>();
         params.put("cmd", Constants.GET_REVIEWS);
         params.put("id", appID);
+        params.put("topic_id", String.valueOf(topicID));
+        params.put("nb_per_page", String.valueOf(size));
+        params.put("page_nr", String.valueOf(page));
 
-        get(params, new RequestCallback<List<Review>>() {
+        get(params, new RequestCallback<Review.Pager>() {
             @Override
-            public void onSuccess(List<Review> result) {
+            public void onSuccess(Review.Pager pager) {
 
                 // Display the empty text if there is no result
                 toggleStateList(view, 0);
 
                 ReviewsAdapter adapter = (ReviewsAdapter) view.getAdapter();
 
-                adapter.addAll(result);
+                adapter.addAll(pager.reviews);
             }
 
             @Override
@@ -145,7 +149,7 @@ public class GeneralWebService extends WebService {
 
             @Override
             public Type getType() {
-                return new TypeToken<List<Review>>(){}.getType();
+                return new TypeToken<Review.Pager>() {}.getType();
             }
         }, key);
     }
@@ -155,7 +159,7 @@ public class GeneralWebService extends WebService {
         // Show the loading icon
         toggleStateList(view, 1);
         // Clear the list to show the empty view
-        final TrendingAdapter adapter = (TrendingAdapter) view.getAdapter();
+        final BoxAppAdapter adapter = (BoxAppAdapter) view.getAdapter();
         adapter.clear();
 
         final String key = CacheManager.KeyBuilder.forTrending(categories);
@@ -178,23 +182,9 @@ public class GeneralWebService extends WebService {
                 // Display the empty text if there is no result
                 toggleStateList(view, 0);
 
-                if (result.size() > Constants.NUMBER_TRENDING_APPS) {
-
-                    Set<Integer> indexes = new TreeSet<>();
-                    Random random = new Random();
-                    while (indexes.size() < Constants.NUMBER_TRENDING_APPS) {
-                        indexes.add(random.nextInt(result.size()));
-                    }
-
-                    for (Integer index : indexes) {
-                        adapter.add(result.get(index));
-                    }
-                    adapter.notifyDataChanged();
-
-                } else {
-
-                    adapter.addAll(result);
-                }
+                adapter.addAll(result);
+                adapter.shuffle(); // Random selection of the trending apps
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -221,9 +211,12 @@ public class GeneralWebService extends WebService {
         get(params, new RequestCallback<List<TopicTitle>>() {
             @Override
             public void onSuccess(List<TopicTitle> result) {
+                Map<Integer, String> topics = new HashMap<Integer, String>();
+                for (TopicTitle topic : result) {
+                    topics.put(topic.getID(), topic.getTitle());
+                }
 
-                Log.d("__TOPICS__", result.size() + " topics loaded");
-                TopicsManager.instance().setTopicTitles(result);
+                TopicsManager.instance().setTopicTitles(topics);
             }
 
             @Override

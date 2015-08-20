@@ -92,11 +92,13 @@ public class JsonTask<T> extends HttpTask<T> {
         } catch (IOException e) {
 
             error = RequestCallback.Errors.CONNECTION;
-            Log.e("IO Exception", e.getMessage());
+            Log.e("IO Exception", "Message: " + e.getMessage());
+
         } catch (JsonSyntaxException e) {
 
             error = RequestCallback.Errors.JSON;
-            Log.e("Json error", e.getMessage());
+            Log.e("Json error", "Message: " + e.getMessage());
+
         } finally {
 
             closeStream();

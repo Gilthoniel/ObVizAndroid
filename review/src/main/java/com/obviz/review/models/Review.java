@@ -5,9 +5,11 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import com.obviz.reviews.R;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by gaylor on 24.07.15.
@@ -17,186 +19,78 @@ public class Review implements Serializable {
 
     private static final long serialVersionUID = -5938468708180459968L;
 
-    private ID _id;
-    private String permalink;
-    private String reviewBody;
-    private int starRatings;
-    private Date reviewDate;
-    private String authorName;
-    private String authorUrl;
-    private String reviewTitle;
-    private List<Sentence> parsed;
-    private List<Sentence> parsedBody;
-    private List<Sentence> parsedTitle;
-    private Map<Integer, List<Opinion>> opinions;
+    public ID _id;
+    public String permalink;
+    public String reviewBody;
+    public String reviewTitle;
+    public int starRatings;
+    public Date reviewDate;
+    public String authorName;
+    public String authorUrl;
+    public boolean parsed;
+    public boolean isQuestionable;
+    public List<Sentence> parsedBody;
+    public List<Sentence> parsedTitle;
+    public Opinion opinions;
 
-    public Review() {
-
-    }
+    private SpannableStringBuilder parsedBodyContent;
+    private SpannableStringBuilder parsedTitleContent;
 
     public String getID() {
         return _id.getValue();
     }
 
-    public void setID(ID value) {
-        _id = value;
-    }
+    public SpannableStringBuilder getTitle() {
 
-    public String getUrl() {
-        return permalink;
-    }
+        if (parsedTitleContent != null) {
 
-    public void setPermalink(String value) {
-        permalink = value;
-    }
-
-    public String getPermalink() {
-        return permalink;
-    }
-
-    public String getReviewBody() {
-        return reviewBody;
-    }
-
-    public void setReviewBody(String value) {
-        reviewBody = value;
-    }
-
-    public String getTitle() {
-        return reviewTitle;
-    }
-
-    public void setTitle(String value) {
-        reviewTitle = value;
-    }
-
-    public int getScore() {
-        return starRatings;
-    }
-
-    public void setScore(int value) {
-        starRatings = value;
-    }
-
-    public String getDate() {
-        return reviewDate.toString();
-    }
-
-    public void setDate(Date value) {
-        reviewDate = value;
-    }
-
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public void setAuthorName(String value) {
-        authorName = value;
-    }
-
-    public Map<Integer, List<Opinion>> getOpinions() {
-        return opinions;
-    }
-
-    public void setOpinions(Map<Integer, List<Opinion>> value) {
-        opinions = value;
-    }
-
-    public void setParsed(List<Sentence> value) {
-        parsed = value;
-    }
-
-    public void setParsedBody(List<Sentence> value) {
-        parsedBody = value;
-    }
-
-    public void setParsedTitle(List<Sentence> value) {
-        parsedTitle = value;
-    }
-
-    public List<Sentence> getBodySentences() {
-        if (parsedBody != null) {
-            return parsedBody;
-        } else if (parsed != null) {
-            return parsed;
-        } else {
-            return new ArrayList<>();
+            return parsedTitleContent;
         }
-    }
 
-    public List<Sentence> getTitleSentences() {
-        if (parsedTitle != null) {
-            return parsedTitle;
+        if (opinions != null && parsedTitle != null) {
+
+            return (parsedTitleContent = parseContent(parsedTitle, true));
         } else {
-            return new ArrayList<>();
-        }
-    }
-
-    public SpannableStringBuilder getBody(int topicID) {
-
-        List<Opinion> opinions = this.opinions.get(topicID);
-        if (opinions != null) {
-
-            Map<Integer, List<Opinion>> children = new TreeMap<>();
-            for (Opinion child : opinions) {
-                if (!children.containsKey(child.getSentenceID())) {
-                    children.put(child.getSentenceID(), new ArrayList<Opinion>());
-                }
-
-                children.get(child.getSentenceID()).add(child);
-            }
-
             SpannableStringBuilder builder = new SpannableStringBuilder();
-            for (Sentence sentence : parsed != null ? parsed : parsedBody) {
-                boolean hasOpinions = children.containsKey(sentence.getID());
-
-                Iterator<Clause> it = sentence.getChildren().iterator();
-                while (it.hasNext()) {
-                    Clause clause = it.next();
-
-                    if (clause.getType() == Clause.ClauseType.PARAGRAPH) {
-                        // Add paragraph unless it's the last clause
-                        if (it.hasNext()) {
-                            builder.append("\n\n");
-                        }
-                    } else {
-
-                        if (hasOpinions) {
-                            SpannableString content = new SpannableString(clause.getText());
-
-                            // Search for aspect or opinion word in the clause and set the side color
-                            Iterator<Opinion> itOpinions = children.get(sentence.getID()).iterator();
-                            while (itOpinions.hasNext()) {
-                                Opinion opinion = itOpinions.next();
-
-                                if (!itOpinions.hasNext()) {
-                                    // Get the color side of the opinion with the last opinion
-                                    content.setSpan(new ForegroundColorSpan(opinion.getColor()), 0, content.length(), 0);
-                                }
-
-                                // Set the aspect and opinion word bold in the text
-                                if (opinion.getAspectID() == clause.getID()) {
-                                    boldify(content, opinion.getAspect());
-                                }
-
-                                if (opinion.getPolarityID() == clause.getID()) {
-                                    boldify(content, opinion.getWord());
-                                }
-                            }
-
-                            builder.append(content);
-                        } else {
-
-                            builder.append(clause.getText());
-                        }
-                    }
-                }
+            if (reviewTitle != null) {
+                builder.append(reviewTitle);
             }
 
             return builder;
+        }
+    }
+
+    public SpannableStringBuilder getContent() {
+
+        if (parsedBodyContent != null) {
+            return parsedBodyContent;
+        }
+
+        if (opinions != null && parsedBody != null) {
+
+            return (parsedBodyContent = parseContent(parsedBody, false));
 
         } else {
-            return new SpannableStringBuilder();
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            if (reviewBody != null) {
+                builder.append(reviewBody);
+            }
+
+            return builder;
+        }
+    }
+
+    public int getDisplayType() {
+
+        if (reviewBody != null && reviewBody.length() > 0 && reviewTitle != null && reviewTitle.length() > 0) {
+
+            return 0;
+        } else if (reviewBody != null && reviewBody.length() > 0) {
+
+            return 1;
+        } else {
+
+            return 2;
         }
     }
 
@@ -214,6 +108,56 @@ public class Review implements Serializable {
 
     /** PRIVATE **/
 
+    private SpannableStringBuilder parseContent(List<Sentence> sentences, boolean isInTitle) {
+
+        // Sort the opinions by sentence and clause IDs
+        Opinion.ParsedOpinion parsedOpinion = new Opinion.ParsedOpinion();
+        parsedOpinion.put(opinions, isInTitle);
+
+        // Build the body or the title sentence by sentence
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        for (Sentence sentence : sentences) {
+
+            Iterator<Clause> it = sentence.getChildren().iterator();
+            while (it.hasNext()) {
+                Clause clause = it.next();
+
+                if (clause.getType() == Clause.ClauseType.PARAGRAPH) {
+
+                    if (it.hasNext()) {
+                        builder.append("\n");
+                    }
+
+                } else {
+
+                    List<Opinion.OpinionDetail> details = parsedOpinion.get(sentence.getID(), clause.getGroupID());
+                    if (details.isEmpty()) {
+                        // If there's no opinions, we check if there's a global for the entire sentence
+                        details = parsedOpinion.get(sentence.getID(), 0);
+                    }
+
+                    SpannableString content = new SpannableString(clause.getText());
+                    if (details.size() > 0) {
+                        Opinion.OpinionDetail detail = details.get(0);
+
+                        for (String word : detail.getWords()) {
+                            boldify(content, word);
+                        }
+
+                        content.setSpan(new ForegroundColorSpan(detail.getColor()), 0, content.length(), 0);
+                    } else if (isInTitle) {
+
+                        content.setSpan(new ForegroundColorSpan(R.color.reviewTitleColor), 0, content.length(), 0);
+                    }
+
+                    builder.append(content);
+                }
+            }
+        }
+
+        return builder;
+    }
+
     private void boldify(SpannableString content, String word) {
         final StyleSpan bold = new StyleSpan(Typeface.BOLD);
         final int index = content.toString().toLowerCase().indexOf(word.toLowerCase());
@@ -221,5 +165,12 @@ public class Review implements Serializable {
         if (index >= 0) {
             content.setSpan(bold, index, index + word.length(), 0);
         }
+    }
+
+    public class Pager implements Serializable {
+
+        private static final long serialVersionUID = 2891725959638437593L;
+        public List<Review> reviews;
+        public int nbTotalPages;
     }
 }

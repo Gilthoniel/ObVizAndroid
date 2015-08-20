@@ -1,34 +1,36 @@
 package com.obviz.review;
 
-import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.Spinner;
 import com.obviz.review.adapters.ReviewsAdapter;
 import com.obviz.review.managers.TopicsManager;
+import com.obviz.review.models.AndroidApp;
+import com.obviz.review.models.OpinionValue;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class ReviewsActivity extends AppCompatActivity {
+public class ReviewsActivity extends AppCompatActivity implements TopicsManager.TopicsObserver {
 
-    private String appID;
+    private AndroidApp mApplication;
     private int topicID;
     private ReviewsAdapter mAdapter;
-    private ListView mListView;
+    private GridView mGridView;
+    private Spinner mSpinner;
+    private ArrayAdapter<String> mSpinnerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,52 +39,61 @@ public class ReviewsActivity extends AppCompatActivity {
 
         // Intent management
         Intent intent = getIntent();
-        appID = intent.getStringExtra(Constants.INTENT_APP_ID);
+        mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
         topicID = (int) intent.getLongExtra(Constants.INTENT_TOPIC_ID, -1);
 
         // Initiate the fragment list
-        ListFragment fragment = (ListFragment) getFragmentManager().findFragmentById(R.id.fragment);
-        mListView = fragment.getListView();
+        mGridView = (GridView) findViewById(R.id.grid_view);
+        mGridView.setEmptyView(findViewById(android.R.id.empty));
 
-        mAdapter = new ReviewsAdapter(getApplicationContext(), topicID);
-        fragment.setListAdapter(mAdapter);
+        mAdapter = new ReviewsAdapter(getApplicationContext());
+        mGridView.setAdapter(mAdapter);
 
         // Action Bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
 
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
-
-            List<String> spinnerItems = TopicsManager.instance().getTopicsTitle();
-
-            Spinner spinner = (Spinner) findViewById(R.id.spinner);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, spinnerItems);
-            adapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
-            spinner.setAdapter(adapter);
-            spinner.setSelection(adapter.getPosition(TopicsManager.instance().getTopicTitle(topicID)));
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                    // Stop the current requests
-                    ConnectionService.instance.cancel();
-
-                    // Get the good topic id related to the position of the item
-                    mAdapter.setTopicID(TopicsManager.instance().getIDs().get(position));
-
-                    // Clear the adapter and get the new items
-                    mAdapter.clear();
-                    GeneralWebService.instance().getReviews(appID, mListView);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    // Well, we do anything in this case
-                }
-            });
+            getSupportActionBar().setTitle(mApplication.getName());
         }
+
+        mSpinner = (Spinner) findViewById(R.id.spinner);
+        List<String> spinnerItems = new ArrayList<>();
+        int spinnerIndex = 0;
+        for (int i = 0; i < mApplication.getOpinions().size(); i++) {
+            OpinionValue value = mApplication.getOpinions().get(i);
+            spinnerItems.add(TopicsManager.instance().getTitle(value.topicID, this));
+
+            if (value.topicID == topicID) {
+                spinnerIndex = i;
+            }
+        }
+
+        mSpinnerAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, spinnerItems);
+        mSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
+        mSpinner.setAdapter(mSpinnerAdapter);
+        mSpinner.setSelection(spinnerIndex);
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                // Stop the current requests
+                ConnectionService.instance.cancel();
+
+                // Get the good topic id related to the position of the item
+                int topicID = mApplication.getOpinions().get(position).topicID;
+
+                // Clear the adapter and get the new items
+                mAdapter.clear();
+                GeneralWebService.instance().getReviews(mApplication.getAppID(), topicID, 0, 10, mGridView);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // Well, we do anything in this case
+            }
+        });
     }
 
     @Override
@@ -97,16 +108,15 @@ public class ReviewsActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        GeneralWebService.instance().getReviews(appID, mListView);
+        GeneralWebService.instance().getReviews(mApplication.getAppID(), topicID, 0, 10, mGridView);
     }
 
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        appID = intent.getStringExtra(Constants.INTENT_APP_ID);
+        mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
         topicID = (int) intent.getLongExtra(Constants.INTENT_TOPIC_ID, -1);
-        mAdapter.setTopicID(topicID);
     }
 
 
@@ -131,18 +141,16 @@ public class ReviewsActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSupportActionModeStarted(ActionMode mode) {
+    public void onTopicsLoaded() {
 
-    }
+        List<String> spinnerItems = new ArrayList<>();
+        for (int i = 0; i < mApplication.getOpinions().size(); i++) {
 
-    @Override
-    public void onSupportActionModeFinished(ActionMode mode) {
+            OpinionValue value = mApplication.getOpinions().get(i);
+            spinnerItems.add(TopicsManager.instance().getTitle(value.topicID, this));
+        }
 
-    }
-
-    @Nullable
-    @Override
-    public ActionMode onWindowStartingSupportActionMode(ActionMode.Callback callback) {
-        return null;
+        mSpinnerAdapter.clear();
+        mSpinnerAdapter.addAll(spinnerItems);
     }
 }

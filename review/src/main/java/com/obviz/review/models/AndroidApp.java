@@ -1,13 +1,15 @@
 package com.obviz.review.models;
 
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
-import com.obviz.review.managers.TopicsManager;
+import com.obviz.review.webservice.MessageParser;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by gaylor on 26.06.15.
@@ -28,7 +30,9 @@ public class AndroidApp implements Parcelable, Serializable {
     private Date publicationDate;
     private Constants.Category category;
     private List<String> relatedIDs;
-    private Bundle topics;
+    private List<OpinionValue> opinionsSummary;
+
+    private AndroidApp() {}
 
     public AndroidApp(Parcel parcel) {
         coverImgUrl = parcel.readString();
@@ -43,7 +47,8 @@ public class AndroidApp implements Parcelable, Serializable {
         category = Constants.Category.fromName(parcel.readString());
         relatedIDs = new ArrayList<>();
         parcel.readStringList(relatedIDs);
-        topics = parcel.readBundle();
+        opinionsSummary = new ArrayList<>();
+        parcel.readTypedList(opinionsSummary, OpinionValue.CREATOR);
     }
 
     public String getAppID() {
@@ -87,24 +92,19 @@ public class AndroidApp implements Parcelable, Serializable {
     }
 
     public List<String> getRelatedIDs() {
-        if (relatedIDs != null) {
-            return relatedIDs;
-        } else {
-            return new ArrayList<>();
+        if (relatedIDs == null) {
+            relatedIDs = new ArrayList<>();
         }
+
+        return relatedIDs;
     }
 
-    public Bundle getTopics() {
-        if (topics == null) {
-            // TODO
-            topics = new Bundle();
-            Random random = new Random();
-            for (Integer id : TopicsManager.instance().getIDs()) {
-                topics.putInt(String.valueOf(id), random.nextInt(100));
-            }
+    public List<OpinionValue> getOpinions() {
+        if (opinionsSummary == null) {
+            opinionsSummary = new ArrayList<>();
         }
 
-        return topics;
+        return opinionsSummary;
     }
 
     /**
@@ -134,7 +134,7 @@ public class AndroidApp implements Parcelable, Serializable {
         parcel.writeParcelable(publicationDate, -1);
         parcel.writeString(category.name());
         parcel.writeStringList(relatedIDs);
-        parcel.writeBundle(topics);
+        parcel.writeTypedList(opinionsSummary);
     }
 
     /**
@@ -152,4 +152,27 @@ public class AndroidApp implements Parcelable, Serializable {
             return new AndroidApp[size];
         }
     };
+
+    public static AndroidApp fromJson(JsonObject object) {
+
+        AndroidApp app = new AndroidApp();
+        app.coverImgUrl = object.get("coverImgUrl").getAsString();
+        app.appID = object.get("appID").getAsString();
+        app.name = object.get("name") != null ? object.get("name").getAsString() : "Unknown";
+        app.score = MessageParser.fromJson(object.get("score"), Score.class);
+        app.developer = object.get("developer").getAsString();
+        app.isFree = object.get("isFree").getAsBoolean();
+        app.minimumOSVersion = object.get("minimumOSVersion").getAsString();
+        app.installations = object.get("installations").getAsString();
+        app.publicationDate = MessageParser.fromJson(object.get("publicationDate"), Date.class);
+        app.category = Constants.Category.fromName(object.get("category").getAsString());
+        if (object.has("relatedIDs")) {
+            app.relatedIDs = MessageParser.fromJson(object.get("relatedIDs"), new TypeToken<List<String>>() {}.getType());
+        } else if (object.has("relatedUrls")) {
+            app.relatedIDs = MessageParser.fromJson(object.get("relatedUrls"), new TypeToken<List<String>>() {}.getType());
+        }
+        app.opinionsSummary = MessageParser.fromJson(object.get("opinionsSummary"), new TypeToken<List<OpinionValue>>(){}.getType());
+
+        return app;
+    }
 }

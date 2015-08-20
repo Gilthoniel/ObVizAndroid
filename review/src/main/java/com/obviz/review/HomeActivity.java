@@ -1,7 +1,9 @@
 package com.obviz.review;
 
+import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -16,15 +18,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import com.obviz.review.adapters.DrawerAdapter;
 import com.obviz.review.adapters.HomePagerAdapter;
-import com.obviz.review.database.DatabaseService;
-import com.obviz.review.managers.CacheManager;
-import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private Toolbar mToolbar;
-    private ListView mListView;
     private DrawerAdapter mAdapter;
     private MenuItem mItemSearchView;
     private DrawerLayout mDrawer;
@@ -39,8 +36,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setElevation(0);
         }
@@ -62,12 +59,12 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         /* Init Drawer Menu */
-        mListView = (ListView) findViewById(R.id.nav_list);
-        mListView.addHeaderView(LayoutInflater.from(getApplicationContext()).inflate(R.layout.drawer_header, mListView, false));
+        ListView listView = (ListView) findViewById(R.id.nav_list);
+        listView.addHeaderView(LayoutInflater.from(getApplicationContext()).inflate(R.layout.drawer_header, listView, false));
 
         mAdapter = new DrawerAdapter(getApplicationContext());
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setAdapter(mAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 setTitle((String) mAdapter.getItem(position - 1));
@@ -78,7 +75,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawerLayout);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close) {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View view) {
                 super.onDrawerOpened(view);
@@ -126,6 +123,13 @@ public class HomeActivity extends AppCompatActivity {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             searchView.setSubmitButtonEnabled(true);
             searchView.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+
+            ActionBar.LayoutParams params = new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
+                    ActionBar.LayoutParams.MATCH_PARENT);
+            searchView.setLayoutParams(params);
+            Point size = new Point();
+            getWindowManager().getDefaultDisplay().getSize(size);
+            searchView.setMaxWidth(size.x);
         } else {
             Log.e("--NULL--", "SearchView is null");
         }

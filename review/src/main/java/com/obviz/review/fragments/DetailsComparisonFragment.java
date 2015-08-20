@@ -4,19 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import com.obviz.review.ComparisonActivity;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
-import com.obviz.review.adapters.ResultsAdapter;
+import com.obviz.review.adapters.ListAppAdapter;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
-import com.obviz.review.webservice.RequestObserver;
 import com.obviz.reviews.R;
 
 import java.lang.reflect.Type;
@@ -26,48 +26,45 @@ import java.util.Iterator;
  * Created by gaylor on 23.07.15.
  *
  */
-public class DetailsComparisonFragment extends ListFragment implements RequestObserver<AndroidApp> {
+public class DetailsComparisonFragment extends Fragment {
 
-    private ResultsAdapter mAdapter;
+    private ListAppAdapter mAdapter;
+    private View mParent;
     private AndroidApp mApplication;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {
 
-        return inflater.inflate(R.layout.details_comparison_tab, container, false);
+        mParent = inflater.inflate(R.layout.grid_fragment, container, false);
+        return mParent;
     }
 
     @Override
     public void onActivityCreated(Bundle states) {
         super.onActivityCreated(states);
 
-        mAdapter = new ResultsAdapter(getActivity());
-        setListAdapter(mAdapter);
+        mAdapter = new ListAppAdapter(getActivity());
+        GridView grid = (GridView) mParent.findViewById(R.id.grid_view);
+        grid.setAdapter(mAdapter);
+        grid.setEmptyView(mParent.findViewById(android.R.id.empty));
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View parent, int position, long l) {
+
+                AndroidApp app = mAdapter.getItem(position);
+
+                Intent intent = new Intent(parent.getContext(), ComparisonActivity.class);
+                intent.putExtra(Constants.INTENT_APP, (Parcelable) mApplication);
+                intent.putExtra(Constants.INTENT_COMPARISON_APP, (Parcelable) app);
+
+                startActivity(intent);
+            }
+        });
 
         DetailsActivity parent = (DetailsActivity) getActivity();
-        parent.AddRequestObserver(this);
-    }
+        mApplication = parent.getAndroidApp();
 
-    @Override
-    public void onListItemClick(ListView list, View v, int position, long id) {
-
-        if (mApplication != null) {
-            AndroidApp app = (AndroidApp) mAdapter.getItem(position);
-
-            Intent intent = new Intent(list.getContext(), ComparisonActivity.class);
-            intent.putExtra(Constants.INTENT_APP, (Parcelable) mApplication);
-            intent.putExtra(Constants.INTENT_COMPARISON_APP, (Parcelable) app);
-
-            startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onSuccess(final AndroidApp app) {
-
-        mApplication = app;
-
-        final Iterator<String> it = app.getRelatedIDs().iterator();
+        final Iterator<String> it = mApplication.getRelatedIDs().iterator();
         while (it.hasNext()) {
             String id = it.next();
 
@@ -78,7 +75,7 @@ public class DetailsComparisonFragment extends ListFragment implements RequestOb
 
                     if (!it.hasNext()) {
                         // Notify only on the last elem
-                        mAdapter.notifyEndLoading();
+                        mAdapter.notifyDataSetChanged();
                     }
                 }
 

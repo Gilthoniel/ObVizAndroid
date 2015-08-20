@@ -1,8 +1,6 @@
 package com.obviz.review.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,117 +8,101 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import com.obviz.review.DetailsActivity;
-import com.obviz.review.ReviewsActivity;
-import com.obviz.review.fragments.DetailsOpinionsFragment;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
-import com.obviz.review.webservice.GeneralWebService;
-import com.obviz.review.webservice.RequestObserver;
-import com.obviz.review.webservice.WebService;
+import com.obviz.review.views.GaugeChart;
+import com.obviz.review.views.GaugeChart.*;
 import com.obviz.reviews.R;
-import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener;
-import lecho.lib.hellocharts.model.PieChartData;
-import lecho.lib.hellocharts.model.SliceValue;
-import lecho.lib.hellocharts.util.ChartUtils;
-import lecho.lib.hellocharts.view.PieChartView;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by gaylor on 22.07.15.
  * Adapter for the gridview of the details activity where you find the gauge charts
  */
-public class GaugeAdapter extends BaseAdapter implements RequestObserver<AndroidApp> {
+public class GaugeAdapter extends BaseAdapter implements TopicsManager.TopicsObserver {
 
     private LayoutInflater inflater;
     private GridView mParent;
     private AndroidApp mApplication;
+    private List<Segment> mChartSegments;
 
     public GaugeAdapter(Context context, GridView parent) {
-        inflater = LayoutInflater.from(context);
 
+        inflater = LayoutInflater.from(context);
         mParent = parent;
 
         DetailsActivity activity = (DetailsActivity) context;
-        activity.AddRequestObserver(this);
+        mApplication = activity.getAndroidApp();
+
+        mChartSegments = new LinkedList<>();
+        mChartSegments.add(new Segment(0, 20, 0xffcc4748, 0.8f));
+        mChartSegments.add(new Segment(20, 40, 0xffcf6868, 0.8f));
+        mChartSegments.add(new Segment(40, 60, 0xffe6e6e6, 0.8f));
+        mChartSegments.add(new Segment(60, 80, 0xffa5d1a5, 0.8f));
+        mChartSegments.add(new Segment(80, 100, 0xff84b761, 0.8f));
     }
 
     public AndroidApp getApplication() {
         return mApplication;
     }
 
-    /* RequestObserver implementation */
+    /* TopicsObserver implementation */
     @Override
-    public void onSuccess(AndroidApp app) {
-        mApplication = app;
+    public void onTopicsLoaded() {
+
         notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        if (mApplication != null) {
-            return mApplication.getTopics().size();
-        } else {
-            return 0;
-        }
+
+        return mApplication.getOpinions().size();
     }
 
     @Override
-    public Object getItem(int i) {
-        int topicID = TopicsManager.instance().getIDs().get(i);
+    public Integer getItem(int i) {
 
-        if (mApplication != null) {
-            return mApplication.getTopics().get(String.valueOf(topicID));
-        } else {
-            return null;
-        }
+        return mApplication.getOpinions().get(i).percentage();
     }
 
     @Override
     public long getItemId(int i) {
-        return TopicsManager.instance().getIDs().get(i);
+
+        return mApplication.getOpinions().get(i).topicID;
     }
 
     @Override
-    public View getView(final int i, View view, ViewGroup parent) {
+    public View getView(final int position, View view, ViewGroup parent) {
 
-        final int topicID = (int) getItemId(i);
         int value = 0;
         if (mApplication != null) {
-            value = mApplication.getTopics().getInt(String.valueOf(topicID));
+            value = getItem(position);
         }
 
         LinearLayout layout;
         if (view == null) {
+
             layout = (LinearLayout) inflater.inflate(R.layout.details_gauge, parent, false);
         } else {
+
             layout = (LinearLayout) view;
         }
 
-        PieChartView gauge = (PieChartView) layout.findViewById(R.id.gauge_chart);
-        List<SliceValue> values = new ArrayList<>();
-        values.add(new SliceValue(value, ChartUtils.COLOR_GREEN));
-        values.add(new SliceValue(100 - value, ChartUtils.COLOR_RED));
+        GaugeChart gauge = (GaugeChart) layout.findViewById(R.id.gauge_chart);
+        GaugeChartData data = new GaugeChartData(100);
+        data.setText(TopicsManager.instance().getTitle((int) getItemId(position), this));
+        data.setSegments(mChartSegments);
 
-        PieChartData data = new PieChartData(values);
-        data.setHasLabels(false);
-        data.setHasCenterCircle(true);
-        data.setSlicesSpacing(5);
-        data.setCenterText1(TopicsManager.instance().getTopicTitle(topicID));
-        data.setCenterText1FontSize(12);
-        data.setCenterCircleScale(0.9f);
+        Arrow arrow = new Arrow(1.0f, 0.4f, 30, 0xff333333);
+        arrow.setValue(value);
 
-        gauge.setPieChartData(data);
-        gauge.setCircleFillRatio(0.8f);
-        gauge.setChartRotationEnabled(false);
-        gauge.setValueTouchEnabled(false);
-        gauge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                GaugeAdapter.this.mParent.performItemClick(null, i, topicID);
-            }
-        });
+        List<Arrow> arrows = new LinkedList<>();
+        arrows.add(arrow);
+        data.addArrows(arrows);
+
+        gauge.setData(data);
 
         return layout;
     }

@@ -8,7 +8,7 @@ public class Constants {
 
     /** SETTINGS **/
 
-    public static final int CACHE_EXPIRATION_TIME = 60 * 60 * 1000; // in ms
+    public static final int CACHE_EXPIRATION_TIME = 1000; // in ms
     public static final int NUMBER_TRENDING_APPS = 10;
 
     /** Commands **/
@@ -41,23 +41,23 @@ public class Constants {
 
     public enum Category {
         SOCIAL("social", "Social"),
-        GAME_ADVENTURE("games", "Adventure"),
+        ADVENTURE("games", "Adventure"),
         GAME_SPORTS("games", "Sport"),
-        GAME_STRATEGY("games", "Strategy"),
-        GAME_ACTION("games", "Action"),
-        GAME_PUZZLE("games", "Puzzle"),
-        GAME_ARCADE("games", "Arcade"),
-        GAME_CARD("games", "Card"),
-        GAME_CASUAL("games", "Casual"),
-        GAME_CASINO("games", "Casino"),
-        GAME_TRIVIA("games", "Trivia"),
-        GAME_SIMULATION("games", "Simulation"),
-        GAME_RACING("games", "Racing"),
-        GAME_ROLE_PLAYING("games", "RPG"),
-        GAME_WORD("games", "Word"),
-        GAME_BOARD("games", "Board"),
-        GAME_EDUCATIONAL("games", "Educational"),
-        GAME_MUSIC("games", "Music"),
+        STRATEGY("games", "Strategy"),
+        ACTION("games", "Action"),
+        PUZZLE("games", "Puzzle"),
+        ARCADE("games", "Arcade"),
+        CARD("games", "Card"),
+        CASUAL("games", "Casual"),
+        CASINO("games", "Casino"),
+        TRIVIA("games", "Trivia"),
+        SIMULATION("games", "Simulation"),
+        RACING("games", "Racing"),
+        ROLE_PLAYING("games", "RPG"),
+        WORD("games", "Word"),
+        BOARD("games", "Board"),
+        EDUCATIONAL("games", "Educational"),
+        MUSIC("games", "Music"),
         COMMUNICATION("communication", "Communication"),
         MUSIC_AND_AUDIO("audio", "Music and Audio"),
         ENTERTAINMENT("entertainment", "Entertainment"),

@@ -7,4 +7,7 @@
     <!-- Color for the comparison -->
     <color name="appColor">#ff393939</color>
     <color name="comparisonColor">#FF4FBBDE</color>
+
+    <!-- Color for the reviews -->
+    <color name="reviewTitleColor">#ff000000</color>
 </resources>

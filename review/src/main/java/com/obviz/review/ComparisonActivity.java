@@ -48,7 +48,7 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
 
                     intent.putExtra(Constants.INTENT_APP_ID, mApplication.getAppID());
                     intent.putExtra(Constants.INTENT_COMPARISON_APP_ID, mComparison.getAppID());
-                    intent.putExtra(Constants.INTENT_TOPIC_ID, (String) mAdapter.getItem(position));
+                    intent.putExtra(Constants.INTENT_TOPIC_ID, mAdapter.getItem(position));
 
                     startActivity(intent);
                 }
@@ -68,7 +68,7 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Comparison");
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
             getSupportActionBar().setElevation(0);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);

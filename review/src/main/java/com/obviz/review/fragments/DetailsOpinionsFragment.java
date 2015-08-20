@@ -2,9 +2,9 @@ package com.obviz.review.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +13,6 @@ import android.widget.GridView;
 import com.obviz.review.Constants;
 import com.obviz.review.ReviewsActivity;
 import com.obviz.review.adapters.GaugeAdapter;
-import com.obviz.review.models.AndroidApp;
 import com.obviz.reviews.R;
 
 /**
@@ -37,7 +36,7 @@ public class DetailsOpinionsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(parent.getContext(), ReviewsActivity.class);
 
-                intent.putExtra(Constants.INTENT_APP_ID, mAdapter.getApplication().getAppID());
+                intent.putExtra(Constants.INTENT_APP, (Parcelable) mAdapter.getApplication());
                 intent.putExtra(Constants.INTENT_TOPIC_ID, id);
 
                 startActivity(intent);

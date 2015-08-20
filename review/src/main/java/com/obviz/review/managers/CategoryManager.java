@@ -3,7 +3,6 @@ package com.obviz.review.managers;
 import com.obviz.review.Constants;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -27,23 +26,23 @@ public class CategoryManager {
         SuperCategory games = new SuperCategory("Games");
 
         games.addAll(new Constants.Category[] {
-                Constants.Category.GAME_ACTION,
-                Constants.Category.GAME_ADVENTURE,
-                Constants.Category.GAME_ARCADE,
-                Constants.Category.GAME_BOARD,
-                Constants.Category.GAME_CARD,
-                Constants.Category.GAME_CASINO,
-                Constants.Category.GAME_CASUAL,
-                Constants.Category.GAME_EDUCATIONAL,
-                Constants.Category.GAME_MUSIC,
-                Constants.Category.GAME_PUZZLE,
-                Constants.Category.GAME_RACING,
-                Constants.Category.GAME_ROLE_PLAYING,
-                Constants.Category.GAME_SIMULATION,
+                Constants.Category.ACTION,
+                Constants.Category.ADVENTURE,
+                Constants.Category.ARCADE,
+                Constants.Category.BOARD,
+                Constants.Category.CARD,
+                Constants.Category.CASINO,
+                Constants.Category.CASUAL,
+                Constants.Category.EDUCATIONAL,
+                Constants.Category.MUSIC,
+                Constants.Category.PUZZLE,
+                Constants.Category.RACING,
+                Constants.Category.ROLE_PLAYING,
+                Constants.Category.SIMULATION,
                 Constants.Category.GAME_SPORTS,
-                Constants.Category.GAME_STRATEGY,
-                Constants.Category.GAME_TRIVIA,
-                Constants.Category.GAME_WORD
+                Constants.Category.STRATEGY,
+                Constants.Category.TRIVIA,
+                Constants.Category.WORD
         });
         supers.add(games);
 

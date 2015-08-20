@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ReviewsComparisonActivity extends AppCompatActivity {
+public class ReviewsComparisonActivity extends AppCompatActivity implements TopicsManager.TopicsObserver {
 
     private ViewPager mPager;
     private SlidingTabLayout mTabs;
@@ -31,7 +31,7 @@ public class ReviewsComparisonActivity extends AppCompatActivity {
     private AndroidApp mComparison;
     private List<RequestObserver<AndroidApp>> appObservers = new ArrayList<>();
     private List<RequestObserver<AndroidApp>> comparisonObservers = new ArrayList<>();
-    private String mTopicID;
+    private int mTopicID;
 
     public void addApplicationObserver(ComparisonReviewsFragment observer) {
         if (observer.getType() == 0) {
@@ -51,11 +51,6 @@ public class ReviewsComparisonActivity extends AppCompatActivity {
         }
     }
 
-    public String getTopicID() {
-
-        return mTopicID;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,8 +59,10 @@ public class ReviewsComparisonActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String appID = intent.getStringExtra(Constants.INTENT_APP_ID);
         String comparisonID = intent.getStringExtra(Constants.INTENT_COMPARISON_APP_ID);
-        mTopicID = intent.getStringExtra(Constants.INTENT_TOPIC_ID);
-        setTitle(TopicsManager.instance().getTopicTitle(Integer.parseInt(mTopicID)));
+        mTopicID = intent.getIntExtra(Constants.INTENT_TOPIC_ID, -1);
+
+        // Try to acquire the topic title
+        onTopicsLoaded();
 
         /* Tabs initialization */
         mPager = (ViewPager) findViewById(R.id.pager);
@@ -121,6 +118,12 @@ public class ReviewsComparisonActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTopicsLoaded() {
+
+        setTitle(TopicsManager.instance().getTitle(mTopicID, this));
     }
 
     /* PRIVATE */

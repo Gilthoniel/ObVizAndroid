@@ -9,7 +9,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
-import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SliceValue;
@@ -23,11 +22,10 @@ import java.util.List;
  * Created by gaylor on 28.07.15.
  * Adapter to show the comparison between two apps
  */
-public class ComparisonAdapter extends BaseAdapter {
+public class ComparisonAdapter extends BaseAdapter implements TopicsManager.TopicsObserver {
 
     private AndroidApp mApplication;
     private AndroidApp mComparison;
-    private List<String> mTopicIDs;
     private LayoutInflater inflater;
 
     public ComparisonAdapter(Context context, AndroidApp application, AndroidApp comparison) {
@@ -35,29 +33,37 @@ public class ComparisonAdapter extends BaseAdapter {
 
         mApplication = application;
         mComparison = comparison;
+    }
 
-        mTopicIDs = new ArrayList<>(mApplication.getTopics().keySet());
+    /* TopicsObserver implementation */
+    @Override
+    public void onTopicsLoaded() {
+
+        notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return mTopicIDs.size();
+
+        return mApplication.getOpinions().size();
     }
 
     @Override
-    public Object getItem(int i) {
-        return mTopicIDs.get(i);
+    public Integer getItem(int position) {
+
+        return mApplication.getOpinions().get(position).topicID;
     }
 
     @Override
-    public long getItemId(int i) {
-        return i;
+    public long getItemId(int position) {
+
+        return position;
     }
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
 
-        String topicID = mTopicIDs.get(position);
+        int topicID = getItem(position);
 
         RelativeLayout layout;
         if (view != null) {
@@ -67,15 +73,15 @@ public class ComparisonAdapter extends BaseAdapter {
         }
 
         PieChartView pieApp = (PieChartView) layout.findViewById(R.id.pie_app);
-        populatePieChart(pieApp, topicID, mApplication);
+        populatePieChart(pieApp, position, mApplication);
 
         PieChartView pieComparison = (PieChartView) layout.findViewById(R.id.pie_comparison);
-        populatePieChart(pieComparison, topicID, mComparison);
+        populatePieChart(pieComparison, position, mComparison);
 
         TextView topicTitle = (TextView) layout.findViewById(R.id.topic_title);
-        topicTitle.setText(TopicsManager.instance().getTopicTitle(Integer.parseInt(topicID)));
+        topicTitle.setText(TopicsManager.instance().getTitle(topicID, this));
         // Set the color of the most appreciate app
-        if (mApplication.getTopics().getInt(topicID) > mComparison.getTopics().getInt(topicID)) {
+        if (mApplication.getOpinions().get(position).percentage() > mComparison.getOpinions().get(position).percentage()) {
             topicTitle.setTextColor(parent.getResources().getColor(R.color.appColor));
         } else {
             topicTitle.setTextColor(parent.getResources().getColor(R.color.comparisonColor));
@@ -86,9 +92,9 @@ public class ComparisonAdapter extends BaseAdapter {
 
     /* PRIVATE */
 
-    private void populatePieChart(PieChartView chart, String topicID, AndroidApp app) {
+    private void populatePieChart(PieChartView chart, int position, AndroidApp app) {
 
-        int value = app.getTopics().getInt(topicID);
+        int value = app.getOpinions().get(position).percentage();
 
         List<SliceValue> values = new ArrayList<>();
         values.add(new SliceValue(value, ChartUtils.COLOR_GREEN));

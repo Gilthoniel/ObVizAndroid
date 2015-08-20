@@ -20,17 +20,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Menu title"
-        android:layout_alignParentTop="false"
+        android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/drawer_item_image"
         android:layout_toRightOf="@+id/drawer_item_image"
-        android:layout_alignBottom="@+id/drawer_item_image"
         android:gravity="center_vertical"
-        android:layout_alignTop="@+id/drawer_item_image"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
         android:textColor="#ff001313"
         android:textSize="18sp"
         android:focusable="false"
-        android:focusableInTouchMode="false" />
+        android:focusableInTouchMode="false"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
 
 </RelativeLayout>

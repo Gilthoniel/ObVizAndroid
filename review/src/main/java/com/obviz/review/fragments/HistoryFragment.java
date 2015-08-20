@@ -32,7 +32,6 @@ public class HistoryFragment extends ListFragment {
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_history);
-        toolbar.setTitle("Actions");
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override

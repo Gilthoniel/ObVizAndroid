@@ -76,9 +76,7 @@ public class CacheManager {
                 while (mDiskCacheStarting) {
                     mDiskCacheLock.wait();
                 }
-            } catch (InterruptedException ignored) {
-            }
-
+            } catch (InterruptedException ignored) {}
 
             // Check that the cache's initialization has not failed
             if (mDiskCache == null) {

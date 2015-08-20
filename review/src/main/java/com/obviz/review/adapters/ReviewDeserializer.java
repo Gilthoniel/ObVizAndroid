@@ -1,14 +1,12 @@
 package com.obviz.review.adapters;
 
-import android.util.Log;
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 import com.obviz.review.models.*;
-import com.obviz.review.models.Date;
 import com.obviz.review.webservice.MessageParser;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by gaylor on 24.07.15.
@@ -23,43 +21,31 @@ public class ReviewDeserializer implements JsonDeserializer<Review> {
 
         JsonObject obj = json.getAsJsonObject();
         Review review = new Review();
-        review.setID(MessageParser.<ID>fromJson(obj.get("_id"), ID.class));
-        review.setPermalink(obj.get("permalink").getAsString());
-        review.setReviewBody(obj.get("reviewBody").getAsString());
-        review.setScore(obj.get("starRatings").getAsInt());
-        review.setDate(MessageParser.<Date>fromJson(obj.get("reviewDate"), Date.class));
-        review.setAuthorName(obj.get("authorName").getAsString());
-        review.setTitle(obj.get("reviewTitle").getAsString());
+        review._id = MessageParser.fromJson(obj.get("_id"), ID.class);
+        review.permalink = obj.get("permalink").getAsString();
+        review.reviewBody = obj.get("reviewBody").getAsString();
+        review.starRatings = obj.get("starRatings").getAsInt();
+        review.reviewDate = MessageParser.fromJson(obj.get("reviewDate"), Date.class);
+        review.authorName = obj.get("authorName").getAsString();
+        review.authorUrl = obj.get("authorUrl") != null ? obj.get("authorUrl").getAsString() : "";
+        review.reviewTitle = obj.get("reviewTitle").getAsString();
 
-        if (obj.get("opinions") != null) {
-            Map<Integer, List<Opinion>> opinions = new TreeMap<>();
-            Type type = new TypeToken<List<Opinion>>(){}.getType();
+        review.isQuestionable = obj.get("isQuestionable") != null && obj.get("isQuestionable").getAsBoolean();
 
-            for (JsonElement jsonElement : obj.get("opinions").getAsJsonArray()) {
-                JsonObject item = jsonElement.getAsJsonObject();
-
-                opinions.put(item.get("topicID").getAsInt(), MessageParser.<List<Opinion>>fromJson(item.get("opinions"), type));
-            }
-
-            review.setOpinions(opinions);
-        } else {
-            review.setOpinions(new TreeMap<Integer, List<Opinion>>());
+        try {
+            review.parsed = obj.get("parsed") != null && obj.get("parsed").getAsBoolean();
+        } catch (Exception e) {
+            review.parsed = false;
         }
 
-        JsonElement parsed = obj.get("parsed");
-        if (parsed != null) {
+        if (review.parsed) {
 
-            if (parsed.isJsonPrimitive() && parsed.getAsBoolean()) {
+            review.parsedBody = parseSentences(obj.getAsJsonArray("parsedBody"));
+            review.parsedTitle = parseSentences(obj.getAsJsonArray("parsedTitle"));
 
-                JsonArray body = obj.get("parsedBody").getAsJsonArray();
-                review.setParsedBody(parseSentences(body));
-
-                JsonArray title = obj.get("parsedTitle").getAsJsonArray();
-                review.setParsedTitle(parseSentences(title));
-
-            } else {
-
-                review.setParsed(parseSentences(parsed.getAsJsonArray()));
+            JsonArray opinions = obj.getAsJsonArray("opinions");
+            if (opinions != null && opinions.size() > 0) {
+                review.opinions = MessageParser.fromJson(opinions.get(0), Opinion.class);
             }
         }
 

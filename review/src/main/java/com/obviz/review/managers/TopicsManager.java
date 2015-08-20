@@ -1,9 +1,11 @@
 package com.obviz.review.managers;
 
-import com.obviz.review.models.TopicTitle;
 import com.obviz.review.webservice.GeneralWebService;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by gaylor on 28.07.15.
@@ -13,14 +15,12 @@ public class TopicsManager {
 
     private static TopicsManager instance;
 
-    private Map<Integer, List<String>> topicTitles;
-    private List<Integer> ids;
+    private Map<Integer, String> topicTitles;
+    private Set<TopicsObserver> mObservers;
 
     private TopicsManager() {
         topicTitles = new HashMap<>();
-        ids = new ArrayList<>();
-
-        GeneralWebService.instance().loadTopicTitles();
+        mObservers = new HashSet<>();
     }
 
     public static void init() {
@@ -32,41 +32,32 @@ public class TopicsManager {
         return instance;
     }
 
-    public void setTopicTitles(Collection<TopicTitle> collection) {
+    public void setTopicTitles(Map<Integer, String> collection) {
 
-        topicTitles.clear();
-        for (TopicTitle topic : collection) {
-            topicTitles.put(topic.getID(), topic.getTitles());
+        topicTitles.putAll(collection);
+
+        for (TopicsObserver observer : mObservers) {
+            observer.onTopicsLoaded();
         }
-
-        ids = new ArrayList<>(topicTitles.keySet());
+        mObservers.clear();
     }
 
-    public List<Integer> getIDs() {
-        return ids;
-    }
+    public String getTitle(int topicID, TopicsObserver observer) {
 
-    public List<String> getTopicsTitle() {
-        List<String> titles = new ArrayList<>();
-        for (Integer id : ids) {
-            titles.add(getTopicTitle(id));
-        }
+        if (topicTitles.containsKey(topicID)) {
 
-        return titles;
-    }
-
-    public String getTopicTitle(int topicID) {
-
-        if (topicTitles == null) {
-            return "";
+            return topicTitles.get(topicID);
         } else {
-            if (topicTitles.containsKey(topicID)) {
-                String title = topicTitles.get(topicID).get(0);
 
-                return title.substring(0, 1).toUpperCase() + title.substring(1);
-            } else {
-                return "Unknown title";
-            }
+            mObservers.add(observer);
+            GeneralWebService.instance().loadTopicTitles();
+
+            return "";
         }
+    }
+
+    public interface TopicsObserver {
+
+        void onTopicsLoaded();
     }
 }

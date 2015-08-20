@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -36,18 +37,13 @@ import java.util.Set;
  */
 public class DetailsActivity extends AppCompatActivity implements ImageObserver {
 
-    private Set<RequestObserver<AndroidApp>> mObservers;
     private AndroidApp mApplication;
     private boolean isInstalled = false;
     private Menu mMenu;
 
-    public void AddRequestObserver(RequestObserver<AndroidApp> observer) {
+    public AndroidApp getAndroidApp() {
 
-        if (mApplication != null) {
-            observer.onSuccess(mApplication);
-        } else {
-            mObservers.add(observer);
-        }
+        return mApplication;
     }
 
     @Override
@@ -63,8 +59,6 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
         super.onCreate(states);
         setContentView(R.layout.activity_details);
 
-        mObservers = new HashSet<>();
-
         /* Init the toolbar */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -75,7 +69,18 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
 
         /* Intent */
         Intent intent = getIntent();
-        String appID = intent.getStringExtra(Constants.INTENT_APP_ID);
+        mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
+        // Check if we have an old state before trying to get the application information
+        if (states != null) {
+
+            mApplication = states.getParcelable(Constants.STATE_APP);
+        }
+
+        // Add a seen to the app
+        GeneralWebService.instance().markAsViewed(mApplication.getAppID());
+
+        // Activity title
+        setTitle(mApplication.getName());
 
         /* Tabs */
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
@@ -93,73 +98,33 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver 
         });
         tabs.setViewPager(pager);
 
-        /* Get the app information */
-        RequestCallback<AndroidApp> callback = new RequestCallback<AndroidApp>() {
-            @Override
-            public void onSuccess(AndroidApp app) {
-
-                mApplication = app;
-                DetailsActivity.this.setTitle(app.getName());
-
-                List<PackageInfo> packages = getPackageManager().getInstalledPackages(0);
-                for (PackageInfo info : packages) {
-                    if (info.packageName.equals(mApplication.getAppID())) {
-                        isInstalled = true;
-                    }
-                }
-
-                TextView appDeveloper = (TextView) findViewById(R.id.app_developper);
-                appDeveloper.setText(app.getDeveloper());
-
-                TextView appCategory = (TextView) findViewById(R.id.app_category);
-                appCategory.setText(app.getCategory().getTitle());
-
-                TextView appDate = (TextView) findViewById(R.id.app_date);
-                appDate.setText(app.getDate());
-
-                TextView appFreedom = (TextView) findViewById(R.id.app_free);
-                appFreedom.setText(app.isFree() ? "Free" : "Paid");
-
-                RatingBar rating = (RatingBar) findViewById(R.id.ratingBar);
-                rating.setRating(app.getScore().getTotal());
-
-                ImagesManager.getInstance().get(app.getImage(), DetailsActivity.this);
-
-                for (RequestObserver<AndroidApp> observer : mObservers) {
-                    observer.onSuccess(app);
-                }
-
-                // Enable the install action
-                if (mMenu != null) {
-                    mMenu.findItem(R.id.action_install).setEnabled(true);
-                }
+        List<PackageInfo> packages = getPackageManager().getInstalledPackages(0);
+        for (PackageInfo info : packages) {
+            if (info.packageName.equals(mApplication.getAppID())) {
+                isInstalled = true;
             }
+        }
 
-            @Override
-            public void onFailure(Errors error) {
-                Toast.makeText(getApplicationContext(), getResources().getText(R.string.app_not_found), Toast.LENGTH_LONG).show();
-            }
+        TextView appDeveloper = (TextView) findViewById(R.id.app_developper);
+        appDeveloper.setText(mApplication.getDeveloper());
 
-            @Override
-            public Type getType() {
-                return AndroidApp.class;
-            }
-        };
+        TextView appCategory = (TextView) findViewById(R.id.app_category);
+        appCategory.setText(mApplication.getCategory().getTitle());
 
-        // Check if we have an old state before trying to get the application informations
-        if (states != null) {
+        TextView appDate = (TextView) findViewById(R.id.app_date);
+        appDate.setText(mApplication.getDate());
 
-            mApplication = states.getParcelable(Constants.STATE_APP);
-            callback.onSuccess(mApplication);
+        TextView appFreedom = (TextView) findViewById(R.id.app_free);
+        appFreedom.setText(mApplication.isFree() ? "Free" : "Paid");
 
-            // Add a seen to the app
-            GeneralWebService.instance().markAsViewed(mApplication.getAppID());
-        } else if (appID != null) {
+        RatingBar rating = (RatingBar) findViewById(R.id.ratingBar);
+        rating.setRating(mApplication.getScore().getTotal());
 
-            GeneralWebService.instance().getApp(appID, callback);
+        ImagesManager.getInstance().get(mApplication.getImage(), DetailsActivity.this);
 
-            // Add a seen to the app
-            GeneralWebService.instance().markAsViewed(appID);
+        // Enable the install action
+        if (mMenu != null) {
+            mMenu.findItem(R.id.action_install).setEnabled(true);
         }
     }
 

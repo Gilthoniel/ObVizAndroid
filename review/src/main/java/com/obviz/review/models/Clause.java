@@ -22,6 +22,10 @@ public class Clause implements Serializable {
         return id;
     }
 
+    public int getGroupID() {
+        return groupId;
+    }
+
     public String getText() {
         return text;
     }

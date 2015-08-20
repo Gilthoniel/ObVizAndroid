@@ -1,6 +1,8 @@
 package com.obviz.review.fragments;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,7 +14,7 @@ import android.widget.GridView;
 import android.widget.Spinner;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
-import com.obviz.review.adapters.TrendingAdapter;
+import com.obviz.review.adapters.BoxAppAdapter;
 import com.obviz.review.managers.CategoryManager;
 import com.obviz.review.managers.CategoryManager.*;
 import com.obviz.review.webservice.ConnectionService;
@@ -37,9 +39,22 @@ public class TrendingFragment extends Fragment {
 
         if (getView() != null) {
             final GridView grid = (GridView) getView().findViewById(R.id.grid_view);
-            final TrendingAdapter trendingAdapter = new TrendingAdapter(getActivity());
-            grid.setAdapter(trendingAdapter);
+            final BoxAppAdapter trendingAdapter = new BoxAppAdapter(getActivity());
 
+            int max;
+            switch (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) {
+                case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                    max = 20;
+                    break;
+                case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                    max = 30;
+                    break;
+                default:
+                    max = 10;
+            }
+            trendingAdapter.setMax(max);
+
+            grid.setAdapter(trendingAdapter);
             grid.setEmptyView(getView().findViewById(R.id.empty_view));
             grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

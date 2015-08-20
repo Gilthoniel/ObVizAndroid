@@ -22,33 +22,23 @@ import java.util.List;
 public class ReviewsAdapter extends BaseAdapter {
 
     private List<Review> mReviews;
-    private int mTopicID;
     private LayoutInflater mInflater;
 
-    public ReviewsAdapter(Context context, int topicID) {
+    public ReviewsAdapter(Context context) {
         mReviews = new ArrayList<>();
-
-        mTopicID = topicID;
 
         mInflater = LayoutInflater.from(context);
     }
 
     public void addAll(Collection<Review> collection) {
-        for (Review review : collection) {
-            if (review.getOpinions().containsKey(mTopicID)) {
-                mReviews.add(review);
-            }
-        }
+
+        mReviews.addAll(collection);
         notifyDataSetChanged();
     }
 
     public void clear() {
         mReviews.clear();
         notifyDataSetChanged();
-    }
-
-    public void setTopicID(int topicID) {
-        mTopicID = topicID;
     }
 
     @Override
@@ -79,19 +69,26 @@ public class ReviewsAdapter extends BaseAdapter {
         Review review = mReviews.get(i);
 
         TextView body = (TextView) layout.findViewById(R.id.review_content);
-        body.setText(review.getBody(mTopicID));
+        switch (review.getDisplayType()) {
+            case 0:
+                body.setText(review.getTitle().append("\n").append(review.getContent()));
+                break;
+            case 1:
+                body.setText(review.getContent());
+                break;
+            default:
+                body.setText(review.getTitle());
+                break;
+        }
 
         TextView author = (TextView) layout.findViewById(R.id.author);
-        author.setText(review.getAuthorName());
+        author.setText(review.authorName.trim());
 
         TextView date = (TextView) layout.findViewById(R.id.date);
-        date.setText(review.getDate());
-
-        TextView title = (TextView) layout.findViewById(R.id.title);
-        title.setText(review.getTitle());
+        date.setText(review.reviewDate.toString());
 
         RatingBar rating = (RatingBar) layout.findViewById(R.id.rating);
-        rating.setRating(review.getScore());
+        rating.setRating(review.starRatings);
 
         return layout;
     }
