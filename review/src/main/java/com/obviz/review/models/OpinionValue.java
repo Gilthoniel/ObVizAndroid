@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Created by gaylor on 08/19/2015.
  *
  */
-public class OpinionValue implements Serializable, Parcelable {
+public class OpinionValue implements Serializable, Parcelable, Comparable<OpinionValue> {
     private static final long serialVersionUID = -100817616366373955L;
 
     public int nbPositiveOpinions;
@@ -44,6 +44,18 @@ public class OpinionValue implements Serializable, Parcelable {
     public boolean isValid() {
 
         return topicID > 0 && nbNegativeOpinions > 0 && nbPositiveOpinions > 0;
+    }
+
+    @Override
+    public int compareTo(@NonNull OpinionValue other) {
+
+        if (getTotal() < other.getTotal()) {
+            return -1;
+        } else if (getTotal() == other.getTotal()) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 
     @Override

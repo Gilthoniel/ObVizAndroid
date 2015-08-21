@@ -12,7 +12,7 @@ import com.obviz.review.fragments.DetailsOpinionsFragment;
  */
 public class DetailsPagerAdapter extends FragmentStatePagerAdapter {
 
-    private CharSequence TITLES[] = new CharSequence[] { "Opinions", "Comparison" };
+    private CharSequence TITLES[] = new CharSequence[] { "Opinions", "Alternatives" };
 
     public DetailsPagerAdapter(FragmentManager manager) {
         super(manager);

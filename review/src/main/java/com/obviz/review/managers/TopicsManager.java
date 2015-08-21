@@ -44,7 +44,10 @@ public class TopicsManager {
 
     public String getTitle(int topicID, TopicsObserver observer) {
 
-        if (topicTitles.containsKey(topicID)) {
+        if (topicID < 0) {
+
+            return "";
+        } else if (topicTitles.containsKey(topicID)) {
 
             return topicTitles.get(topicID);
         } else {

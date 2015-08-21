@@ -17,6 +17,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.obviz.review.adapters.DetailsPagerAdapter;
+import com.obviz.review.adapters.GaugeAdapter;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.models.AndroidApp;
@@ -28,6 +29,7 @@ import com.obviz.reviews.R;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -35,15 +37,19 @@ import java.util.Set;
  * Display general information about an application
  * @intent INTENT_APP_ID id of the application
  */
-public class DetailsActivity extends AppCompatActivity implements ImageObserver {
+public class DetailsActivity extends AppCompatActivity implements ImageObserver, GaugeAdapter.GaugeAdaptable {
 
     private AndroidApp mApplication;
     private boolean isInstalled = false;
     private Menu mMenu;
 
-    public AndroidApp getAndroidApp() {
+    @Override
+    public List<AndroidApp> getListApplications() {
 
-        return mApplication;
+        List<AndroidApp> list = new LinkedList<>();
+        list.add(mApplication);
+
+        return list;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.obviz.review.models;
 
-import lecho.lib.hellocharts.util.ChartUtils;
+import com.obviz.review.Constants;
 
 import java.io.Serializable;
 import java.util.*;
@@ -50,7 +50,7 @@ public class Opinion implements Serializable {
         }
 
         public int getColor() {
-            return polarity.equals("positive") ? ChartUtils.COLOR_GREEN : ChartUtils.COLOR_RED;
+            return polarity.equals("positive") ? Constants.POSITIVE_COLOR : Constants.NEGATIVE_COLOR;
         }
     }
 

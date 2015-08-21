@@ -1,12 +1,12 @@
 package com.obviz.review.webservice;
 
 import android.net.Uri;
+import com.obviz.review.webservice.tasks.GetTask;
 import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.review.webservice.tasks.ImageTask;
-import com.obviz.review.webservice.tasks.JsonTask;
+import com.obviz.review.webservice.tasks.PostTask;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,8 +17,6 @@ import java.util.concurrent.Executors;
  */
 public class ConnectionService {
 
-    public enum TypeRequest { GET, POST }
-
     public static final ConnectionService instance = new ConnectionService();
 
     private ExecutorService executor;
@@ -27,6 +25,10 @@ public class ConnectionService {
     private ConnectionService() {
         executor = Executors.newCachedThreadPool();
         requests = new HashSet<>();
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
     }
 
     /**
@@ -50,8 +52,7 @@ public class ConnectionService {
      */
     public void cancel() {
         for (HttpTask<?> task : requests) {
-            task.closeStream();
-            task.cancel(true);
+            task.cancel();
         }
 
         requests.clear();
@@ -59,24 +60,22 @@ public class ConnectionService {
 
     /**
      * Execute an HTTP request
-     * @param url URL of the request
-     * @param params Queries of the request
+     * @param builder URL of the request
      * @param callback callback function when the request is over
-     * @param isPostRequest True if the request is a POST request
      * @param <T> Type of the return object
      * @return An instance of the task (cancellable)
      */
-    public <T> HttpTask<T> execute(String url, Map<String, String> params, RequestCallback<T> callback, String cacheKey,
-                                          boolean isPostRequest) {
+    public <T> HttpTask<T> executeGetRequest(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
-        // Create the url
-        Uri.Builder builder = new Uri.Builder();
-        builder.encodedPath(url);
-        for (String key : params.keySet()) {
-            builder.appendQueryParameter(key, params.get(key));
-        }
+        HttpTask<T> task = new GetTask<>(callback, cacheKey);
+        addRequest(task);
 
-        HttpTask<T> task = new JsonTask<>(callback, isPostRequest, cacheKey);
+        return (HttpTask<T>) task.executeOnExecutor(executor, builder);
+    }
+
+    public <T> HttpTask<T> executePostRequest(Uri.Builder builder, RequestCallback<Boolean> callback) {
+
+        PostTask task = new PostTask(callback);
         addRequest(task);
 
         return (HttpTask<T>) task.executeOnExecutor(executor, builder);

@@ -1,12 +1,14 @@
 package com.obviz.review.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.*;
 import android.util.AttributeSet;
 import android.view.View;
+import com.obviz.reviews.R;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,17 +31,31 @@ public class GaugeChart extends View {
     public GaugeChart(Context context, AttributeSet attributes) {
         super(context, attributes);
 
-        // TODO : attributes
-        mAngle = 240;
+        // Get the attributes
+        TypedArray array = context.getTheme().obtainStyledAttributes(attributes, R.styleable.GaugeChart, 0, 0);
+        try {
+
+            // Take an angle between 0 and 360 degrees
+            mAngle = Math.min(array.getInt(R.styleable.GaugeChart_angle, -1), 360);
+            mText = array.getString(R.styleable.GaugeChart_text);
+        } finally {
+
+            array.recycle();
+        }
+
+        // Default values
+        if (mAngle < 0) {
+            mAngle = 180;
+        }
+
+        if (mText == null) {
+            mText = "";
+        }
 
         /* Initialization */
-        mSegmentsPaths = new HashMap<>();
-        mArrowsPaths = new HashMap<>();
         mOrigin = new Point(0, 0);
-        mText = "";
 
         mTextPaint = new Paint();
-        mTextPaint.setTextSize(40);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
     }
 
@@ -51,24 +67,15 @@ public class GaugeChart extends View {
             mText = data.mText;
         }
 
+        mTextPaint.setTextSize(data.mTextSize);
+
         // Default black segment if none is present
-        mSegmentsPaths.clear();
-        if (data.segments == null || data.segments.isEmpty()) {
+        mSegmentsPaths = data.mSegments;
+        if (data.mSegments.isEmpty()) {
             mSegmentsPaths.put(new Segment(0, mMaxValue, 0xff000000, 0.8f), new Path());
-        } else {
-
-            for (Segment segment : data.segments) {
-                mSegmentsPaths.put(segment, new Path());
-            }
         }
 
-        mArrowsPaths.clear();
-        if (data.arrows != null) {
-
-            for (Arrow arrow : data.arrows) {
-                mArrowsPaths.put(arrow, new Path());
-            }
-        }
+        mArrowsPaths = data.mArrows;
 
         // Compute the size and the paths
         computeGeometry(getWidth(), getHeight());
@@ -82,14 +89,18 @@ public class GaugeChart extends View {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // Draw segments
-        for (Map.Entry<Segment, Path> entry : mSegmentsPaths.entrySet()) {
-            canvas.drawPath(entry.getValue(), entry.getKey().paint);
+        // Draw mSegments
+        if (mSegmentsPaths != null) {
+            for (Map.Entry<Segment, Path> entry : mSegmentsPaths.entrySet()) {
+                canvas.drawPath(entry.getValue(), entry.getKey().paint);
+            }
         }
 
-        // Draw arrows
-        for (Map.Entry<Arrow, Path> entry : mArrowsPaths.entrySet()) {
-            canvas.drawPath(entry.getValue(), entry.getKey().paint);
+        // Draw mArrows
+        if (mArrowsPaths != null) {
+            for (Map.Entry<Arrow, Path> entry : mArrowsPaths.entrySet()) {
+                canvas.drawPath(entry.getValue(), entry.getKey().paint);
+            }
         }
 
         // Draw the text
@@ -120,14 +131,17 @@ public class GaugeChart extends View {
     }
 
     private void computePaths() {
+        if (mSegmentsPaths == null || mArrowsPaths == null) {
+            return;
+        }
 
         float offset = 90 + (360 - mAngle) / 2;
-        // Compute the paths of the segments
+        // Compute the paths of the mSegments
         for (Map.Entry<Segment, Path> entry : mSegmentsPaths.entrySet()) {
             entry.getKey().compute(this, entry.getValue(), offset);
         }
 
-        // Compute the paths of the arrows
+        // Compute the paths of the mArrows
         for (Map.Entry<Arrow, Path> entry : mArrowsPaths.entrySet()) {
             entry.getKey().compute(this, entry.getValue());
         }
@@ -141,14 +155,13 @@ public class GaugeChart extends View {
         private float innerRadius;
         private Paint paint;
 
-        public Arrow(float h, float i, float b, int color) {
-            baseLength = b / 2;
-            height = h;
-            innerRadius = i;
+        public Arrow() {
+            baseLength = 20;
+            height = 1.0f;
+            innerRadius = 0.2f;
 
             paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            paint.setColor(color);
-
+            paint.setColor(0xff000000);
         }
 
         public void compute(GaugeChart chart, Path path) {
@@ -174,6 +187,28 @@ public class GaugeChart extends View {
         public void setValue(int v) {
 
             value = v;
+        }
+
+        public void setBaseLength(float value) {
+            if (value > 0) {
+                baseLength = value;
+            }
+        }
+
+        public void setHeight(float value) {
+            if (value >= 0 && value <= 1.0) {
+                height = value;
+            }
+        }
+
+        public void setInnerRadius(float value) {
+            if (value >= 0 && value <= 1.0) {
+                innerRadius = value;
+            }
+        }
+
+        public void setColor(int value) {
+            paint.setColor(value);
         }
     }
 
@@ -214,26 +249,46 @@ public class GaugeChart extends View {
 
     public static class GaugeChartData {
 
-        private List<Segment> segments;
-        private List<Arrow> arrows;
+        private Map<Segment, Path> mSegments;
+        private Map<Arrow, Path> mArrows;
         private int mMaxValue;
         private String mText;
+        private float mTextSize;
 
         public GaugeChartData(int maxValue) {
 
             mMaxValue = maxValue;
+            mTextSize = 40;
+            mSegments = new HashMap<>();
+            mArrows = new HashMap<>();
         }
 
         public void setText(String text) {
             mText = text;
         }
 
-        public void setSegments(List<Segment> list) {
-            segments = list;
+        public void setTextSize(float size) {
+            mTextSize = size;
         }
 
-        public void addArrows(List<Arrow> list) {
-            arrows = list;
+        public void addSegments(Collection<Segment> segments) {
+            for (Segment segment : segments) {
+                addSegment(segment);
+            }
+        }
+
+        public void addSegment(Segment segment) {
+            mSegments.put(segment, new Path());
+        }
+
+        public void addArrows(Collection<Arrow> arrows) {
+            for (Arrow arrow : arrows) {
+                addArrow(arrow);
+            }
+        }
+
+        public void addArrow(Arrow arrow) {
+            mArrows.put(arrow, new Path());
         }
     }
 }

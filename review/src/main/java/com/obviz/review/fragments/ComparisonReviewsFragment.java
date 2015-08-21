@@ -36,7 +36,7 @@ public class ComparisonReviewsFragment extends Fragment implements RequestObserv
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {
 
-        mParent = inflater.inflate(R.layout.grid_fragment, container, false);
+        mParent = inflater.inflate(R.layout.grid_review, container, false);
         return mParent;
     }
 

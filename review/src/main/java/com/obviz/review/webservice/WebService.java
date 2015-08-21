@@ -1,5 +1,6 @@
 package com.obviz.review.webservice;
 
+import android.net.Uri;
 import android.util.Log;
 import com.obviz.review.Constants;
 
@@ -10,41 +11,28 @@ import java.util.Map;
  * Base of a web service implementation
  */
 public abstract class WebService {
-    private String baseURL;
-
-    public WebService() {
-        baseURL = Constants.URL;
-    }
-
-    /**
-     * Change the url of the requests
-     * @param url the enw URL
-     */
-    public void setBaseURL(String url) {
-        baseURL = url;
-    }
 
     /**
      * GET HTTP request
-     * @param params queries parameter
+     * @param builder queries parameter
      * @param callback call when the request is over
      * @param <T> Type of the object requested
      */
-    public <T> void get(Map<String, String> params, RequestCallback<T> callback, String cacheKey) {
+    public <T> void get(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
-        ConnectionService.instance.execute(baseURL, params, callback, cacheKey, false);
+        ConnectionService.instance.executeGetRequest(builder, callback, cacheKey);
     }
 
     /**
      * POST HTTP request
-     * @param params query parameters
+     * @param builder query parameters
      * @param callback callback function
      * @param <T> type of the return
      */
-    public <T> void post(Map<String, String> params, RequestCallback<T> callback) {
+    public <T> void post(Uri.Builder builder, RequestCallback<Boolean> callback) {
 
         // POST request without caching
-        ConnectionService.instance.execute(baseURL, params, callback, null, true);
+        ConnectionService.instance.executePostRequest(builder, callback);
     }
 
     /**

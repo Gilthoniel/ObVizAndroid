@@ -11,14 +11,14 @@ import java.util.*;
  * Created by gaylor on 08/12/2015.
  *
  */
-public abstract class BaseAppAdapter extends BaseAdapter implements ImageObserver {
+public abstract class AppBaseAdapter extends BaseAdapter implements ImageObserver {
 
     protected Map<String, Bitmap> mImages;
 
     private List<AndroidApp> mApplications;
     private int maxItems;
 
-    public BaseAppAdapter() {
+    public AppBaseAdapter() {
 
         mApplications = new ArrayList<>();
         mImages = new HashMap<>();

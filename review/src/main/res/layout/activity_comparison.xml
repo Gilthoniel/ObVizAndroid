@@ -7,13 +7,14 @@
     <include layout="@layout/toolbar"
              android:id="@+id/toolbar" />
 
-    <RelativeLayout
+    <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/toolbar" android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" android:id="@+id/linearLayout"
             android:background="@color/ColorPrimary">
+
         <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -21,7 +22,7 @@
                 android:layout_alignParentTop="true"/>
         <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="App Name"
                 android:id="@+id/app_name" android:gravity="center_vertical"
                 android:textColor="#ffffffff"
@@ -29,47 +30,59 @@
                 android:layout_toRightOf="@+id/app_logo"
                 android:padding="5dp"
                 android:layout_alignBottom="@+id/app_logo" android:layout_toLeftOf="@+id/comparison_name"
-                android:layout_toStartOf="@+id/comparison_name"/>
+                android:layout_toStartOf="@+id/comparison_name"
+                android:layout_weight="1"/>
         <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="App Name"
                 android:id="@+id/comparison_name"
                 android:textColor="#ffffffff"
                 android:layout_alignParentTop="true"
                 android:gravity="center_vertical|end"
                 android:padding="5dp" android:layout_toLeftOf="@+id/comparison_logo"
-                android:layout_toStartOf="@+id/comparison_logo" android:layout_alignBottom="@+id/comparison_logo"/>
+                android:layout_toStartOf="@+id/comparison_logo" android:layout_alignBottom="@+id/comparison_logo"
+                android:layout_weight="1"/>
         <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/comparison_logo" android:padding="5dp"
                 android:layout_alignParentTop="true" android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"/>
-        <View
-                android:layout_width="wrap_content"
-                android:layout_height="5dp"
-                android:id="@+id/textView" android:layout_below="@+id/app_logo" android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@+id/comparison_name"
-                android:layout_toLeftOf="@+id/comparison_name"
-                android:layout_alignRight="@+id/app_name"
-                android:background="@color/appColor"/>
-        <View
-                android:layout_width="wrap_content"
-                android:layout_height="5dp"
-                android:id="@+id/textView2"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/comparison_logo"
-                android:layout_alignLeft="@+id/comparison_name" android:background="@color/comparisonColor"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <fragment android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:name="android.app.ListFragment"
-              android:id="@+id/fragment"
-              tools:layout="@layout/list_fragment" android:layout_below="@+id/linearLayout"
-              android:layout_alignParentLeft="true" android:layout_alignParentStart="true"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:id="@+id/sub_linear_layout"
+        android:layout_below="@+id/linearLayout">
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="5dp"
+            android:id="@+id/textView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/appColor"
+            android:layout_below="@+id/linearLayout"
+            android:layout_weight="1"/>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="5dp"
+            android:id="@+id/textView2"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@color/comparisonColor"
+            android:layout_below="@+id/linearLayout"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <include
+        layout="@layout/grid_app_box"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/sub_linear_layout"/>
 
 </RelativeLayout>

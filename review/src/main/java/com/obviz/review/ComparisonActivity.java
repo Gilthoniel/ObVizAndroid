@@ -1,6 +1,5 @@
 package com.obviz.review;
 
-import android.app.ListFragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,22 +9,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.obviz.review.adapters.ComparisonAdapter;
+import com.obviz.review.adapters.GaugeAdapter;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.reviews.R;
 
+import java.util.LinkedList;
+import java.util.List;
 
-public class ComparisonActivity extends AppCompatActivity implements ImageObserver {
+
+public class ComparisonActivity extends AppCompatActivity implements ImageObserver, GaugeAdapter.GaugeAdaptable {
 
     private AndroidApp mApplication;
     private AndroidApp mComparison;
-    private ComparisonAdapter mAdapter;
+    private GaugeAdapter mAdapter;
+
+    @Override
+    public List<AndroidApp> getListApplications() {
+        List<AndroidApp> list = new LinkedList<>();
+        list.add(mApplication);
+        list.add(mComparison);
+
+        return list;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +49,11 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
 
         if (mApplication != null && mComparison != null) {
 
-            ListFragment list = (ListFragment) getFragmentManager().findFragmentById(R.id.fragment);
-            mAdapter = new ComparisonAdapter(getApplicationContext(), mApplication, mComparison);
-            list.setListAdapter(mAdapter);
-            list.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            GridView grid = (GridView) findViewById(R.id.grid_view);
+            mAdapter = new GaugeAdapter(this, grid);
+            grid.setAdapter(mAdapter);
+            grid.setEmptyView(findViewById(android.R.id.empty));
+            grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                     Intent intent = new Intent(ComparisonActivity.this, ReviewsComparisonActivity.class);

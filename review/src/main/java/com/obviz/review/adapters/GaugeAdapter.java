@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
@@ -14,7 +15,6 @@ import com.obviz.review.views.GaugeChart;
 import com.obviz.review.views.GaugeChart.*;
 import com.obviz.reviews.R;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,27 +25,20 @@ public class GaugeAdapter extends BaseAdapter implements TopicsManager.TopicsObs
 
     private LayoutInflater inflater;
     private GridView mParent;
-    private AndroidApp mApplication;
-    private List<Segment> mChartSegments;
+    private List<AndroidApp> mApplications;
 
     public GaugeAdapter(Context context, GridView parent) {
 
         inflater = LayoutInflater.from(context);
         mParent = parent;
 
-        DetailsActivity activity = (DetailsActivity) context;
-        mApplication = activity.getAndroidApp();
-
-        mChartSegments = new LinkedList<>();
-        mChartSegments.add(new Segment(0, 20, 0xffcc4748, 0.8f));
-        mChartSegments.add(new Segment(20, 40, 0xffcf6868, 0.8f));
-        mChartSegments.add(new Segment(40, 60, 0xffe6e6e6, 0.8f));
-        mChartSegments.add(new Segment(60, 80, 0xffa5d1a5, 0.8f));
-        mChartSegments.add(new Segment(80, 100, 0xff84b761, 0.8f));
+        GaugeAdaptable activity = (GaugeAdaptable) context;
+        mApplications = activity.getListApplications();
     }
 
     public AndroidApp getApplication() {
-        return mApplication;
+
+        return mApplications.get(0);
     }
 
     /* TopicsObserver implementation */
@@ -58,33 +51,45 @@ public class GaugeAdapter extends BaseAdapter implements TopicsManager.TopicsObs
     @Override
     public int getCount() {
 
-        return mApplication.getOpinions().size();
+        if (mApplications.size() > 0) {
+
+            return mApplications.get(0).getOpinions().size();
+        } else {
+
+            return 0;
+        }
     }
 
     @Override
     public Integer getItem(int i) {
 
-        return mApplication.getOpinions().get(i).percentage();
+        if (mApplications.size() > 0) {
+
+            return mApplications.get(0).getOpinions().get(i).percentage();
+        } else {
+
+            return 0;
+        }
     }
 
     @Override
     public long getItemId(int i) {
 
-        return mApplication.getOpinions().get(i).topicID;
+        if (mApplications.size() > 0) {
+            return mApplications.get(0).getOpinions().get(i).topicID;
+        } else {
+
+            return -1;
+        }
     }
 
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
 
-        int value = 0;
-        if (mApplication != null) {
-            value = getItem(position);
-        }
-
         LinearLayout layout;
         if (view == null) {
 
-            layout = (LinearLayout) inflater.inflate(R.layout.details_gauge, parent, false);
+            layout = (LinearLayout) inflater.inflate(R.layout.item_gauge, parent, false);
         } else {
 
             layout = (LinearLayout) view;
@@ -93,17 +98,33 @@ public class GaugeAdapter extends BaseAdapter implements TopicsManager.TopicsObs
         GaugeChart gauge = (GaugeChart) layout.findViewById(R.id.gauge_chart);
         GaugeChartData data = new GaugeChartData(100);
         data.setText(TopicsManager.instance().getTitle((int) getItemId(position), this));
-        data.setSegments(mChartSegments);
+        data.addSegments(Constants.CHART_SEGMENTS);
 
-        Arrow arrow = new Arrow(1.0f, 0.4f, 30, 0xff333333);
-        arrow.setValue(value);
+        for (AndroidApp app : mApplications) {
 
-        List<Arrow> arrows = new LinkedList<>();
-        arrows.add(arrow);
-        data.addArrows(arrows);
+            if (app.getOpinions().size() > position) {
+                Arrow arrow = new Arrow();
+                arrow.setValue(app.getOpinions().get(position).percentage());
+                arrow.setHeight(1.0f);
+                arrow.setInnerRadius(0.4f);
+                arrow.setBaseLength(20);
+
+                if (app == mApplications.get(0)) {
+                    arrow.setColor(parent.getResources().getColor(R.color.appColor));
+                } else {
+                    arrow.setColor(parent.getResources().getColor(R.color.comparisonColor));
+                }
+
+                data.addArrow(arrow);
+            }
+        }
 
         gauge.setData(data);
 
         return layout;
+    }
+
+    public interface GaugeAdaptable {
+        List<AndroidApp> getListApplications();
     }
 }

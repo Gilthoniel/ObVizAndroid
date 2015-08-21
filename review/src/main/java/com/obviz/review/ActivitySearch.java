@@ -1,6 +1,5 @@
 package com.obviz.review;
 
-import android.app.ListFragment;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,9 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import com.obviz.review.adapters.BaseAppAdapter;
-import com.obviz.review.adapters.BoxAppAdapter;
-import com.obviz.review.adapters.ListAppAdapter;
+import com.obviz.review.adapters.AppBaseAdapter;
+import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.database.DatabaseService;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
@@ -26,7 +24,7 @@ import com.obviz.reviews.R;
  */
 public class ActivitySearch extends AppCompatActivity {
 
-    private BaseAppAdapter mAdapter;
+    private AppBaseAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,29 +51,14 @@ public class ActivitySearch extends AppCompatActivity {
             query = intent.getStringExtra(Constants.INTENT_SEARCH);
         }
 
-        // Click listener
-        ItemClickListener clickListener = new ItemClickListener();
-
-        ListFragment fragment = (ListFragment) getFragmentManager().findFragmentById(R.id.fragment);
-        if (fragment != null) {
-            mAdapter = new ListAppAdapter(getApplicationContext());
-            fragment.setListAdapter(mAdapter);
-            fragment.getListView().setOnItemClickListener(clickListener);
-
-            // Perform the search
-            GeneralWebService.instance().searchApp(query, fragment.getListView());
-        }
-
         GridView grid = (GridView) findViewById(R.id.grid_view);
-        if (grid != null) {
-            mAdapter = new BoxAppAdapter(getApplicationContext());
-            grid.setAdapter(mAdapter);
-            grid.setEmptyView(findViewById(R.id.empty_view));
-            grid.setOnItemClickListener(clickListener);
+        mAdapter = new AppBoxAdapter(getApplicationContext());
+        grid.setAdapter(mAdapter);
+        grid.setEmptyView(findViewById(R.id.empty_view));
+        grid.setOnItemClickListener(new ItemClickListener());
 
-            // Perform the search
-            GeneralWebService.instance().searchApp(query, grid);
-        }
+        // Perform the search
+        GeneralWebService.instance().searchApp(query, grid);
     }
 
     @Override

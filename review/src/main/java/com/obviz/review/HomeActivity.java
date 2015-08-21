@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import com.obviz.review.adapters.DrawerAdapter;
 import com.obviz.review.adapters.HomePagerAdapter;
+import com.obviz.review.webservice.ConnectionService;
 import com.obviz.reviews.R;
 
 public class HomeActivity extends AppCompatActivity {
@@ -34,7 +35,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_activity);
+        setContentView(R.layout.activity_home);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -102,6 +103,13 @@ public class HomeActivity extends AppCompatActivity {
         if (mItemSearchView != null) {
             mItemSearchView.collapseActionView();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ConnectionService.instance.cancel();
     }
 
     /**

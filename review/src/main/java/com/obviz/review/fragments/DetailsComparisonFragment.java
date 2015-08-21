@@ -13,7 +13,7 @@ import android.widget.GridView;
 import com.obviz.review.ComparisonActivity;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
-import com.obviz.review.adapters.ListAppAdapter;
+import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
@@ -28,14 +28,14 @@ import java.util.Iterator;
  */
 public class DetailsComparisonFragment extends Fragment {
 
-    private ListAppAdapter mAdapter;
+    private AppBoxAdapter mAdapter;
     private View mParent;
     private AndroidApp mApplication;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {
 
-        mParent = inflater.inflate(R.layout.grid_fragment, container, false);
+        mParent = inflater.inflate(R.layout.grid_app_box, container, false);
         return mParent;
     }
 
@@ -43,7 +43,7 @@ public class DetailsComparisonFragment extends Fragment {
     public void onActivityCreated(Bundle states) {
         super.onActivityCreated(states);
 
-        mAdapter = new ListAppAdapter(getActivity());
+        mAdapter = new AppBoxAdapter(getActivity());
         GridView grid = (GridView) mParent.findViewById(R.id.grid_view);
         grid.setAdapter(mAdapter);
         grid.setEmptyView(mParent.findViewById(android.R.id.empty));
@@ -62,7 +62,7 @@ public class DetailsComparisonFragment extends Fragment {
         });
 
         DetailsActivity parent = (DetailsActivity) getActivity();
-        mApplication = parent.getAndroidApp();
+        mApplication = parent.getListApplications().get(0);
 
         final Iterator<String> it = mApplication.getRelatedIDs().iterator();
         while (it.hasNext()) {

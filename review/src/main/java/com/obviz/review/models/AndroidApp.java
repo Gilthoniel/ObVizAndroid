@@ -5,11 +5,11 @@ import android.os.Parcelable;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
+import com.obviz.review.managers.Utils;
 import com.obviz.review.webservice.MessageParser;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by gaylor on 26.06.15.
@@ -25,6 +25,7 @@ public class AndroidApp implements Parcelable, Serializable {
     private Score score;
     private String developer;
     private boolean isFree;
+    private String price;
     private String minimumOSVersion;
     private String installations;
     private Date publicationDate;
@@ -41,6 +42,7 @@ public class AndroidApp implements Parcelable, Serializable {
         score = parcel.readParcelable(Score.class.getClassLoader());
         developer = parcel.readString();
         isFree = parcel.readInt() == 1;
+        price = parcel.readString();
         minimumOSVersion = parcel.readString();
         installations = parcel.readString();
         publicationDate = parcel.readParcelable(Date.class.getClassLoader());
@@ -75,6 +77,10 @@ public class AndroidApp implements Parcelable, Serializable {
         return isFree;
     }
 
+    public String getPrice() {
+        return price;
+    }
+
     public String getInstallations() {
         return installations;
     }
@@ -107,6 +113,54 @@ public class AndroidApp implements Parcelable, Serializable {
         return opinionsSummary;
     }
 
+    public int getGlobalOpinion() {
+        if (opinionsSummary == null || opinionsSummary.isEmpty()) {
+            return -1;
+        }
+
+        int totalPositive = 0;
+        int totalNegative = 0;
+        for (OpinionValue value : opinionsSummary) {
+            totalNegative += value.nbNegativeOpinions;
+            totalPositive += value.nbPositiveOpinions;
+        }
+
+        return 100 * totalPositive / (totalNegative + totalPositive);
+    }
+
+    public int getBestOpinion() {
+
+        if (opinionsSummary != null && opinionsSummary.size() > 0) {
+            if (!Utils.checkSorting(opinionsSummary)) {
+                Collections.sort(opinionsSummary);
+            }
+
+            return opinionsSummary.get(opinionsSummary.size() - 1).topicID;
+        } else {
+
+            return -1;
+        }
+    }
+
+    public int getWorstOpinion() {
+
+        if (opinionsSummary != null && opinionsSummary.size() > 0) {
+            if (!Utils.checkSorting(opinionsSummary)) {
+                Collections.sort(opinionsSummary);
+            }
+
+            return opinionsSummary.get(0).topicID;
+        } else {
+
+            return -1;
+        }
+    }
+
+    public boolean isParsed() {
+
+        return getGlobalOpinion() > -1;
+    }
+
     /**
      * Parcelable implementation
      * @return integer
@@ -129,6 +183,7 @@ public class AndroidApp implements Parcelable, Serializable {
         parcel.writeParcelable(score, -1);
         parcel.writeString(developer);
         parcel.writeInt(isFree ? 1 : 0);
+        parcel.writeString(price);
         parcel.writeString(minimumOSVersion);
         parcel.writeString(installations);
         parcel.writeParcelable(publicationDate, -1);

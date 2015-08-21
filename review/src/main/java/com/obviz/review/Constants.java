@@ -1,5 +1,10 @@
 package com.obviz.review;
 
+import com.obviz.review.views.GaugeChart;
+
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by gaylor on 21.07.15.
  *
@@ -111,4 +116,10 @@ public class Constants {
             return title;
         }
     }
+
+    /** Gauge **/
+    public static final List<GaugeChart.Segment> CHART_SEGMENTS = new LinkedList<>();
+
+    public static final int POSITIVE_COLOR = 0x57B05E;
+    public static final int NEGATIVE_COLOR = 0xCC6B6B;
 }

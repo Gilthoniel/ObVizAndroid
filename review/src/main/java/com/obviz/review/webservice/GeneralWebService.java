@@ -1,17 +1,16 @@
 package com.obviz.review.webservice;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
-import com.obviz.review.adapters.BaseAppAdapter;
+import com.obviz.review.adapters.AppBaseAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
-import com.obviz.review.adapters.BoxAppAdapter;
+import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.managers.CacheManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
@@ -51,12 +50,13 @@ public class GeneralWebService extends WebService {
         // Key for the cache
         final String key = CacheManager.KeyBuilder.forApps(id);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("cmd", Constants.GET_APP);
-        params.put("weight", "LIGHT");
-        params.put("id", id);
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", Constants.GET_APP);
+        builder.appendQueryParameter("weight", "LIGHT");
+        builder.appendQueryParameter("id", id);
 
-        get(params, callback, key);
+        get(builder, callback, key);
     }
 
     /**
@@ -72,9 +72,10 @@ public class GeneralWebService extends WebService {
         // Key for the cache
         final String key = CacheManager.KeyBuilder.forSearch(query);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("cmd", Constants.SEARCH_APP);
-        params.put("name", query);
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", Constants.SEARCH_APP);
+        builder.appendQueryParameter("name", query);
 
         RequestCallback<List<AndroidApp>> callback = new RequestCallback<List<AndroidApp>>() {
             @Override
@@ -83,7 +84,7 @@ public class GeneralWebService extends WebService {
                 // Display the empty text of there's no result
                 toggleStateList(view, 0);
 
-                BaseAppAdapter adapter = (BaseAppAdapter) view.getAdapter();
+                AppBaseAdapter adapter = (AppBaseAdapter) view.getAdapter();
 
                 adapter.clear();
                 if (result.size() == 0) {
@@ -107,7 +108,7 @@ public class GeneralWebService extends WebService {
             }
         };
 
-        get(params, callback, key);
+        get(builder, callback, key);
     }
 
     /**
@@ -123,14 +124,15 @@ public class GeneralWebService extends WebService {
         // Key for the cache
         final String key = CacheManager.KeyBuilder.forReviews(appID);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("cmd", Constants.GET_REVIEWS);
-        params.put("id", appID);
-        params.put("topic_id", String.valueOf(topicID));
-        params.put("nb_per_page", String.valueOf(size));
-        params.put("page_nr", String.valueOf(page));
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", Constants.GET_REVIEWS);
+        builder.appendQueryParameter("id", appID);
+        builder.appendQueryParameter("topic_id", String.valueOf(topicID));
+        builder.appendQueryParameter("nb_per_page", String.valueOf(size));
+        builder.appendQueryParameter("page_nr", String.valueOf(page));
 
-        get(params, new RequestCallback<Review.Pager>() {
+        get(builder, new RequestCallback<Review.Pager>() {
             @Override
             public void onSuccess(Review.Pager pager) {
 
@@ -159,23 +161,24 @@ public class GeneralWebService extends WebService {
         // Show the loading icon
         toggleStateList(view, 1);
         // Clear the list to show the empty view
-        final BoxAppAdapter adapter = (BoxAppAdapter) view.getAdapter();
+        final AppBoxAdapter adapter = (AppBoxAdapter) view.getAdapter();
         adapter.clear();
 
         final String key = CacheManager.KeyBuilder.forTrending(categories);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("cmd", Constants.GET_TRENDING_APPS);
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", Constants.GET_TRENDING_APPS);
         if (categories.size() > 0) {
             List<String> json = new ArrayList<>();
             for (Constants.Category category : categories) {
                 json.add(category.name());
             }
 
-            params.put("categories", MessageParser.toJson(json));
+            builder.appendQueryParameter("categories", MessageParser.toJson(json));
         }
 
-        get(params, new RequestCallback<List<AndroidApp>>() {
+        get(builder, new RequestCallback<List<AndroidApp>>() {
             @Override
             public void onSuccess(List<AndroidApp> result) {
 
@@ -205,10 +208,11 @@ public class GeneralWebService extends WebService {
      */
     public void loadTopicTitles() {
 
-        Map<String, String> params = new HashMap<>();
-        params.put("cmd", Constants.GET_TOPIC_TITLES);
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", Constants.GET_TOPIC_TITLES);
 
-        get(params, new RequestCallback<List<TopicTitle>>() {
+        get(builder, new RequestCallback<List<TopicTitle>>() {
             @Override
             public void onSuccess(List<TopicTitle> result) {
                 Map<Integer, String> topics = new HashMap<Integer, String>();
@@ -235,14 +239,15 @@ public class GeneralWebService extends WebService {
 
     public void markAsViewed(String appID) {
 
-        Map<String, String> params = new HashMap<>();
-        params.put("cmd", Constants.APP_VIEWED);
-        params.put("id", appID);
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", Constants.APP_VIEWED);
+        builder.appendQueryParameter("id", appID);
 
-        post(params, new RequestCallback<Boolean>() {
+        post(builder, new RequestCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                Log.d("__MARK_VIEWED__", "Mark as viewwed successfully: "+result);
+                Log.d("__MARK_VIEWED__", "Mark as viewed successfully: "+result);
             }
 
             @Override

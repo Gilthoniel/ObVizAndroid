@@ -5,27 +5,16 @@ import android.os.AsyncTask;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.Future;
 
 /**
  * Created by gaylor on 27.07.15.
  *
  */
-public class HttpTask<T> extends AsyncTask<Uri.Builder, Integer, T> {
+public abstract class HttpTask<T> extends AsyncTask<Uri.Builder, Void, T> {
 
-    protected InputStream stream;
-
-    public void closeStream() {
-        try {
-            if (stream != null) {
-                stream.close();
-            }
-        } catch (IOException e) {
-            // Nothing ...
-        }
-    }
+    public abstract void cancel();
 
     @Override
-    protected T doInBackground(Uri.Builder... builders) {
-        throw new UnsupportedOperationException();
-    }
+    protected abstract T doInBackground(Uri.Builder... builders);
 }

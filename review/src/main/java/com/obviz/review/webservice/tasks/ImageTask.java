@@ -8,8 +8,14 @@ import com.obviz.review.managers.CacheManager;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.webservice.ConnectionService;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by gaylor on 27.07.15.
@@ -18,30 +24,67 @@ import java.net.URL;
 public class ImageTask extends HttpTask<Bitmap> {
 
     private String url;
+    private Future<Bitmap> mFuture = null;
 
     @Override
-    protected Bitmap doInBackground(Uri.Builder... urls) {
-        url = urls[0].toString();
+    public void cancel() {
+
+        if (mFuture != null) {
+            mFuture.cancel(true);
+        }
+
+        super.cancel(true);
+    }
+
+    @Override
+    protected Bitmap doInBackground(final Uri.Builder... urls) {
 
         try {
+            url = urls[0].toString();
+
             // Take the image with a square size of 100px
             String littleSizeUrl = url.replaceFirst("\\d+$", "100");
 
             InputStream in = new URL(littleSizeUrl).openStream();
-            Bitmap bitmap = BitmapFactory.decodeStream(in);
+            final Bitmap bitmap = BitmapFactory.decodeStream(in);
 
-            Log.d("__INTERNET__", "Image acquire from the web");
+            mFuture = ConnectionService.instance.getExecutor().submit(new Callable<Bitmap>() {
+                @Override
+                public Bitmap call() throws Exception {
 
-            // Put in disk cache
-            String key = CacheManager.KeyBuilder.forImage(url);
-            CacheManager.instance().add(key, bitmap);
+                    try {
 
-            return bitmap;
 
-        } catch (Exception e) {
-            Log.e("-- Image Loading --", "With message:" + e.getMessage());
-            e.printStackTrace();
+                        Log.d("__INTERNET__", "Image acquire from the web");
+
+                        // Put in disk cache
+                        String key = CacheManager.KeyBuilder.forImage(url);
+                        CacheManager.instance().add(key, bitmap);
+
+                        return bitmap;
+
+                    } catch (Exception e) {
+                        Log.e("-- Image Loading --", "With message:" + e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    return null;
+                }
+            });
+
+            try {
+
+                return mFuture.get();
+            } catch (InterruptedException | ExecutionException ignored) {} finally {
+
+                in.close();
+            }
+
+        } catch (IOException e) {
+
+            Log.e("__IMAGE__", "IOException occured: " + e.getLocalizedMessage());
         }
+
         return null;
     }
 

@@ -2,7 +2,6 @@ package com.obviz.review.fragments;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,7 +13,7 @@ import android.widget.GridView;
 import android.widget.Spinner;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
-import com.obviz.review.adapters.BoxAppAdapter;
+import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.managers.CategoryManager;
 import com.obviz.review.managers.CategoryManager.*;
 import com.obviz.review.webservice.ConnectionService;
@@ -39,7 +38,7 @@ public class TrendingFragment extends Fragment {
 
         if (getView() != null) {
             final GridView grid = (GridView) getView().findViewById(R.id.grid_view);
-            final BoxAppAdapter trendingAdapter = new BoxAppAdapter(getActivity());
+            final AppBoxAdapter trendingAdapter = new AppBoxAdapter(getActivity());
 
             int max;
             switch (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) {

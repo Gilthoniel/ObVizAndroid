@@ -25,10 +25,11 @@ public class DetailsOpinionsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {
-        View view = inflater.inflate(R.layout.details_opinions_tab, container, false);
+        View view = inflater.inflate(R.layout.grid_app_box, container, false);
 
-        GridView grid = (GridView) view.findViewById(R.id.gridView);
+        GridView grid = (GridView) view.findViewById(R.id.grid_view);
         mAdapter = new GaugeAdapter(view.getContext(), grid);
+        grid.setEmptyView(view.findViewById(android.R.id.empty));
         grid.setAdapter(mAdapter);
 
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
