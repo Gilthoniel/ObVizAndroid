@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
     public static final String DATABASE_NAME = "obviz.db";
 
     public DatabaseHelper(Context context) {
@@ -20,11 +20,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(HistoryContract.HistoryEntry.SQL_CREATE);
+        db.execSQL(FavoriteContract.FavoriteEntry.SQL_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(HistoryContract.HistoryEntry.SQL_DELETE); // Delete
+        db.execSQL(FavoriteContract.FavoriteEntry.SQL_DELETE);
 
         onCreate(db);
     }

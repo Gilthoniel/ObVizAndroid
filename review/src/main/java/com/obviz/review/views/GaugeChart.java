@@ -55,7 +55,7 @@ public class GaugeChart extends View {
         /* Initialization */
         mOrigin = new Point(0, 0);
 
-        mTextPaint = new Paint();
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
     }
 

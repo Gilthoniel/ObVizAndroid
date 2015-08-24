@@ -1,5 +1,6 @@
 package com.obviz.review.adapters;
 
+import android.util.Log;
 import com.google.gson.*;
 import com.obviz.review.models.*;
 import com.obviz.review.webservice.MessageParser;

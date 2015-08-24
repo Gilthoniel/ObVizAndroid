@@ -26,9 +26,15 @@ public class DrawerAdapter extends BaseAdapter {
     };
 
     private Context mContext;
+    private int activeItem = 0;
 
     public DrawerAdapter(Context context) {
         mContext = context;
+    }
+
+    public void setActiveItem(int value) {
+        activeItem = value;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -58,6 +64,14 @@ public class DrawerAdapter extends BaseAdapter {
 
         TextView title = (TextView) layout.findViewById(R.id.drawer_item_text);
         title.setText(TITLES[position]);
+
+        if (activeItem == position) {
+            title.setTextColor(0xffffffff);
+            layout.setBackgroundColor(parent.getResources().getColor(R.color.ColorPrimaryDark));
+        } else {
+            title.setTextColor(0xff000000);
+            layout.setBackgroundColor(0x0);
+        }
 
         ImageView icon = (ImageView) layout.findViewById(R.id.drawer_item_image);
         icon.setImageResource(ICONS[position]);

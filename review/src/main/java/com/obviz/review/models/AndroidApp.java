@@ -54,7 +54,7 @@ public class AndroidApp implements Parcelable, Serializable {
     }
 
     public String getAppID() {
-        return appID;
+        return appID != null ? appID : "";
     }
 
     public String getDeveloper() {

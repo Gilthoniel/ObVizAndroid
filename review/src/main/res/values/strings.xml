@@ -29,4 +29,10 @@
     <!-- Toast messages -->
     <string name="app_not_found">Application not found</string>
     <string name="list_error">Check your internet connection</string>
+
+    <string name="action_favorite">Add in favorite</string>
+    <string name="favorite_inserted">Successfully added in favorite!</string>
+    <string name="favorite_failed_insertion">Something goes wrong :(</string>
+    <string name="action_remove_favorite">Remove from favorite</string>
+    <string name="favorite_removed">Successfully removed the favorite</string>
 </resources>

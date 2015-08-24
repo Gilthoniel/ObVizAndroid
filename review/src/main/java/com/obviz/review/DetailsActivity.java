@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.obviz.review.adapters.DetailsPagerAdapter;
 import com.obviz.review.adapters.GaugeAdapter;
+import com.obviz.review.database.DatabaseService;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.models.AndroidApp;
@@ -158,6 +159,14 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver,
         mMenu = menu;
         if (mApplication != null) {
             mMenu.findItem(R.id.action_install).setEnabled(true);
+
+            if (DatabaseService.instance().isInFavorite(mApplication.getAppID())) {
+
+                mMenu.findItem(R.id.action_remove_favorite).setVisible(true);
+            } else {
+
+                mMenu.findItem(R.id.action_favorite).setVisible(true);
+            }
         }
 
         return true;
@@ -183,6 +192,33 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver,
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + packageName)));
                     }
                 }
+                break;
+
+            case R.id.action_favorite:
+
+                if (DatabaseService.instance().insertFavorite(mApplication) > 0) {
+
+                    Toast.makeText(getApplicationContext(), getResources().getText(R.string.favorite_inserted),
+                            Toast.LENGTH_SHORT).show();
+
+                    mMenu.findItem(R.id.action_favorite).setVisible(false);
+                    mMenu.findItem(R.id.action_remove_favorite).setVisible(true);
+                } else {
+
+                    Toast.makeText(getApplicationContext(), getResources().getText(R.string.favorite_failed_insertion),
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case R.id.action_remove_favorite:
+
+                DatabaseService.instance().removeFavorite(mApplication.getAppID());
+
+                Toast.makeText(getApplicationContext(), getResources().getText(R.string.favorite_removed),
+                        Toast.LENGTH_SHORT).show();
+
+                mMenu.findItem(R.id.action_remove_favorite).setVisible(false);
+                mMenu.findItem(R.id.action_favorite).setVisible(true);
                 break;
 
             default:

@@ -14,7 +14,8 @@
         android:verticalSpacing="10dp"
         android:paddingTop="10dp"
         android:clipToPadding="false"
-        android:fastScrollAlwaysVisible="true"/>
+        android:stretchMode="columnWidth"
+        />
 
     <include
         layout="@layout/empty_view" />

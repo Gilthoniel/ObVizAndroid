@@ -120,6 +120,6 @@ public class Constants {
     /** Gauge **/
     public static final List<GaugeChart.Segment> CHART_SEGMENTS = new LinkedList<>();
 
-    public static final int POSITIVE_COLOR = 0x57B05E;
-    public static final int NEGATIVE_COLOR = 0xCC6B6B;
+    public static final int POSITIVE_COLOR = 0xff57B05E;
+    public static final int NEGATIVE_COLOR = 0xffCC6B6B;
 }

@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.obviz.reviews.R;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,6 +30,16 @@ public class PackageAdapter extends BaseAdapter {
 
         mContext = context;
         mPackages = context.getPackageManager().getInstalledPackages(0);
+        Collections.sort(mPackages, new Comparator<PackageInfo>() {
+            @Override
+            public int compare(PackageInfo info, PackageInfo other) {
+
+                CharSequence infoLabel = mContext.getPackageManager().getApplicationLabel(info.applicationInfo);
+                CharSequence otherLabel = mContext.getPackageManager().getApplicationLabel(other.applicationInfo);
+
+                return infoLabel.toString().compareTo(otherLabel.toString());
+            }
+        });
 
         Iterator<PackageInfo> it = mPackages.iterator();
         while (it.hasNext()) {

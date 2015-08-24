@@ -50,13 +50,17 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int index) {
                 setTitle(DrawerAdapter.TITLES[index]);
+                mAdapter.setActiveItem(index);
             }
 
             @Override
-            public void onPageScrolled(int i, float v, int i1) {}
+            public void onPageScrolled(int index, float offset, int offsetPixels) {
+                mAdapter.setActiveItem(index);
+            }
 
             @Override
-            public void onPageScrollStateChanged(int i) {}
+            public void onPageScrollStateChanged(int i) {
+            }
         });
 
         /* Init Drawer Menu */
@@ -68,10 +72,12 @@ public class HomeActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                setTitle((String) mAdapter.getItem(position - 1));
+                if (position > 0) {
+                    setTitle((String) mAdapter.getItem(position - 1));
 
-                pager.setCurrentItem(position - 1);
-                mDrawer.closeDrawers();
+                    pager.setCurrentItem(position - 1);
+                    mDrawer.closeDrawers();
+                }
             }
         });
 

@@ -3,6 +3,7 @@ package com.obviz.review;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -58,7 +59,7 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                     Intent intent = new Intent(ComparisonActivity.this, ReviewsComparisonActivity.class);
 
-                    intent.putExtra(Constants.INTENT_APP_ID, mApplication.getAppID());
+                    intent.putExtra(Constants.INTENT_APP, mApplication.getAppID());
                     intent.putExtra(Constants.INTENT_COMPARISON_APP_ID, mComparison.getAppID());
                     intent.putExtra(Constants.INTENT_TOPIC_ID, mAdapter.getItem(position));
 
@@ -119,7 +120,7 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
         switch (item.getItemId()) {
             case R.id.action_go_to:
                 Intent intent = new Intent(this, DetailsActivity.class);
-                intent.putExtra(Constants.INTENT_APP_ID, mComparison.getAppID());
+                intent.putExtra(Constants.INTENT_APP, (Parcelable) mComparison);
 
                 startActivity(intent);
                 break;

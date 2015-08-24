@@ -1,6 +1,8 @@
 package com.obviz.review.adapters;
 
 import android.content.Context;
+import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +49,7 @@ public class ReviewsAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public Review getItem(int i) {
         return mReviews.get(i);
     }
 
@@ -71,7 +73,9 @@ public class ReviewsAdapter extends BaseAdapter {
         TextView body = (TextView) layout.findViewById(R.id.review_content);
         switch (review.getDisplayType()) {
             case 0:
-                body.setText(review.getTitle().append("\n").append(review.getContent()));
+                SpannableStringBuilder builder = new SpannableStringBuilder();
+                builder.append(review.getTitle()).append("\n").append(review.getContent());
+                body.setText(builder);
                 break;
             case 1:
                 body.setText(review.getContent());
