@@ -29,27 +29,7 @@ public class ReviewsComparisonActivity extends AppCompatActivity implements Topi
     private ComparisonPagerAdapter mAdapter;
     private AndroidApp mApplication;
     private AndroidApp mComparison;
-    private List<RequestObserver<AndroidApp>> appObservers = new ArrayList<>();
-    private List<RequestObserver<AndroidApp>> comparisonObservers = new ArrayList<>();
     private int mTopicID;
-
-    public void addApplicationObserver(ComparisonReviewsFragment observer) {
-        if (observer.getType() == 0) {
-
-            if (mApplication != null) {
-                observer.onSuccess(mApplication);
-            } else {
-                appObservers.add(observer);
-            }
-        } else {
-
-            if (mComparison != null) {
-                observer.onSuccess(mComparison);
-            } else {
-                comparisonObservers.add(observer);
-            }
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +37,8 @@ public class ReviewsComparisonActivity extends AppCompatActivity implements Topi
         setContentView(R.layout.activity_reviews_comparison);
 
         Intent intent = getIntent();
-        String appID = intent.getStringExtra(Constants.INTENT_APP_ID);
-        String comparisonID = intent.getStringExtra(Constants.INTENT_COMPARISON_APP_ID);
+        mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
+        mComparison = intent.getParcelableExtra(Constants.INTENT_COMPARISON_APP);
         mTopicID = intent.getIntExtra(Constants.INTENT_TOPIC_ID, -1);
 
         // Try to acquire the topic title
@@ -67,6 +47,8 @@ public class ReviewsComparisonActivity extends AppCompatActivity implements Topi
         /* Tabs initialization */
         mPager = (ViewPager) findViewById(R.id.pager);
         mAdapter = new ComparisonPagerAdapter(getSupportFragmentManager());
+        mAdapter.addPage(mApplication);
+        mAdapter.addPage(mComparison);
 
         mPager.setAdapter(mAdapter);
 
@@ -79,10 +61,6 @@ public class ReviewsComparisonActivity extends AppCompatActivity implements Topi
             }
         });
         mTabs.setViewPager(mPager);
-
-        /* Get the information for the two apps */
-        populateApp(appID, true);
-        populateApp(comparisonID, false);
 
         /* Action Bar */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -124,58 +102,5 @@ public class ReviewsComparisonActivity extends AppCompatActivity implements Topi
     public void onTopicsLoaded() {
 
         setTitle(TopicsManager.instance().getTitle(mTopicID, this));
-    }
-
-    /* PRIVATE */
-
-    private void populateApp(String id, final boolean isApp) {
-
-        GeneralWebService.instance().getApp(id, new RequestCallback<AndroidApp>() {
-            @Override
-            public void onSuccess(AndroidApp result) {
-
-                mAdapter.addTitle(result.getName());
-                mTabs.setViewPager(mPager);
-
-                if (isApp) {
-                    fillApp(result);
-                } else {
-                    fillComparison(result);
-                }
-            }
-
-            @Override
-            public void onFailure(Errors error) {
-
-            }
-
-            @Override
-            public Type getType() {
-                return AndroidApp.class;
-            }
-        });
-    }
-
-    private void fillApp(AndroidApp app) {
-        mApplication = app;
-
-        // Send the application to the observer
-        warnObservers(appObservers, mApplication);
-    }
-
-    private void fillComparison(AndroidApp app) {
-        mComparison = app;
-
-        // Send the application to the observers
-        warnObservers(comparisonObservers, mComparison);
-    }
-
-    private void warnObservers(List<RequestObserver<AndroidApp>> observers, AndroidApp app) {
-
-        for (RequestObserver<AndroidApp> observer : observers) {
-            observer.onSuccess(app);
-        }
-
-        observers.clear();
     }
 }

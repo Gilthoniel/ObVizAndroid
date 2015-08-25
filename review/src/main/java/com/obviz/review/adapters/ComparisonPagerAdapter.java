@@ -2,28 +2,32 @@ package com.obviz.review.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import com.obviz.review.fragments.ComparisonReviewsFragment;
+import com.obviz.review.models.AndroidApp;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by gaylor on 29.07.15.
  *
  */
-public class ComparisonPagerAdapter extends FragmentStatePagerAdapter {
+public class ComparisonPagerAdapter extends FragmentPagerAdapter {
 
+    private Map<String, ComparisonReviewsFragment> mFragments;
     private List<String> mTitles;
 
     public ComparisonPagerAdapter(FragmentManager manager) {
         super(manager);
 
-        mTitles = new ArrayList<>();
+        mFragments = new HashMap<>();
+        mTitles = new LinkedList<>();
     }
 
-    public void addTitle(String title) {
-        mTitles.add(title);
+    public void addPage(AndroidApp app) {
+        mFragments.put(app.getName(), ComparisonReviewsFragment.newInstance(app));
+        mTitles.add(app.getName());
 
         notifyDataSetChanged();
     }
@@ -31,10 +35,7 @@ public class ComparisonPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        ComparisonReviewsFragment fragment = new ComparisonReviewsFragment();
-        fragment.setType(position);
-
-        return fragment;
+        return mFragments.get(mTitles.get(position));
     }
 
     @Override
@@ -44,6 +45,6 @@ public class ComparisonPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return mTitles.size();
+        return mFragments.size();
     }
 }

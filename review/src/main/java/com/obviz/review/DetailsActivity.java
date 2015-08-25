@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -24,15 +23,10 @@ import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
-import com.obviz.review.webservice.RequestCallback;
-import com.obviz.review.webservice.RequestObserver;
 import com.obviz.reviews.R;
 
-import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Display general information about an application
@@ -127,7 +121,7 @@ public class DetailsActivity extends AppCompatActivity implements ImageObserver,
         RatingBar rating = (RatingBar) findViewById(R.id.ratingBar);
         rating.setRating(mApplication.getScore().getTotal());
 
-        ImagesManager.getInstance().get(mApplication.getImage(), DetailsActivity.this);
+        ImagesManager.getInstance().get(mApplication.getLogo(), DetailsActivity.this);
 
         // Enable the install action
         if (mMenu != null) {

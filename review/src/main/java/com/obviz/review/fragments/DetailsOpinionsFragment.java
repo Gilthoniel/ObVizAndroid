@@ -28,7 +28,7 @@ public class DetailsOpinionsFragment extends Fragment {
         View view = inflater.inflate(R.layout.grid_app_box, container, false);
 
         GridView grid = (GridView) view.findViewById(R.id.grid_view);
-        mAdapter = new GaugeAdapter(view.getContext(), grid);
+        mAdapter = new GaugeAdapter(view.getContext());
         grid.setEmptyView(view.findViewById(android.R.id.empty));
         grid.setAdapter(mAdapter);
 

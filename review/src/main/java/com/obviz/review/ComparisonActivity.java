@@ -51,7 +51,7 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
         if (mApplication != null && mComparison != null) {
 
             GridView grid = (GridView) findViewById(R.id.grid_view);
-            mAdapter = new GaugeAdapter(this, grid);
+            mAdapter = new GaugeAdapter(this);
             grid.setAdapter(mAdapter);
             grid.setEmptyView(findViewById(android.R.id.empty));
             grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -59,8 +59,8 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                     Intent intent = new Intent(ComparisonActivity.this, ReviewsComparisonActivity.class);
 
-                    intent.putExtra(Constants.INTENT_APP, mApplication.getAppID());
-                    intent.putExtra(Constants.INTENT_COMPARISON_APP_ID, mComparison.getAppID());
+                    intent.putExtra(Constants.INTENT_APP, (Parcelable) mApplication);
+                    intent.putExtra(Constants.INTENT_COMPARISON_APP, (Parcelable) mComparison);
                     intent.putExtra(Constants.INTENT_TOPIC_ID, mAdapter.getItem(position));
 
                     startActivity(intent);
@@ -68,8 +68,8 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
             });
 
             // Populate views
-            ImagesManager.getInstance().get(mApplication.getImage(), this);
-            ImagesManager.getInstance().get(mComparison.getImage(), this);
+            ImagesManager.getInstance().get(mApplication.getLogo(), this);
+            ImagesManager.getInstance().get(mComparison.getLogo(), this);
 
             TextView appName = (TextView) findViewById(R.id.app_name);
             appName.setText(mApplication.getName());
@@ -99,7 +99,7 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
     public void onImageLoaded(String url, Bitmap bitmap) {
 
         ImageView image;
-        if (url.equals(mApplication.getImage())) {
+        if (url.equals(mApplication.getLogo())) {
             image = (ImageView) findViewById(R.id.app_logo);
         } else {
             image = (ImageView) findViewById(R.id.comparison_logo);

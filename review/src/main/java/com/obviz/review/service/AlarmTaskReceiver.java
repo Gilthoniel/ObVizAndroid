@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import com.obviz.review.HomeActivity;
 import com.obviz.reviews.R;
 
@@ -34,7 +35,9 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
             alarmManager.cancel(pending);
 
             alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, 0,
-                    AlarmManager.INTERVAL_DAY, pending);
+                    AlarmManager.INTERVAL_HALF_HOUR, pending);
+
+            Log.d("__ALARM__", "Notification Task planned");
         }
 
         /* Notification for the user */

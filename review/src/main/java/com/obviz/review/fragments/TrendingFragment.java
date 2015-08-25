@@ -3,7 +3,9 @@ package com.obviz.review.fragments;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,29 +61,33 @@ public class TrendingFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                    intent.putExtra(Constants.INTENT_APP_ID, trendingAdapter.getItem(i).getAppID());
+                    intent.putExtra(Constants.INTENT_APP, (Parcelable) trendingAdapter.getItem(i));
 
                     startActivity(intent);
                 }
             });
 
             /* Categories selection */
-            Spinner spinner = (Spinner) getView().findViewById(R.id.spinner);
+            final Spinner spinner = (Spinner) getView().findViewById(R.id.spinner);
             final ArrayAdapter<SuperCategory> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, CategoryManager.instance().getSupers());
             adapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
 
             spinner.setAdapter(adapter);
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
 
-                    ConnectionService.instance.cancel();
-                    GeneralWebService.instance().getTrendingApps(grid, adapter.getItem(i).getCategories());
+                    if (spinner.getTag() == null || (Integer) spinner.getTag() != position) {
+                        spinner.setTag(position);
+
+                        ConnectionService.instance.cancel();
+                        GeneralWebService.instance().getTrendingApps(grid, adapter.getItem(position).getCategories());
+                    }
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {
-                    // Nothing
+
                 }
             });
         }

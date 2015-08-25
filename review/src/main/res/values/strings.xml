@@ -18,7 +18,7 @@
     <string name="list_empty">No items</string>
     <string name="title_activity_reviews">ReviewsActivity</string>
     <string name="title_activity_comparison">ComparisonActivity</string>
-    <string name="loading">Loading …</string>
+    <string name="loading">Data are loading. Be patient or press back button.</string>
     <string name="spinner">Topics</string>
     <string name="title_activity_reviews_comparison">Comparison reviews</string>
     <string name="action_install">Install</string>
@@ -35,4 +35,5 @@
     <string name="favorite_failed_insertion">Something goes wrong :(</string>
     <string name="action_remove_favorite">Remove from favorite</string>
     <string name="favorite_removed">Successfully removed the favorite</string>
+    <string name="internet_error">Please check your internet connection.</string>
 </resources>

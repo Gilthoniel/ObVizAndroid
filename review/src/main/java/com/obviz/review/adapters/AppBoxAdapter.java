@@ -41,11 +41,11 @@ public class AppBoxAdapter extends AppBaseAdapter implements TopicsManager.Topic
         name.setText(app.getName());
 
         ImageView logo = (ImageView) layout.findViewById(R.id.app_logo);
-        if (mImages.containsKey(app.getImage())) {
-            logo.setImageBitmap(mImages.get(app.getImage()));
+        if (mImages.containsKey(app.getLogo())) {
+            logo.setImageBitmap(mImages.get(app.getLogo()));
         } else {
-            mImages.put(app.getImage(), null);
-            ImagesManager.getInstance().get(app.getImage(), this);
+            mImages.put(app.getLogo(), null);
+            ImagesManager.getInstance().get(app.getLogo(), this);
         }
 
         TextView bestOpinion = (TextView) layout.findViewById(R.id.mostOpinion);
@@ -55,14 +55,14 @@ public class AppBoxAdapter extends AppBaseAdapter implements TopicsManager.Topic
         worstOpinion.setText(TopicsManager.instance().getTitle(app.getWorstOpinion(), this));
 
         GaugeChart.GaugeChartData gaugeData = new GaugeChart.GaugeChartData(100);
-        gaugeData.setTextSize(30);
+        gaugeData.setTextSize(8);
         gaugeData.addSegments(Constants.CHART_SEGMENTS);
 
         GaugeChart.Arrow arrow = new GaugeChart.Arrow();
         arrow.setValue(app.getGlobalOpinion());
         arrow.setHeight(1.0f);
         arrow.setInnerRadius(0.2f);
-        arrow.setBaseLength(6);
+        arrow.setBaseLength(3);
         arrow.setColor(0xff393939);
         gaugeData.addArrow(arrow);
 

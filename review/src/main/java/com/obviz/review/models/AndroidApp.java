@@ -61,7 +61,7 @@ public class AndroidApp implements Parcelable, Serializable {
         return developer;
     }
 
-    public String getImage() {
+    public String getLogo() {
         return coverImgUrl;
     }
 

@@ -5,14 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.LinearLayout;
 import com.obviz.review.Constants;
-import com.obviz.review.DetailsActivity;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.views.GaugeChart;
-import com.obviz.review.views.GaugeChart.*;
+import com.obviz.review.views.GaugeChart.Arrow;
+import com.obviz.review.views.GaugeChart.GaugeChartData;
 import com.obviz.reviews.R;
 
 import java.util.List;
@@ -24,13 +23,11 @@ import java.util.List;
 public class GaugeAdapter extends BaseAdapter implements TopicsManager.TopicsObserver {
 
     private LayoutInflater inflater;
-    private GridView mParent;
     private List<AndroidApp> mApplications;
 
-    public GaugeAdapter(Context context, GridView parent) {
+    public GaugeAdapter(Context context) {
 
         inflater = LayoutInflater.from(context);
-        mParent = parent;
 
         GaugeAdaptable activity = (GaugeAdaptable) context;
         mApplications = activity.getListApplications();
@@ -107,7 +104,7 @@ public class GaugeAdapter extends BaseAdapter implements TopicsManager.TopicsObs
                 arrow.setValue(app.getOpinions().get(position).percentage());
                 arrow.setHeight(1.0f);
                 arrow.setInnerRadius(0.4f);
-                arrow.setBaseLength(20);
+                arrow.setBaseLength(5);
 
                 if (app == mApplications.get(0)) {
                     arrow.setColor(parent.getResources().getColor(R.color.appColor));

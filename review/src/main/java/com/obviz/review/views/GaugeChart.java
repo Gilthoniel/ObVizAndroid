@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.*;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 import com.obviz.reviews.R;
 
@@ -16,6 +17,8 @@ import java.util.Map;
  * A Gauge Chart widget for Android
  */
 public class GaugeChart extends View {
+
+    private DisplayMetrics mMetrics;
 
     private float mDiameter;
     private Point mOrigin;
@@ -30,6 +33,8 @@ public class GaugeChart extends View {
 
     public GaugeChart(Context context, AttributeSet attributes) {
         super(context, attributes);
+
+        mMetrics = context.getResources().getDisplayMetrics();
 
         // Get the attributes
         TypedArray array = context.getTheme().obtainStyledAttributes(attributes, R.styleable.GaugeChart, 0, 0);
@@ -67,7 +72,8 @@ public class GaugeChart extends View {
             mText = data.mText;
         }
 
-        mTextPaint.setTextSize(data.mTextSize);
+        // Convert pixels size to dp
+        mTextPaint.setTextSize(dpToPx(data.mTextSize));
 
         // Default black segment if none is present
         mSegmentsPaths = data.mSegments;
@@ -147,6 +153,11 @@ public class GaugeChart extends View {
         }
     }
 
+    private float dpToPx(float dp) {
+
+        return mMetrics.scaledDensity * dp;
+    }
+
     public static class Arrow {
 
         private int value;
@@ -156,7 +167,7 @@ public class GaugeChart extends View {
         private Paint paint;
 
         public Arrow() {
-            baseLength = 20;
+            baseLength = 10;
             height = 1.0f;
             innerRadius = 0.2f;
 
@@ -171,9 +182,9 @@ public class GaugeChart extends View {
 
             path.setFillType(Path.FillType.EVEN_ODD);
             path.reset();
-            path.moveTo(chart.mOrigin.x - baseLength, chart.mOrigin.y + offsetBottom);
-            path.rLineTo(baseLength * 2, 0);
-            path.rLineTo(-baseLength, length);
+            path.moveTo(chart.mOrigin.x - chart.dpToPx(baseLength), chart.mOrigin.y + offsetBottom);
+            path.rLineTo(chart.dpToPx(baseLength) * 2, 0);
+            path.rLineTo(-chart.dpToPx(baseLength), length);
             path.close();
 
             // Rotate the arrow related to the value
@@ -258,7 +269,7 @@ public class GaugeChart extends View {
         public GaugeChartData(int maxValue) {
 
             mMaxValue = maxValue;
-            mTextSize = 40;
+            mTextSize = 14;
             mSegments = new HashMap<>();
             mArrows = new HashMap<>();
         }
@@ -267,6 +278,10 @@ public class GaugeChart extends View {
             mText = text;
         }
 
+        /**
+         * Set the text size
+         * @param size In pixels
+         */
         public void setTextSize(float size) {
             mTextSize = size;
         }

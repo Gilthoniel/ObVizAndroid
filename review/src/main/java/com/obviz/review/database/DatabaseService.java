@@ -8,8 +8,11 @@ import android.database.sqlite.SQLiteException;
 import com.obviz.review.database.HistoryContract.HistoryEntry;
 import com.obviz.review.database.FavoriteContract.FavoriteEntry;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.models.Favorite;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by gaylor on 8/3/2015.
@@ -20,6 +23,7 @@ public class DatabaseService {
     private static DatabaseService instance;
 
     private DatabaseHelper helper;
+    private final Object mLock = new Object();
 
     private DatabaseService() {}
     
@@ -36,15 +40,17 @@ public class DatabaseService {
     }
 
     public void initHelper(Context context) {
-        helper = new DatabaseHelper(context);
+
+        synchronized (mLock) {
+            helper = new DatabaseHelper(context);
+            mLock.notifyAll();
+        }
     }
 
     /* INSERTION */
 
     public long insertHistoryEntry(String query) {
-        if (helper == null) {
-            return 0;
-        }
+        checkInit();
 
         SQLiteDatabase db = helper.getWritableDatabase();
 
@@ -74,15 +80,14 @@ public class DatabaseService {
     }
 
     public long insertFavorite(AndroidApp app) {
-        if (helper == null) {
-            return 0;
-        }
+        checkInit();
 
         SQLiteDatabase db = helper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(FavoriteEntry.COLUMN_APP_ID, app.getAppID());
         values.put(FavoriteEntry.COLUMN_APP_NAME, app.getName());
+        values.put(FavoriteEntry.COLUMN_APP_LOGO, app.getLogo());
 
         try {
 
@@ -96,9 +101,7 @@ public class DatabaseService {
     /* SELECTION */
 
     public Cursor selectHistory() {
-        if (helper == null) {
-            return null;
-        }
+        checkInit();
 
         SQLiteDatabase db = helper.getReadableDatabase();
 
@@ -110,10 +113,36 @@ public class DatabaseService {
         return db.query(HistoryEntry.TABLE_NAME, projection, null, null, null, null, HistoryEntry.COLUMN_DATE + " DESC");
     }
 
-    public boolean isInFavorite(String appID) {
-        if (helper == null) {
-            return false;
+    public List<Favorite> getFavorites() {
+        checkInit();
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+
+        String[] projection = new String[] {
+                FavoriteEntry.COLUMN_APP_ID,
+                FavoriteEntry.COLUMN_APP_NAME,
+                FavoriteEntry.COLUMN_APP_LOGO
+        };
+
+        Cursor cursor = db.query(FavoriteEntry.TABLE_NAME, projection, null, null, null, null, null);
+        List<Favorite> favorites = new LinkedList<>();
+        while (cursor.getCount() > 0 && !cursor.isLast()) {
+            cursor.moveToNext();
+
+            Favorite favorite = new Favorite();
+            favorite.id = cursor.getString(0);
+            favorite.name = cursor.getString(1);
+            favorite.logo = cursor.getString(2);
+
+            favorites.add(favorite);
         }
+        cursor.close();
+
+        return favorites;
+    }
+
+    public boolean isInFavorite(String appID) {
+        checkInit();
 
         SQLiteDatabase db = helper.getReadableDatabase();
 
@@ -133,9 +162,7 @@ public class DatabaseService {
     /* DELETIONS */
 
     public void dropHistory() {
-        if (helper == null) {
-            return;
-        }
+        checkInit();
 
         SQLiteDatabase db = helper.getWritableDatabase();
 
@@ -143,12 +170,22 @@ public class DatabaseService {
     }
 
     public long removeFavorite(String appID) {
-        if (helper == null) {
-            return 0;
-        }
+        checkInit();
 
         SQLiteDatabase db = helper.getWritableDatabase();
 
         return db.delete(FavoriteEntry.TABLE_NAME, FavoriteEntry.COLUMN_APP_ID + " = '" + appID + "'", null);
+    }
+
+    /* PRIVATE FUNCTIONS */
+
+    private void checkInit() {
+        synchronized (mLock) {
+            while (helper == null) {
+                try {
+                    mLock.wait();
+                } catch (InterruptedException ignored) {}
+            }
+        }
     }
 }
