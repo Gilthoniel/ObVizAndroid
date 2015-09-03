@@ -3,6 +3,7 @@ package com.obviz.review.webservice;
 import android.net.Uri;
 import android.util.Log;
 import com.obviz.review.Constants;
+import com.obviz.review.webservice.tasks.HttpTask;
 
 import java.util.Map;
 
@@ -18,18 +19,17 @@ public abstract class WebService {
      * @param callback call when the request is over
      * @param <T> Type of the object requested
      */
-    public <T> void get(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
+    public <T> HttpTask<T> get(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
-        ConnectionService.instance.executeGetRequest(builder, callback, cacheKey);
+        return ConnectionService.instance.executeGetRequest(builder, callback, cacheKey);
     }
 
     /**
      * POST HTTP request
      * @param builder query parameters
      * @param callback callback function
-     * @param <T> type of the return
      */
-    public <T> void post(Uri.Builder builder, RequestCallback<Boolean> callback) {
+    public void post(Uri.Builder builder, RequestCallback<Boolean> callback) {
 
         // POST request without caching
         ConnectionService.instance.executePostRequest(builder, callback);

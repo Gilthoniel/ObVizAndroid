@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:layout_width="@dimen/app_box_width"
     android:layout_height="@dimen/app_box_width"
-    android:focusable="false"
+    android:focusable="true"
+    android:clickable="true"
     android:background="@null">
 
     <com.obviz.review.views.GaugeChart

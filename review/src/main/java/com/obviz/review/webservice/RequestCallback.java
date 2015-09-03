@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
  */
 public interface RequestCallback<T> {
 
-    enum Errors {SUCCESS, JSON, CONNECTION}
+    enum Errors { SUCCESS, JSON, CONNECTION, CANCELLATION, NULL }
 
     /**
      * Call when the request onSuccess the result

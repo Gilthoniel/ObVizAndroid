@@ -1,22 +1,17 @@
 package com.obviz.review;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
+import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.GaugeAdapter;
-import com.obviz.review.managers.ImageObserver;
-import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.reviews.R;
 
@@ -24,11 +19,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class ComparisonActivity extends AppCompatActivity implements ImageObserver, GaugeAdapter.GaugeAdaptable {
+public class ComparisonActivity extends AppCompatActivity implements GaugeAdapter.GaugeAdaptable {
 
     private AndroidApp mApplication;
     private AndroidApp mComparison;
-    private GaugeAdapter mAdapter;
 
     @Override
     public List<AndroidApp> getListApplications() {
@@ -50,38 +44,26 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
 
         if (mApplication != null && mComparison != null) {
 
-            GridView grid = (GridView) findViewById(R.id.grid_view);
-            mAdapter = new GaugeAdapter(this);
-            grid.setAdapter(mAdapter);
-            grid.setEmptyView(findViewById(android.R.id.empty));
-            grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            GridRecyclerView grid = (GridRecyclerView) findViewById(R.id.grid_view);
+            final GaugeAdapter adapter = new GaugeAdapter(this);
+            adapter.addOnItemClickListener(new GridAdapter.OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                public void onClick(int position) {
                     Intent intent = new Intent(ComparisonActivity.this, ReviewsComparisonActivity.class);
 
                     intent.putExtra(Constants.INTENT_APP, (Parcelable) mApplication);
                     intent.putExtra(Constants.INTENT_COMPARISON_APP, (Parcelable) mComparison);
-                    intent.putExtra(Constants.INTENT_TOPIC_ID, mAdapter.getItem(position));
+                    intent.putExtra(Constants.INTENT_TOPIC_ID, adapter.getItem(position).topicID);
 
                     startActivity(intent);
                 }
             });
-
-            // Populate views
-            ImagesManager.getInstance().get(mApplication.getLogo(), this);
-            ImagesManager.getInstance().get(mComparison.getLogo(), this);
-
-            TextView appName = (TextView) findViewById(R.id.app_name);
-            appName.setText(mApplication.getName());
-
-            TextView comparisonName = (TextView) findViewById(R.id.comparison_name);
-            comparisonName.setText(mComparison.getName());
+            grid.setAdapter(adapter);
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
             getSupportActionBar().setElevation(0);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
@@ -93,19 +75,6 @@ public class ComparisonActivity extends AppCompatActivity implements ImageObserv
         super.onPause();
 
         ConnectionService.instance.cancel();
-    }
-
-    @Override
-    public void onImageLoaded(String url, Bitmap bitmap) {
-
-        ImageView image;
-        if (url.equals(mApplication.getLogo())) {
-            image = (ImageView) findViewById(R.id.app_logo);
-        } else {
-            image = (ImageView) findViewById(R.id.comparison_logo);
-        }
-
-        image.setImageBitmap(bitmap);
     }
 
     @Override

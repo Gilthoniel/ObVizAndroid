@@ -9,14 +9,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.Spinner;
 import com.obviz.review.adapters.ReviewsAdapter;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.OpinionValue;
+import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.ConnectionService;
-import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
 import java.util.ArrayList;
@@ -28,8 +27,6 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
     private AndroidApp mApplication;
     private int topicID;
     private ReviewsAdapter mAdapter;
-    private GridView mGridView;
-    private Spinner mSpinner;
     private ArrayAdapter<String> mSpinnerAdapter;
 
     @Override
@@ -40,14 +37,13 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
         // Intent management
         Intent intent = getIntent();
         mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
-        topicID = (int) intent.getLongExtra(Constants.INTENT_TOPIC_ID, -1);
+        topicID = intent.getIntExtra(Constants.INTENT_TOPIC_ID, -1);
 
         // Initiate the fragment list
-        mGridView = (GridView) findViewById(R.id.grid_view);
-        mGridView.setEmptyView(findViewById(android.R.id.empty));
+        GridRecyclerView mGridView = (GridRecyclerView) findViewById(R.id.grid_view);
 
-        mAdapter = new ReviewsAdapter(getApplicationContext());
-        mGridView.setAdapter(mAdapter);
+        mAdapter = new ReviewsAdapter(mApplication.getAppID(), topicID);
+        mGridView.setInfiniteAdapter(mAdapter);
 
         // Action Bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -59,7 +55,7 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
             getSupportActionBar().setTitle(mApplication.getName());
         }
 
-        mSpinner = (Spinner) findViewById(R.id.spinner);
+        Spinner mSpinner = (Spinner) findViewById(R.id.spinner);
         List<String> spinnerItems = new ArrayList<>();
         int spinnerIndex = 0;
         for (int i = 0; i < mApplication.getOpinions().size(); i++) {
@@ -71,8 +67,8 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
             }
         }
 
-        mSpinnerAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, spinnerItems);
-        mSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
+        mSpinnerAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.item_spinner, spinnerItems);
+        mSpinnerAdapter.setDropDownViewResource(R.layout.item_spinner_dropdown);
         mSpinner.setAdapter(mSpinnerAdapter);
         mSpinner.setSelection(spinnerIndex);
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -82,11 +78,12 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
                 ConnectionService.instance.cancel();
 
                 // Get the good topic id related to the position of the item
-                int topicID = mApplication.getOpinions().get(position).topicID;
+                final int topicID = mApplication.getOpinions().get(position).topicID;
 
                 // Clear the adapter and get the new items
                 mAdapter.clear();
-                GeneralWebService.instance().getReviews(mApplication.getAppID(), topicID, 0, 10, mGridView);
+                mAdapter.setTopicID(topicID);
+                mAdapter.onLoadMore();
             }
 
             @Override
@@ -108,7 +105,7 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
     public void onResume() {
         super.onResume();
 
-        GeneralWebService.instance().getReviews(mApplication.getAppID(), topicID, 0, 10, mGridView);
+        mAdapter.onLoadMore();
     }
 
     @Override

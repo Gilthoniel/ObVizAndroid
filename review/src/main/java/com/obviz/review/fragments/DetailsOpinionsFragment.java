@@ -8,12 +8,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import com.obviz.review.Constants;
+import com.obviz.review.DetailsActivity;
 import com.obviz.review.ReviewsActivity;
 import com.obviz.review.adapters.GaugeAdapter;
+import com.obviz.review.adapters.GridAdapter;
+import com.obviz.review.models.AndroidApp;
+import com.obviz.review.models.OpinionValue;
+import com.obviz.review.views.GridRecyclerView;
 import com.obviz.reviews.R;
+
+import java.io.Serializable;
 
 /**
  * Created by gaylor on 23.07.15.
@@ -21,29 +26,44 @@ import com.obviz.reviews.R;
  */
 public class DetailsOpinionsFragment extends Fragment {
 
-    private GaugeAdapter mAdapter;
+    private GridRecyclerView mGridView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {
         View view = inflater.inflate(R.layout.grid_app_box, container, false);
 
-        GridView grid = (GridView) view.findViewById(R.id.grid_view);
-        mAdapter = new GaugeAdapter(view.getContext());
-        grid.setEmptyView(view.findViewById(android.R.id.empty));
-        grid.setAdapter(mAdapter);
-
-        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(parent.getContext(), ReviewsActivity.class);
-
-                intent.putExtra(Constants.INTENT_APP, (Parcelable) mAdapter.getApplication());
-                intent.putExtra(Constants.INTENT_TOPIC_ID, id);
-
-                startActivity(intent);
-            }
-        });
+        mGridView = (GridRecyclerView) view.findViewById(R.id.grid_view);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle states) {
+        super.onActivityCreated(states);
+
+        AndroidApp app = ((DetailsActivity) getActivity()).getListApplications().get(0);
+
+        populateOpinions(mGridView, app);
+    }
+
+    public static void populateOpinions(final GridRecyclerView grid, final AndroidApp app) {
+
+        final GaugeAdapter adapter = new GaugeAdapter(grid.getContext());
+        adapter.addOnItemClickListener(new GridAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                OpinionValue opinion = adapter.getItem(position);
+
+
+
+                Intent intent = new Intent(grid.getContext(), ReviewsActivity.class);
+
+                intent.putExtra(Constants.INTENT_APP, (Parcelable) app);
+                intent.putExtra(Constants.INTENT_TOPIC_ID, opinion.topicID);
+
+                grid.getContext().startActivity(intent);
+            }
+        });
+        grid.setAdapter(adapter);
     }
 }

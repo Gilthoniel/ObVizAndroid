@@ -1,11 +1,9 @@
-package com.obviz.review.webservice;
+package com.obviz.review.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
-import com.obviz.review.adapters.AndroidAppDeserializer;
-import com.obviz.review.adapters.ReviewDeserializer;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.Review;
 

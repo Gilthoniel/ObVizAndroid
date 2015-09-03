@@ -4,4 +4,10 @@
         <attr name="angle" format="integer" />
         <attr name="text" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="GridRecyclerView">
+        <attr name="numColumns" format="integer" />
+        <attr name="columnWidth" format="dimension" />
+        <attr name="childMargin" format="dimension" />
+    </declare-styleable>
 </resources>

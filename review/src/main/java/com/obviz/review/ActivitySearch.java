@@ -8,12 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import com.obviz.review.adapters.AppBaseAdapter;
 import com.obviz.review.adapters.AppBoxAdapter;
+import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.database.DatabaseService;
+import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
@@ -24,7 +22,7 @@ import com.obviz.reviews.R;
  */
 public class ActivitySearch extends AppCompatActivity {
 
-    private AppBaseAdapter mAdapter;
+    private AppBoxAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +49,13 @@ public class ActivitySearch extends AppCompatActivity {
             query = intent.getStringExtra(Constants.INTENT_SEARCH);
         }
 
-        GridView grid = (GridView) findViewById(R.id.grid_view);
-        mAdapter = new AppBoxAdapter(getApplicationContext());
+        GridRecyclerView grid = (GridRecyclerView) findViewById(R.id.grid_view);
+        mAdapter = new AppBoxAdapter();
+        mAdapter.addOnItemClickListener(new ItemClickListener());
         grid.setAdapter(mAdapter);
-        grid.setEmptyView(findViewById(R.id.empty_view));
-        grid.setOnItemClickListener(new ItemClickListener());
 
         // Perform the search
-        GeneralWebService.instance().searchApp(query, grid);
+        GeneralWebService.instance().searchApp(query, mAdapter);
     }
 
     @Override
@@ -83,9 +80,9 @@ public class ActivitySearch extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class ItemClickListener implements AdapterView.OnItemClickListener {
+    private class ItemClickListener implements GridAdapter.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        public void onClick(int position) {
             Intent intent = new Intent(ActivitySearch.this, DetailsActivity.class);
             intent.putExtra(Constants.INTENT_APP, (Parcelable) mAdapter.getItem(position));
 

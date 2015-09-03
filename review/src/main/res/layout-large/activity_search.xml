@@ -25,8 +25,4 @@
         android:clipToPadding="false"
         android:paddingBottom="20dp"/>
 
-    <include
-        layout="@layout/empty_view"
-        android:id="@+id/empty_view"/>
-
 </LinearLayout>

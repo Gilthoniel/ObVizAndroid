@@ -1,6 +1,7 @@
 package com.obviz.review.webservice;
 
 import android.net.Uri;
+import android.util.Log;
 import com.obviz.review.webservice.tasks.GetTask;
 import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.review.webservice.tasks.ImageTask;
@@ -51,6 +52,8 @@ public class ConnectionService {
      * Cancel running requests
      */
     public void cancel() {
+        Log.i("__CONNECTION__", "Cancellation asked");
+
         for (HttpTask<?> task : requests) {
             task.cancel();
         }

@@ -3,6 +3,7 @@ package com.obviz.review.models;
 import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import com.obviz.reviews.R;
@@ -145,9 +146,10 @@ public class Review implements Serializable {
                         }
 
                         content.setSpan(new ForegroundColorSpan(detail.getColor()), 0, content.length(), 0);
+                        content.setSpan(new AbsoluteSizeSpan(14, true), 0, content.length(), 0);
                     } else if (isInTitle) {
 
-                        content.setSpan(new ForegroundColorSpan(R.color.reviewTitleColor), 0, content.length(), 0);
+                        content.setSpan(new AbsoluteSizeSpan(16, true), 0, content.length(), 0);
                     }
 
                     builder.append(content);

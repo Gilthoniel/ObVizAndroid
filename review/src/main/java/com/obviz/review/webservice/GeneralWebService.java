@@ -1,25 +1,21 @@
 package com.obviz.review.webservice;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.Toast;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
-import com.obviz.review.adapters.AppBaseAdapter;
+import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
-import com.obviz.review.adapters.AppBoxAdapter;
+import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.CacheManager;
-import com.obviz.review.managers.TopicsManager;
-import com.obviz.review.models.AndroidApp;
-import com.obviz.review.models.Review;
-import com.obviz.review.models.TopicTitle;
-import com.obviz.reviews.R;
+import com.obviz.review.managers.CategoryManager;
+import com.obviz.review.models.*;
+import com.obviz.review.webservice.tasks.HttpTask;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by gaylor on 26.06.15.
@@ -62,12 +58,12 @@ public class GeneralWebService extends WebService {
     /**
      * Execute a research in the database
      * @param query of the search
-     * @param view where sent the results
+     * @param adapter where sent the results
      */
-    public void searchApp(String query, final AbsListView view) {
+    public void searchApp(String query, final GridAdapter<AndroidApp> adapter) {
 
-        // Display the loading icon
-        toggleStateList(view, 1);
+        // State loading
+        adapter.setState(GridAdapter.State.LOADING);
 
         // Key for the cache
         final String key = CacheManager.KeyBuilder.forSearch(query);
@@ -82,24 +78,17 @@ public class GeneralWebService extends WebService {
             public void onSuccess(List<AndroidApp> result) {
 
                 // Display the empty text of there's no result
-                toggleStateList(view, 0);
-
-                AppBaseAdapter adapter = (AppBaseAdapter) view.getAdapter();
+                adapter.setState(GridAdapter.State.NONE);
 
                 adapter.clear();
-                if (result.size() == 0) {
-                    toggleStateList(view, 0);
-                }
                 adapter.addAll(result);
             }
 
             @Override
             public void onFailure(Errors error) {
-                Log.e("--SEARCH--", "An error occurred during a search");
+                Log.e("--SEARCH--", "An error occurred during a search: " + error);
 
-                toggleStateList(view, 2);
-
-                Toast.makeText(view.getContext(), "Check you internet connection", Toast.LENGTH_LONG).show();
+                adapter.setState(GridAdapter.State.ERRORS);
             }
 
             @Override
@@ -114,15 +103,15 @@ public class GeneralWebService extends WebService {
     /**
      * Get the reviews of an android app
      * @param appID ID of the App
-     * @param view where to populate the results
+     * @param adapter where to populate the results
      */
-    public void getReviews(final String appID, final int topicID, final int page, final int size, final AbsListView view) {
+    public void getReviews(final String appID, final int topicID, final int page, final int size, final ReviewsAdapter adapter) {
 
-        // Display the loading
-        toggleStateList(view, 1);
+        // Turn on the loading
+        adapter.setState(GridAdapter.State.LOADING);
 
         // Key for the cache
-        final String key = CacheManager.KeyBuilder.forReviews(appID);
+        final String key = CacheManager.KeyBuilder.forReviews(appID, page, size);
 
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(Constants.URL);
@@ -136,17 +125,14 @@ public class GeneralWebService extends WebService {
             @Override
             public void onSuccess(Review.Pager pager) {
 
-                // Display the empty text if there is no result
-                toggleStateList(view, 0);
-
-                ReviewsAdapter adapter = (ReviewsAdapter) view.getAdapter();
-
+                adapter.setMaxPage(pager.nbTotalPages);
                 adapter.addAll(pager.reviews);
+                adapter.setState(GridAdapter.State.NONE);
             }
 
             @Override
             public void onFailure(Errors error) {
-                toggleStateList(view, 2);
+                adapter.setState(GridAdapter.State.ERRORS);
             }
 
             @Override
@@ -156,34 +142,35 @@ public class GeneralWebService extends WebService {
         }, key);
     }
 
-    public void getTrendingApps(final AbsListView view, @NonNull List<Constants.Category> categories) {
+    public HttpTask<?> getTrendingApps(final GridAdapter<AndroidApp> adapter, @Nullable SuperCategory superCategory) {
 
         // Show the loading icon
-        toggleStateList(view, 1);
+        adapter.setState(GridAdapter.State.LOADING);
         // Clear the list to show the empty view
-        final AppBoxAdapter adapter = (AppBoxAdapter) view.getAdapter();
         adapter.clear();
 
-        final String key = CacheManager.KeyBuilder.forTrending(categories);
+        final String key = CacheManager.KeyBuilder.forTrending(superCategory);
 
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(Constants.URL);
         builder.appendQueryParameter("cmd", Constants.GET_TRENDING_APPS);
-        if (categories.size() > 0) {
+        if (superCategory != null) {
             List<String> json = new ArrayList<>();
-            for (Constants.Category category : categories) {
-                json.add(category.name());
+            for (Category category : CategoryManager.instance().getCategories(superCategory._id)) {
+                json.add(category.category);
             }
 
-            builder.appendQueryParameter("categories", MessageParser.toJson(json));
+            if (json.size() > 0) {
+                builder.appendQueryParameter("categories", MessageParser.toJson(json));
+            }
         }
 
-        get(builder, new RequestCallback<List<AndroidApp>>() {
+        return get(builder, new RequestCallback<List<AndroidApp>>() {
             @Override
             public void onSuccess(List<AndroidApp> result) {
 
                 // Display the empty text if there is no result
-                toggleStateList(view, 0);
+                adapter.setState(GridAdapter.State.NONE);
 
                 adapter.addAll(result);
                 adapter.shuffle(); // Random selection of the trending apps
@@ -193,7 +180,7 @@ public class GeneralWebService extends WebService {
             @Override
             public void onFailure(Errors error) {
 
-                toggleStateList(view, 2);
+                adapter.setState(GridAdapter.State.ERRORS);
             }
 
             @Override
@@ -206,33 +193,31 @@ public class GeneralWebService extends WebService {
     /**
      * Load the list of topics for the opinions of the app
      */
-    public void loadTopicTitles() {
+    public void getTopics(RequestCallback<List<Topic>> callback) {
 
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(Constants.URL);
         builder.appendQueryParameter("cmd", Constants.GET_TOPIC_TITLES);
 
-        get(builder, new RequestCallback<List<TopicTitle>>() {
-            @Override
-            public void onSuccess(List<TopicTitle> result) {
-                Map<Integer, String> topics = new HashMap<Integer, String>();
-                for (TopicTitle topic : result) {
-                    topics.put(topic.getID(), topic.getTitle());
-                }
+        get(builder, callback, null);
+    }
 
-                TopicsManager.instance().setTopicTitles(topics);
-            }
+    public void getCategories(RequestCallback<List<Category>> callback) {
 
-            @Override
-            public void onFailure(Errors error) {
-                Log.e("__TOPIC_TITLES__", "Error when loading the topic titles");
-            }
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", Constants.GET_CATEGORIES);
 
-            @Override
-            public Type getType() {
-                return new TypeToken<List<TopicTitle>>(){}.getType();
-            }
-        }, null); // Cache is useless because we load that on starting and no more after that
+        get(builder, callback, null);
+    }
+
+    public void getSuperCategories(RequestCallback<List<SuperCategory>> callback) {
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", Constants.GET_CATEGORIES_TYPES);
+
+        get(builder, callback, null);
     }
 
     /* POST requests */
@@ -260,32 +245,5 @@ public class GeneralWebService extends WebService {
                 return Boolean.class;
             }
         });
-    }
-
-    /* Private */
-
-    /**
-     * Display the view of the given state in a list view
-     * @param view the list
-     * @param state the state: 0 - 1 - 2
-     */
-    private void toggleStateList(AbsListView view, int state) {
-
-        // Hide the views
-        view.getEmptyView().findViewById(R.id.empty_text).setVisibility(View.GONE);
-        view.getEmptyView().findViewById(R.id.error_message).setVisibility(View.GONE);
-        view.getEmptyView().findViewById(R.id.progressBar).setVisibility(View.GONE);
-
-        // Display the good one
-        switch (state) {
-            case 0:
-                view.getEmptyView().findViewById(R.id.empty_text).setVisibility(View.VISIBLE);
-                break;
-            case 1:
-                view.getEmptyView().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-                break;
-            default:
-                view.getEmptyView().findViewById(R.id.error_message).setVisibility(View.VISIBLE);
-        }
     }
 }

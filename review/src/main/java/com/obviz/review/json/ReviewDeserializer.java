@@ -1,9 +1,7 @@
-package com.obviz.review.adapters;
+package com.obviz.review.json;
 
-import android.util.Log;
 import com.google.gson.*;
 import com.obviz.review.models.*;
-import com.obviz.review.webservice.MessageParser;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

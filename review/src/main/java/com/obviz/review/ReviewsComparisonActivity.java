@@ -46,7 +46,7 @@ public class ReviewsComparisonActivity extends AppCompatActivity implements Topi
 
         /* Tabs initialization */
         mPager = (ViewPager) findViewById(R.id.pager);
-        mAdapter = new ComparisonPagerAdapter(getSupportFragmentManager());
+        mAdapter = new ComparisonPagerAdapter(getSupportFragmentManager(), mTopicID);
         mAdapter.addPage(mApplication);
         mAdapter.addPage(mComparison);
 

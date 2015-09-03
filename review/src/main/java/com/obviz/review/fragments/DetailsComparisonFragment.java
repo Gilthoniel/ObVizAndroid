@@ -8,13 +8,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import com.obviz.review.ComparisonActivity;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
 import com.obviz.review.adapters.AppBoxAdapter;
+import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
 import com.obviz.reviews.R;
@@ -28,9 +28,7 @@ import java.util.Iterator;
  */
 public class DetailsComparisonFragment extends Fragment {
 
-    private AppBoxAdapter mAdapter;
     private View mParent;
-    private AndroidApp mApplication;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {
@@ -43,39 +41,44 @@ public class DetailsComparisonFragment extends Fragment {
     public void onActivityCreated(Bundle states) {
         super.onActivityCreated(states);
 
-        mAdapter = new AppBoxAdapter(getActivity());
-        GridView grid = (GridView) mParent.findViewById(R.id.grid_view);
-        grid.setAdapter(mAdapter);
-        grid.setEmptyView(mParent.findViewById(android.R.id.empty));
-        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        DetailsActivity parent = (DetailsActivity) getActivity();
+        AndroidApp mApplication = parent.getListApplications().get(0);
+
+        populateAlternatives(mApplication, mParent);
+    }
+
+    public static void populateAlternatives(final AndroidApp application, final View view) {
+
+        final AppBoxAdapter adapter = new AppBoxAdapter();
+        GridRecyclerView grid = (GridRecyclerView) view.findViewById(R.id.grid_view);
+        adapter.addOnItemClickListener(new GridAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View parent, int position, long l) {
+            public void onClick(int position) {
+                AndroidApp app = adapter.getItem(position);
 
-                AndroidApp app = mAdapter.getItem(position);
-
-                Intent intent = new Intent(parent.getContext(), ComparisonActivity.class);
-                intent.putExtra(Constants.INTENT_APP, (Parcelable) mApplication);
+                Intent intent = new Intent(view.getContext(), ComparisonActivity.class);
+                intent.putExtra(Constants.INTENT_APP, (Parcelable) application);
                 intent.putExtra(Constants.INTENT_COMPARISON_APP, (Parcelable) app);
 
-                startActivity(intent);
+                view.getContext().startActivity(intent);
             }
         });
+        grid.setAdapter(adapter);
 
-        DetailsActivity parent = (DetailsActivity) getActivity();
-        mApplication = parent.getListApplications().get(0);
-
-        final Iterator<String> it = mApplication.getRelatedIDs().iterator();
+        final Iterator<String> it = application.getRelatedIDs().iterator();
         while (it.hasNext()) {
             String id = it.next();
 
             GeneralWebService.instance().getApp(id, new RequestCallback<AndroidApp>() {
                 @Override
                 public void onSuccess(AndroidApp result) {
-                    mAdapter.add(result);
+                    if (result.isParsed()) {
+                        adapter.add(result);
+                    }
 
                     if (!it.hasNext()) {
                         // Notify only on the last elem
-                        mAdapter.notifyDataSetChanged();
+                        adapter.notifyDataSetChanged();
                     }
                 }
 

@@ -1,11 +1,14 @@
 package com.obviz.review.managers;
 
+import android.util.Log;
+import com.google.gson.reflect.TypeToken;
+import com.obviz.review.models.Topic;
 import com.obviz.review.webservice.GeneralWebService;
+import com.obviz.review.webservice.RequestCallback;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by gaylor on 28.07.15.
@@ -14,13 +17,20 @@ import java.util.Set;
 public class TopicsManager {
 
     private static TopicsManager instance;
+    private static final String DEFAULT = "";
 
-    private Map<Integer, String> topicTitles;
+    private Map<Integer, Topic> mTopics;
     private Set<TopicsObserver> mObservers;
+    private ReentrantLock mLock;
 
     private TopicsManager() {
-        topicTitles = new HashMap<>();
+        mTopics = new HashMap<>();
         mObservers = new HashSet<>();
+
+        mLock = new ReentrantLock();
+        mLock.lock();
+
+        GeneralWebService.instance().getTopics(new TopicsCallback());
     }
 
     public static void init() {
@@ -28,39 +38,70 @@ public class TopicsManager {
     }
 
     public static TopicsManager instance() {
-
         return instance;
     }
 
-    public void setTopicTitles(Map<Integer, String> collection) {
-
-        topicTitles.putAll(collection);
-
-        for (TopicsObserver observer : mObservers) {
-            observer.onTopicsLoaded();
+    public Topic getTopic(int topicID, TopicsObserver observer) {
+        if (topicID < 0) {
+            return null;
         }
-        mObservers.clear();
+
+        mLock.lock();
+
+        if (mTopics.containsKey(topicID)) {
+
+            mLock.unlock();
+            return mTopics.get(topicID);
+        }
+
+        mObservers.add(observer);
+        GeneralWebService.instance().getTopics(new TopicsCallback());
+
+        return null;
     }
 
     public String getTitle(int topicID, TopicsObserver observer) {
 
-        if (topicID < 0) {
-
-            return "";
-        } else if (topicTitles.containsKey(topicID)) {
-
-            return topicTitles.get(topicID);
+        Topic topic = getTopic(topicID, observer);
+        if (topic != null) {
+            return topic.getTitle();
         } else {
-
-            mObservers.add(observer);
-            GeneralWebService.instance().loadTopicTitles();
-
-            return "";
+            return DEFAULT;
         }
     }
 
     public interface TopicsObserver {
-
         void onTopicsLoaded();
+    }
+
+    private class TopicsCallback implements RequestCallback<List<Topic>> {
+
+        @Override
+        public void onSuccess(List<Topic> result) {
+
+            instance.mTopics.clear();
+
+            for (Topic topic : result) {
+                mTopics.put(topic.getID(), topic);
+            }
+
+            mLock.unlock();
+
+            for (TopicsObserver observer : mObservers) {
+                observer.onTopicsLoaded();
+            }
+            mObservers.clear();
+        }
+
+        @Override
+        public void onFailure(Errors error) {
+            mLock.unlock();
+            Log.e("__TOPICS__", "Error when loading topics: " + error);
+        }
+
+        @Override
+        public Type getType() {
+            return new TypeToken<List<Topic>>(){}.getType();
+        }
     }
 }

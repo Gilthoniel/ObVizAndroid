@@ -1,10 +1,14 @@
 package com.obviz.review.adapters;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import com.obviz.review.Constants;
 import com.obviz.review.fragments.DetailsComparisonFragment;
+import com.obviz.review.fragments.DetailsFragment;
 import com.obviz.review.fragments.DetailsOpinionsFragment;
+import com.obviz.review.models.AndroidApp;
 
 /**
  * Created by gaylor on 23.07.15.
@@ -12,20 +16,31 @@ import com.obviz.review.fragments.DetailsOpinionsFragment;
  */
 public class DetailsPagerAdapter extends FragmentStatePagerAdapter {
 
-    private CharSequence TITLES[] = new CharSequence[] { "Opinions", "Alternatives" };
+    private CharSequence TITLES[] = new CharSequence[] { "Details", "Opinions", "Alternatives" };
+    private AndroidApp mApplication;
 
-    public DetailsPagerAdapter(FragmentManager manager) {
+    public DetailsPagerAdapter(FragmentManager manager, AndroidApp application) {
         super(manager);
+
+        mApplication = application;
     }
 
     @Override
     public Fragment getItem(int position) {
 
         switch (position) {
-            case 1:
+            case 2:
                 return new DetailsComparisonFragment();
-            default:
+            case 1:
                 return new DetailsOpinionsFragment();
+            default:
+                DetailsFragment fragment = new DetailsFragment();
+
+                Bundle args = new Bundle();
+                args.putParcelable(Constants.STATE_APP, mApplication);
+
+                fragment.setArguments(args);
+                return fragment;
         }
     }
 

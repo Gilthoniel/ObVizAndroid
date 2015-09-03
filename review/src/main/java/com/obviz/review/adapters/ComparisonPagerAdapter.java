@@ -17,16 +17,18 @@ public class ComparisonPagerAdapter extends FragmentPagerAdapter {
 
     private Map<String, ComparisonReviewsFragment> mFragments;
     private List<String> mTitles;
+    private int mTopicID;
 
-    public ComparisonPagerAdapter(FragmentManager manager) {
+    public ComparisonPagerAdapter(FragmentManager manager, int topicID) {
         super(manager);
 
         mFragments = new HashMap<>();
         mTitles = new LinkedList<>();
+        mTopicID = topicID;
     }
 
     public void addPage(AndroidApp app) {
-        mFragments.put(app.getName(), ComparisonReviewsFragment.newInstance(app));
+        mFragments.put(app.getName(), ComparisonReviewsFragment.newInstance(app, mTopicID));
         mTitles.add(app.getName());
 
         notifyDataSetChanged();

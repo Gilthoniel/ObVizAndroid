@@ -5,21 +5,19 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.Spinner;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
 import com.obviz.review.adapters.AppBoxAdapter;
-import com.obviz.review.managers.CategoryManager;
-import com.obviz.review.managers.CategoryManager.*;
-import com.obviz.review.webservice.ConnectionService;
+import com.obviz.review.adapters.GridAdapter;
+import com.obviz.review.adapters.SuperCategoryAdapter;
+import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.GeneralWebService;
+import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.reviews.R;
 
 /**
@@ -28,10 +26,12 @@ import com.obviz.reviews.R;
  */
 public class TrendingFragment extends Fragment {
 
+    private HttpTask<?> request;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle states) {
 
-        return inflater.inflate(R.layout.trending_fragment, parent, false);
+        return inflater.inflate(R.layout.fragment_trending, parent, false);
     }
 
     @Override
@@ -39,8 +39,17 @@ public class TrendingFragment extends Fragment {
         super.onActivityCreated(states);
 
         if (getView() != null) {
-            final GridView grid = (GridView) getView().findViewById(R.id.grid_view);
-            final AppBoxAdapter trendingAdapter = new AppBoxAdapter(getActivity());
+            final GridRecyclerView grid = (GridRecyclerView) getView().findViewById(R.id.grid_view);
+            final AppBoxAdapter trendingAdapter = new AppBoxAdapter();
+            trendingAdapter.addOnItemClickListener(new GridAdapter.OnItemClickListener() {
+                @Override
+                public void onClick(int position) {
+                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                    intent.putExtra(Constants.INTENT_APP, (Parcelable) trendingAdapter.getItem(position));
+
+                    startActivity(intent);
+                }
+            });
 
             int max;
             switch (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) {
@@ -56,21 +65,10 @@ public class TrendingFragment extends Fragment {
             trendingAdapter.setMax(max);
 
             grid.setAdapter(trendingAdapter);
-            grid.setEmptyView(getView().findViewById(R.id.empty_view));
-            grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                    intent.putExtra(Constants.INTENT_APP, (Parcelable) trendingAdapter.getItem(i));
-
-                    startActivity(intent);
-                }
-            });
 
             /* Categories selection */
             final Spinner spinner = (Spinner) getView().findViewById(R.id.spinner);
-            final ArrayAdapter<SuperCategory> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, CategoryManager.instance().getSupers());
-            adapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
+            final SuperCategoryAdapter adapter = new SuperCategoryAdapter(getActivity());
 
             spinner.setAdapter(adapter);
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -80,8 +78,10 @@ public class TrendingFragment extends Fragment {
                     if (spinner.getTag() == null || (Integer) spinner.getTag() != position) {
                         spinner.setTag(position);
 
-                        ConnectionService.instance.cancel();
-                        GeneralWebService.instance().getTrendingApps(grid, adapter.getItem(position).getCategories());
+                        if (request != null) {
+                            request.cancel();
+                        }
+                        request = GeneralWebService.instance().getTrendingApps(trendingAdapter, adapter.getItem(position));
                     }
                 }
 

@@ -1,99 +1,109 @@
 package com.obviz.review.adapters;
 
-import android.content.Context;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.obviz.review.Constants;
 import com.obviz.review.models.Review;
+import com.obviz.review.views.InfiniteScrollable;
+import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by gaylor on 24.07.15.
  *
  */
-public class ReviewsAdapter extends BaseAdapter {
+public class ReviewsAdapter extends GridAdapter<Review> implements InfiniteScrollable {
 
-    private List<Review> mReviews;
-    private LayoutInflater mInflater;
+    private int mPage;
+    private int mMaxPage;
+    private String mAppID;
+    private int mTopicID;
 
-    public ReviewsAdapter(Context context) {
-        mReviews = new ArrayList<>();
+    public ReviewsAdapter(String appID, int topicID) {
+        mPage = 0;
+        mMaxPage = 1;
 
-        mInflater = LayoutInflater.from(context);
+        mAppID = appID;
+        mTopicID = topicID;
     }
 
-    public void addAll(Collection<Review> collection) {
-
-        mReviews.addAll(collection);
-        notifyDataSetChanged();
+    public void setMaxPage(int value) {
+        mMaxPage = value;
     }
 
+    public void setTopicID(int value) {
+        mTopicID = value;
+    }
+
+    @Override
     public void clear() {
-        mReviews.clear();
-        notifyDataSetChanged();
+        super.clear();
+
+        mPage = 0;
+        mMaxPage = 1;
     }
 
     @Override
-    public int getCount() {
-        return mReviews.size();
+    public void onLoadMore() {
+        if (mPage < mMaxPage) {
+            GeneralWebService.instance().getReviews(mAppID, mTopicID, mPage, Constants.NUMBER_REVIEW_PER_BLOCK, this);
+            mPage++;
+        }
     }
 
     @Override
-    public Review getItem(int i) {
-        return mReviews.get(i);
-    }
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    @Override
-    public View getView(int i, View view, ViewGroup parent) {
-
-        RelativeLayout layout;
-        if (view != null) {
-            layout = (RelativeLayout) view;
+        if (viewType == TYPE_ITEM) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_review, parent, false);
+            return new ReviewHolder(v);
         } else {
-            layout = (RelativeLayout) mInflater.inflate(R.layout.reviews_item_row, parent, false);
+
+            return super.onCreateViewHolder(parent, viewType);
+        }
+    }
+
+    public class ReviewHolder extends GridAdapter<Review>.ViewHolder {
+
+        public TextView body;
+        public TextView author;
+        public TextView date;
+        public RatingBar rating;
+
+        public ReviewHolder(View v) {
+            super(v);
+
+            body = (TextView) v.findViewById(R.id.review_content);
+            author = (TextView) v.findViewById(R.id.author);
+            date = (TextView) v.findViewById(R.id.date);
+            rating = (RatingBar) v.findViewById(R.id.rating);
         }
 
-        Review review = mReviews.get(i);
+        @Override
+        public void onPopulate(Review review) {
+            switch (review.getDisplayType()) {
+                case 0:
+                    SpannableStringBuilder builder = new SpannableStringBuilder();
+                    builder.append(review.getTitle()).append(": ").append(review.getContent());
+                    body.setText(builder);
+                    break;
+                case 1:
+                    body.setText(review.getContent());
+                    break;
+                default:
+                    body.setText(review.getTitle());
+                    break;
+            }
 
-        TextView body = (TextView) layout.findViewById(R.id.review_content);
-        switch (review.getDisplayType()) {
-            case 0:
-                SpannableStringBuilder builder = new SpannableStringBuilder();
-                builder.append(review.getTitle()).append("\n").append(review.getContent());
-                body.setText(builder);
-                break;
-            case 1:
-                body.setText(review.getContent());
-                break;
-            default:
-                body.setText(review.getTitle());
-                break;
+            author.setText(review.authorName.trim());
+
+            date.setText(review.reviewDate.toString());
+
+            rating.setRating(review.starRatings);
         }
-
-        TextView author = (TextView) layout.findViewById(R.id.author);
-        author.setText(review.authorName.trim());
-
-        TextView date = (TextView) layout.findViewById(R.id.date);
-        date.setText(review.reviewDate.toString());
-
-        RatingBar rating = (RatingBar) layout.findViewById(R.id.rating);
-        rating.setRating(review.starRatings);
-
-        return layout;
     }
 }

@@ -11,6 +11,8 @@ import android.util.Log;
 import com.obviz.review.HomeActivity;
 import com.obviz.reviews.R;
 
+import java.util.Calendar;
+
 /**
  * Created by gaylor on 08/24/2015.
  * Scheduled task to send notifications to the user even if the app isn't running
@@ -26,33 +28,45 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
 
         /* Set an alarm to repeat this task */
         if (intent.getAction() != null && intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            // Set the notification alarm task if not already done
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            Intent alarmIntent = new Intent(context, AlarmTaskReceiver.class);
-            PendingIntent pending = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 
-            // Remove the current alarm if it already exists
-            alarmManager.cancel(pending);
+            setAlarm(context);
 
-            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, 0,
-                    AlarmManager.INTERVAL_HALF_HOUR, pending);
+        } else {
 
-            Log.d("__ALARM__", "Notification Task planned");
+            /* Notification for the user */
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.favicon)
+                    .setContentTitle(NOTIFICATION_TITLE)
+                    .setContentText(NOTIFICATION_BODY)
+                    .setAutoCancel(true)
+                    .setVibrate(new long[] {1000});
+
+            Intent homeIntent = new Intent(context, HomeActivity.class);
+            PendingIntent pending = PendingIntent.getActivity(context, 0, homeIntent, 0);
+            builder.setContentIntent(pending);
+
+            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.notify(NOTIFICATION_ID, builder.build());
         }
+    }
 
-        /* Notification for the user */
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.favicon)
-                .setContentTitle(NOTIFICATION_TITLE)
-                .setContentText(NOTIFICATION_BODY)
-                .setAutoCancel(true)
-                .setVibrate(new long[] {1000});
+    public static void setAlarm(Context context) {
+        // Set the notification alarm task if not already done
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent alarmIntent = new Intent(context, AlarmTaskReceiver.class);
+        PendingIntent pending = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 
-        Intent homeIntent = new Intent(context, HomeActivity.class);
-        PendingIntent pending = PendingIntent.getActivity(context, 0, homeIntent, 0);
-        builder.setContentIntent(pending);
+        // Remove the current alarm if it already exists
+        alarmManager.cancel(pending);
 
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(NOTIFICATION_ID, builder.build());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+
+        alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(),
+                1000 * 60 * 60 * 24 * 7, pending);
+
+        Log.d("__ALARM__", "Notification Task planned");
     }
 }

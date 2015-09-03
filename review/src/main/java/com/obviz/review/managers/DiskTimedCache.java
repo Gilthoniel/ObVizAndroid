@@ -291,6 +291,8 @@ public class DiskTimedCache {
     /* Exceptions */
     public class BadKeyException extends IllegalArgumentException {
 
+        private static final long serialVersionUID = -5686499348456010299L;
+
         @Override
         public String getMessage() {
             return "Key must match [a-z0-9-_]";

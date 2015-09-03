@@ -1,9 +1,18 @@
 package com.obviz.review.managers;
 
-import com.obviz.review.Constants;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+import com.google.gson.reflect.TypeToken;
+import com.obviz.review.models.Category;
+import com.obviz.review.models.SuperCategory;
+import com.obviz.review.webservice.GeneralWebService;
+import com.obviz.review.webservice.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by gaylor on 08/07/2015.
@@ -13,153 +22,147 @@ public class CategoryManager {
 
     private static CategoryManager instance;
 
-    private List<SuperCategory> supers;
+    private Map<String, Category> mCategories;
+    private Map<Integer, List<Category>> mTypes;
+    private Map<Integer, SuperCategory> mTypeTitles;
+    private Set<CategoryObserver> mObservers;
+    private Context mContext;
+    private ReentrantLock mLock;
 
-    private CategoryManager() {
+    private CategoryManager() {}
 
-        supers = new ArrayList<>();
-
-        SuperCategory all = new SuperCategory("All");
-        supers.add(all);
-
-        /** Games **/
-        SuperCategory games = new SuperCategory("Games");
-
-        games.addAll(new Constants.Category[] {
-                Constants.Category.ACTION,
-                Constants.Category.ADVENTURE,
-                Constants.Category.ARCADE,
-                Constants.Category.BOARD,
-                Constants.Category.CARD,
-                Constants.Category.CASINO,
-                Constants.Category.CASUAL,
-                Constants.Category.EDUCATIONAL,
-                Constants.Category.MUSIC,
-                Constants.Category.PUZZLE,
-                Constants.Category.RACING,
-                Constants.Category.ROLE_PLAYING,
-                Constants.Category.SIMULATION,
-                Constants.Category.GAME_SPORTS,
-                Constants.Category.STRATEGY,
-                Constants.Category.TRIVIA,
-                Constants.Category.WORD
-        });
-        supers.add(games);
-
-        /** Social **/
-        SuperCategory social = new SuperCategory("Social");
-
-        social.addAll(new Constants.Category[]{
-                Constants.Category.COMMUNICATION,
-                Constants.Category.SOCIAL
-        });
-        supers.add(social);
-
-        /** Entertainment **/
-        SuperCategory entertainment = new SuperCategory("Entertainment");
-
-        entertainment.addAll(new Constants.Category[] {
-                Constants.Category.MUSIC_AND_AUDIO,
-                Constants.Category.ENTERTAINMENT,
-                Constants.Category.COMICS,
-                Constants.Category.BOOKS_AND_REFERENCE,
-                Constants.Category.PHOTOGRAPHY,
-                Constants.Category.SHOPPING
-        });
-        supers.add(entertainment);
-
-        /** Tools **/
-        SuperCategory tools = new SuperCategory("Tools");
-
-        tools.addAll(new Constants.Category[]{
-                Constants.Category.TOOLS,
-                Constants.Category.PERSONALIZATION
-        });
-        supers.add(tools);
-
-        /** WORK **/
-        SuperCategory work = new SuperCategory("Work");
-
-        work.addAll(new Constants.Category[] {
-                Constants.Category.BUSINESS,
-                Constants.Category.EDUCATION,
-                Constants.Category.FINANCE,
-                Constants.Category.PRODUCTIVITY,
-                Constants.Category.TRANSPORTATION,
-                Constants.Category.TRAVEL_AND_LOCAL
-        });
-        supers.add(work);
-
-        /** HEALTH **/
-        SuperCategory health = new SuperCategory("Health");
-
-        health.addAll(new Constants.Category[] {
-                Constants.Category.HEALTH_AND_FITNESS,
-                Constants.Category.SPORTS,
-                Constants.Category.MEDICAL
-        });
-        supers.add(health);
-
-        /** Others **/
-        SuperCategory others = new SuperCategory("Others");
-        others.addAll(new Constants.Category[] {
-                Constants.Category.NEWS_AND_MAGAZINES,
-                Constants.Category.WEATHER,
-                Constants.Category.LIFESTYLE
-        });
-        supers.add(others);
-    }
-
-    public static void init() {
+    public static void init(Context context) {
         instance = new CategoryManager();
+
+        instance.mLock = new ReentrantLock();
+        instance.mLock.lock();
+
+        instance.mCategories = new HashMap<>();
+        instance.mTypes = new HashMap<>();
+        instance.mTypeTitles = new HashMap<>();
+        instance.mObservers = new HashSet<>();
+        instance.mContext = context;
+
+        GeneralWebService.instance().getSuperCategories(new SuperCategoryCallback());
     }
 
     public static CategoryManager instance() {
-
         return instance;
     }
 
-    public List<SuperCategory> getSupers() {
+    public Category getFrom(String category, CategoryObserver observer) {
 
-        return supers;
+        mLock.lock();
+
+        if (mCategories.containsKey(category)) {
+
+            mLock.unlock();
+            return mCategories.get(category);
+
+        } else if(isInternetAvailable()) {
+
+            mObservers.add(observer);
+            GeneralWebService.instance().getSuperCategories(new SuperCategoryCallback());
+        }
+
+        return Category.instanceDefault;
     }
 
-    public class SuperCategory {
+    public Collection<SuperCategory> getSupers() {
 
-        private List<Constants.Category> mCategories;
-        private String mName;
+        mLock.lock();
 
-        public SuperCategory(String name) {
+        Collection<SuperCategory> list = mTypeTitles.values();
 
-            mName = name;
-            mCategories = new ArrayList<>();
+        mLock.unlock();
+
+        return list;
+    }
+
+    public List<Category> getCategories(int id) {
+
+        if (id == 0) {
+            return Collections.emptyList();
         }
 
-        public String getName() {
+        mLock.lock();
+        List<Category> list = mTypes.get(id);
+        mLock.unlock();
 
-            return mName;
-        }
+        return list;
+    }
 
-        public List<Constants.Category> getCategories() {
+    public interface CategoryObserver {
+        void onCategoriesLoaded();
+    }
 
-            return mCategories;
-        }
+    private static class SuperCategoryCallback implements RequestCallback<List<SuperCategory>> {
 
-        public void add(Constants.Category category) {
-            mCategories.add(category);
-        }
+        @Override
+        public void onSuccess(List<SuperCategory> result) {
 
-        public void addAll(Constants.Category[] collection) {
+            instance.mTypes.clear();
+            instance.mTypeTitles.clear();
+            instance.mCategories.clear();
 
-            for (Constants.Category category : collection) {
-                add(category);
+            for (SuperCategory type : result) {
+                instance.mTypes.put(type._id, new LinkedList<Category>());
+                instance.mTypeTitles.put(type._id, type);
             }
+
+            GeneralWebService.instance().getCategories(new CategoryCallback());
         }
 
         @Override
-        public String toString() {
-
-            return mName;
+        public void onFailure(Errors error) {
+            Log.e("__SUPER_CATEGORIES__", "Error when loading: "+error);
+            instance.mLock.unlock();
         }
+
+        @Override
+        public Type getType() {
+            return new TypeToken<List<SuperCategory>>(){}.getType();
+        }
+    }
+
+    private static class CategoryCallback implements RequestCallback<List<Category>> {
+
+        @Override
+        public void onSuccess(List<Category> result) {
+            for (Category category : result) {
+                instance.mCategories.put(category.category, category);
+
+                for (int type : category.types) {
+                    instance.mTypes.get(type).add(category);
+                }
+            }
+
+            instance.mLock.unlock();
+            for (CategoryObserver observer : instance.mObservers) {
+                observer.onCategoriesLoaded();
+            }
+            instance.mObservers.clear();
+        }
+
+        @Override
+        public void onFailure(Errors error) {
+            Log.e("__CATEGORIES__", "Error when loading: "+error);
+            instance.mLock.unlock();
+        }
+
+        @Override
+        public Type getType() {
+            return new TypeToken<List<Category>>(){}.getType();
+        }
+    }
+
+    /* PRIVATE FUNCTIONS */
+
+    private boolean isInternetAvailable() {
+
+        ConnectivityManager manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = manager.getActiveNetworkInfo();
+
+        return info != null && info.isConnected();
     }
 }

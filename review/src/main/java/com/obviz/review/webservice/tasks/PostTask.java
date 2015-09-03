@@ -72,7 +72,7 @@ public class PostTask extends HttpTask<Boolean> {
 
                     } catch (IOException e) {
 
-                        Log.e("__POST__", "IOException during POST request : " + e.getStackTrace()[0]);
+                        Log.e("__POST__", "IOException during POST request : " + e.getMessage());
 
                         return false;
                     } finally {

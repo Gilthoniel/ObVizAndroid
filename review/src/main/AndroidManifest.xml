@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.obviz.reviews" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="ANDROID.PERMISSION.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="ANDROID.PERMISSION.DELETE_CACHE_FILES" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -68,7 +69,8 @@
         </activity>
 
         <receiver
-            android:name="com.obviz.review.service.AlarmTaskReceiver">
+            android:name="com.obviz.review.service.AlarmTaskReceiver"
+            android:enabled="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

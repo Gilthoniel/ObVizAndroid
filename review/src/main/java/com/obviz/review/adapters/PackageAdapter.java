@@ -74,7 +74,7 @@ public class PackageAdapter extends BaseAdapter {
         if (view != null) {
             layout = (LinearLayout) view;
         } else {
-            layout = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.package_item_row, parent, false);
+            layout = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.item_package, parent, false);
         }
 
         PackageInfo appInfo = mPackages.get(position);

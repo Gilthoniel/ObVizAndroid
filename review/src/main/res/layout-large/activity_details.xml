@@ -1,0 +1,180 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/details_id"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="com.obviz.review.DetailsActivity">
+
+    <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/details"
+        android:layout_below="@+id/toolbar"
+        android:padding="10dp"
+        android:layout_toLeftOf="@+id/grid_view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/app_logo"
+            android:padding="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Application Name"
+            android:id="@+id/app_name"
+            android:layout_toRightOf="@+id/app_logo"
+            android:textColor="#ff000000"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Developer"
+            android:id="@+id/app_developer"
+            android:layout_below="@+id/app_name"
+            android:layout_toRightOf="@+id/app_logo"
+            android:textStyle="italic"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/app_developer"
+            android:layout_toRightOf="@+id/app_logo"
+            android:layout_toEndOf="@+id/app_logo"
+            android:layout_marginTop="10dp"
+            android:stretchColumns="0,1,2,3"
+            android:id="@+id/tableLayout">
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rating_title"
+                    android:id="@+id/textView"
+                    android:textColor="#ff000000"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/date_title"
+                    android:id="@+id/textView2"
+                    android:layout_column="1"
+                    android:textColor="#ff000000"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Category"
+                    android:id="@+id/textView7"
+                    android:layout_column="2"
+                    android:textColor="#ff000000"/>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <RatingBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rating"
+                    style="?android:ratingBarStyleSmall"
+                    android:numStars="5"
+                    android:layout_gravity="left|center_horizontal"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/app_date"
+                    android:layout_column="1"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/app_category"
+                    android:layout_column="2"/>
+
+            </TableRow>
+        </TableLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:id="@+id/textView8"
+            android:layout_column="3"
+            android:layout_below="@+id/tableLayout"
+            android:layout_toRightOf="@+id/app_logo"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:textColor="#ff000000"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/app_description"
+            android:layout_column="3"
+            android:layout_toRightOf="@+id/app_logo"
+            android:layout_below="@+id/textView8"/>
+
+    </RelativeLayout>
+
+    <GridView
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/grid_view"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:numColumns="1"
+        android:columnWidth="160dp"
+        android:layout_below="@+id/textView9"
+        android:stretchMode="none"/>
+
+
+    <com.obviz.review.views.GridRecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/opinions_grid"
+        android:layout_below="@+id/details"
+        android:layout_toLeftOf="@+id/grid_view"
+        android:layout_toStartOf="@+id/grid_view"
+        android:scrollbars="vertical" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alternatives"
+        android:id="@+id/textView9"
+        android:layout_below="@+id/toolbar"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:padding="10dp"
+        android:layout_toRightOf="@+id/details"
+        android:layout_toEndOf="@+id/details"
+        android:textSize="20sp"
+        android:textColor="#ff000000"
+        />
+
+</RelativeLayout>

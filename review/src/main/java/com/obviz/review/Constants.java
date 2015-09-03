@@ -13,8 +13,9 @@ public class Constants {
 
     /** SETTINGS **/
 
-    public static final int CACHE_EXPIRATION_TIME = 1000; // in ms
+    public static final int CACHE_EXPIRATION_TIME = 1000 * 60 * 60 * 24; // in ms
     public static final int NUMBER_TRENDING_APPS = 10;
+    public static final int NUMBER_REVIEW_PER_BLOCK = 20;
 
     /** Commands **/
     public static final String URL = "http://vps186042.ovh.net/ObVizService";
@@ -24,6 +25,8 @@ public class Constants {
     public static final String GET_TOPIC_TITLES = "Get_App_Topics";
     public static final String GET_REVIEWS = "Get_Reviews";
     public static final String GET_TRENDING_APPS = "Get_Trending_Apps";
+    public static final String GET_CATEGORIES = "Get_App_Categories";
+    public static final String GET_CATEGORIES_TYPES = "Get_App_Categories_Types";
 
     public static final String APP_VIEWED = "App_Viewed";
 
@@ -31,6 +34,7 @@ public class Constants {
 
     public static final String INTENT_APP_ID = "com.obviz.review.INTENT_APP_ID";
     public static final String INTENT_APP = "com.obviz.review.INTENT_APP";
+    public static final String INTENT_LIST_APP = "com.obviz.review.INTENT_LIST_APP";
     public static final String INTENT_TOPIC_ID = "com.obviz.review.INTENT_TOPIC_ID";
     public static final String INTENT_COMPARISON_APP = "com.obviz.review.INTENT_COMPARISON_APP";
     public static final String INTENT_COMPARISON_APP_ID = "com.obviz.review.INTENT_COMPARISON_APP_ID";
@@ -39,83 +43,7 @@ public class Constants {
     /** STATES **/
 
     public static final String STATE_APP = "com.obviz.review.APP";
-
-    /** Categories **/
-
-    /* Category */
-
-    public enum Category {
-        SOCIAL("social", "Social"),
-        ADVENTURE("games", "Adventure"),
-        GAME_SPORTS("games", "Sport"),
-        STRATEGY("games", "Strategy"),
-        ACTION("games", "Action"),
-        PUZZLE("games", "Puzzle"),
-        ARCADE("games", "Arcade"),
-        CARD("games", "Card"),
-        CASUAL("games", "Casual"),
-        CASINO("games", "Casino"),
-        TRIVIA("games", "Trivia"),
-        SIMULATION("games", "Simulation"),
-        RACING("games", "Racing"),
-        ROLE_PLAYING("games", "RPG"),
-        WORD("games", "Word"),
-        BOARD("games", "Board"),
-        EDUCATIONAL("games", "Educational"),
-        MUSIC("games", "Music"),
-        COMMUNICATION("communication", "Communication"),
-        MUSIC_AND_AUDIO("audio", "Music and Audio"),
-        ENTERTAINMENT("entertainment", "Entertainment"),
-        TOOLS("tools", "Tools"),
-        BOOKS_AND_REFERENCE("books", "Books"),
-        PERSONALIZATION("personalization", "Personalization"),
-        PRODUCTIVITY("productivity", "Productivity"),
-        WEATHER("weather", "Weather"),
-        SHOPPING("shopping", "Shopping"),
-        TRANSPORTATION("transportation", "Transportation"),
-        LIFESTYLE("lifestyle", "Lifestyle"),
-        TRAVEL_AND_LOCAL("travel", "Travel and Local"),
-        PHOTOGRAPHY("photo", "Photography"),
-        BUSINESS("business", "Business"),
-        HEALTH_AND_FITNESS("health", "Health"),
-        FINANCE("finance", "Finance"),
-        SPORTS("sports", "Sports"),
-        EDUCATION("education", "Education"),
-        NEWS_AND_MAGAZINES("news", "News and Magazines"),
-        MEDICAL("medical", "Medical"),
-        COMICS("comics", "Comics"),
-        DEFAULT("default", "Application");
-
-        private final String name;
-        private final String title;
-        Category(String value, String title) {
-            name = value;
-            this.title = title;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public static Category fromName(String name) {
-            for (Category category : values()) {
-                if (category.name().equals(name)) {
-                    return category;
-                }
-            }
-
-            return DEFAULT;
-        }
-
-        @Override
-        public String toString() {
-            return title;
-        }
-    }
+    public static final String STATE_TOPIC = "com.obviz.review.TOPIC";
 
     /** Gauge **/
     public static final List<GaugeChart.Segment> CHART_SEGMENTS = new LinkedList<>();

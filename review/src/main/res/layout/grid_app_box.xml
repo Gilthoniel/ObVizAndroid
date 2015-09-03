@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <GridView
+    <com.obviz.review.views.GridRecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/grid_view"
-        android:layout_gravity="center_horizontal"
-        android:choiceMode="singleChoice"
-        android:numColumns="auto_fit"
-        android:gravity="center"
-        android:verticalSpacing="10dp"
-        android:paddingTop="20dp"
-        android:clipToPadding="false"
-        android:columnWidth="@dimen/app_box_width" />
-
-    <include
-        layout="@layout/empty_view" />
+        android:scrollbars="vertical"
+        app:columnWidth="@dimen/app_box_width"
+        app:childMargin="10dp"/>
 
 </RelativeLayout>

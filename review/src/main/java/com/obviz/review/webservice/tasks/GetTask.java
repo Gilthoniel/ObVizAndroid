@@ -6,7 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.obviz.review.Constants;
 import com.obviz.review.managers.CacheManager;
 import com.obviz.review.webservice.ConnectionService;
-import com.obviz.review.webservice.MessageParser;
+import com.obviz.review.json.MessageParser;
 import com.obviz.review.webservice.RequestCallback;
 
 import java.io.IOException;
@@ -95,7 +95,14 @@ public class GetTask<T> extends HttpTask<T> {
 
                 return mFuture.get();
 
-            }  catch (InterruptedException | ExecutionException | CancellationException ignored) {} finally {
+            } catch (ExecutionException e) {
+
+                Log.i("__FUTURE__", "Future cancelled: "+e.getCause().getMessage());
+                for (StackTraceElement trace : e.getCause().getStackTrace()) {
+                    Log.i("__FUTURE__", "-> "+trace);
+                }
+
+            } catch (InterruptedException | CancellationException ignored) {} finally {
 
                 connection.disconnect();
             }
@@ -119,6 +126,7 @@ public class GetTask<T> extends HttpTask<T> {
         if (result != null) {
             callback.onSuccess(result);
         } else {
+            error = RequestCallback.Errors.NULL;
             callback.onFailure(error);
         }
     }
@@ -126,6 +134,8 @@ public class GetTask<T> extends HttpTask<T> {
     @Override
     protected void onCancelled(T result) {
 
+        error = RequestCallback.Errors.CANCELLATION;
+        callback.onFailure(error);
         ConnectionService.instance.removeRequest(this);
     }
 }

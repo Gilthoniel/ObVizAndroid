@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -54,9 +55,6 @@ public class ImageTask extends HttpTask<Bitmap> {
 
                     try {
 
-
-                        Log.d("__INTERNET__", "Image acquire from the web");
-
                         // Put in disk cache
                         String key = CacheManager.KeyBuilder.forImage(url);
                         CacheManager.instance().add(key, bitmap);
@@ -75,14 +73,14 @@ public class ImageTask extends HttpTask<Bitmap> {
             try {
 
                 return mFuture.get();
-            } catch (InterruptedException | ExecutionException ignored) {} finally {
+            } catch (CancellationException | InterruptedException | ExecutionException ignored) {} finally {
 
                 in.close();
             }
 
         } catch (IOException e) {
 
-            Log.e("__IMAGE__", "IOException occured: " + e.getLocalizedMessage());
+            Log.e("__IMAGE__", "IOException occurred: " + e.getLocalizedMessage());
         }
 
         return null;

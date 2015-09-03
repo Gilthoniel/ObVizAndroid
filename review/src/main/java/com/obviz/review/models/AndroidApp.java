@@ -4,12 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.obviz.review.Constants;
+import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.Utils;
-import com.obviz.review.webservice.MessageParser;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by gaylor on 26.06.15.
@@ -29,9 +30,11 @@ public class AndroidApp implements Parcelable, Serializable {
     private String minimumOSVersion;
     private String installations;
     private Date publicationDate;
-    private Constants.Category category;
+    private String category;
+    private String description;
     private List<String> relatedIDs;
     private List<OpinionValue> opinionsSummary;
+    private int nbParsedReviews;
 
     private AndroidApp() {}
 
@@ -46,11 +49,13 @@ public class AndroidApp implements Parcelable, Serializable {
         minimumOSVersion = parcel.readString();
         installations = parcel.readString();
         publicationDate = parcel.readParcelable(Date.class.getClassLoader());
-        category = Constants.Category.fromName(parcel.readString());
+        category = parcel.readString();
+        description = parcel.readString();
         relatedIDs = new ArrayList<>();
         parcel.readStringList(relatedIDs);
         opinionsSummary = new ArrayList<>();
         parcel.readTypedList(opinionsSummary, OpinionValue.CREATOR);
+        nbParsedReviews = parcel.readInt();
     }
 
     public String getAppID() {
@@ -89,12 +94,13 @@ public class AndroidApp implements Parcelable, Serializable {
         return publicationDate.toString();
     }
 
-    public Constants.Category getCategory() {
-        if (category == null) {
-            category = Constants.Category.DEFAULT;
-        }
+    public String getCategory() {
 
         return category;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public List<String> getRelatedIDs() {
@@ -158,7 +164,11 @@ public class AndroidApp implements Parcelable, Serializable {
 
     public boolean isParsed() {
 
-        return getGlobalOpinion() > -1;
+        return opinionsSummary != null && opinionsSummary.size() > 0;
+    }
+
+    public int getNbParsedReviews() {
+        return nbParsedReviews;
     }
 
     /**
@@ -187,9 +197,11 @@ public class AndroidApp implements Parcelable, Serializable {
         parcel.writeString(minimumOSVersion);
         parcel.writeString(installations);
         parcel.writeParcelable(publicationDate, -1);
-        parcel.writeString(category.name());
+        parcel.writeString(category);
+        parcel.writeString(description);
         parcel.writeStringList(relatedIDs);
         parcel.writeTypedList(opinionsSummary);
+        parcel.writeInt(nbParsedReviews);
     }
 
     /**
@@ -220,13 +232,21 @@ public class AndroidApp implements Parcelable, Serializable {
         app.minimumOSVersion = object.get("minimumOSVersion").getAsString();
         app.installations = object.get("installations").getAsString();
         app.publicationDate = MessageParser.fromJson(object.get("publicationDate"), Date.class);
-        app.category = Constants.Category.fromName(object.get("category").getAsString());
+        app.category = object.get("category").getAsString();
+        app.description = object.get("description").getAsString();
         if (object.has("relatedIDs")) {
-            app.relatedIDs = MessageParser.fromJson(object.get("relatedIDs"), new TypeToken<List<String>>() {}.getType());
+            app.relatedIDs = MessageParser.fromJson(object.get("relatedIDs"), new TypeToken<List<String>>() {
+            }.getType());
         } else if (object.has("relatedUrls")) {
             app.relatedIDs = MessageParser.fromJson(object.get("relatedUrls"), new TypeToken<List<String>>() {}.getType());
         }
         app.opinionsSummary = MessageParser.fromJson(object.get("opinionsSummary"), new TypeToken<List<OpinionValue>>(){}.getType());
+
+        if (object.has("nbParsedReviews")) {
+            app.nbParsedReviews = object.get("nbParsedReviews").getAsInt();
+        } else {
+            app.nbParsedReviews = 0;
+        }
 
         return app;
     }

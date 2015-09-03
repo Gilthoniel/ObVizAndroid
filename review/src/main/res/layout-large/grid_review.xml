@@ -8,8 +8,6 @@
         android:id="@+id/grid_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        app:numColumns="1"
-        app:childMargin="10dp" />
+        app:numColumns="2"/>
 
 </RelativeLayout>

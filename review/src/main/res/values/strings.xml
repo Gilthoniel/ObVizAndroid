@@ -16,14 +16,14 @@
     <string name="image_description">Image</string>
     <string name="action_compare">Compare</string>
     <string name="list_empty">No items</string>
-    <string name="title_activity_reviews">ReviewsActivity</string>
-    <string name="title_activity_comparison">ComparisonActivity</string>
+    <string name="title_activity_reviews">Reviews</string>
+    <string name="title_activity_comparison">Comparison</string>
     <string name="loading">Data are loading. Be patient or press back button.</string>
     <string name="spinner">Topics</string>
     <string name="title_activity_reviews_comparison">Comparison reviews</string>
     <string name="action_install">Install</string>
     <string name="go_to">See more</string>
-    <string name="title_activity_package">PackageActivity</string>
+    <string name="title_activity_package">My Applications</string>
     <string name="action_clear">Clear History</string>
 
     <!-- Toast messages -->
@@ -36,4 +36,9 @@
     <string name="action_remove_favorite">Remove from favorite</string>
     <string name="favorite_removed">Successfully removed the favorite</string>
     <string name="internet_error">Please check your internet connection.</string>
+
+    <!-- Titles -->
+    <string name="rating_title">Rating</string>
+    <string name="date_title">Publication date</string>
+    <string name="action_spinner_app">Choose app</string>
 </resources>

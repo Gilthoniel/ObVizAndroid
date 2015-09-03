@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import com.obviz.review.Constants;
+import com.obviz.review.models.Category;
+import com.obviz.review.models.SuperCategory;
 
 import java.io.*;
 import java.util.List;
@@ -220,8 +222,8 @@ public class CacheManager {
             mCleaner = Pattern.compile("[^a-zA-Z0-9-_]");
         }
 
-        public static String forReviews(String appID) {
-            return "reviews_" + clean(appID);
+        public static String forReviews(String appID, int page, int size) {
+            return "reviews_" + clean(appID) + "_" + page + "_" + size;
         }
 
         public static String forSearch(String query) {
@@ -232,12 +234,14 @@ public class CacheManager {
             return "app_" + clean(appID);
         }
 
-        public static String forTrending(List<Constants.Category> categories) {
+        public static String forTrending(SuperCategory superCategory) {
             StringBuilder builder = new StringBuilder();
             builder.append("trending_");
 
-            for (Constants.Category category : categories) {
-                builder.append(category.ordinal()).append("_");
+            if (superCategory == null) {
+                builder.append("0");
+            } else {
+                builder.append(superCategory._id);
             }
 
             return builder.toString();

@@ -7,13 +7,15 @@ import java.util.List;
  * Created by gaylor on 24.07.15.
  *
  */
-public class TopicTitle implements Serializable {
+public class Topic implements Serializable {
 
     private static final long serialVersionUID = 8634619334632273342L;
 
     private int _id;
     private String title;
     private String[] keys;
+    private boolean useSpecialGauge;
+    private double  gaugeThreshold;
 
     public int getID() {
         return _id;
@@ -29,5 +31,13 @@ public class TopicTitle implements Serializable {
         } else {
             return "Unknown";
         }
+    }
+
+    public boolean isSpecial() {
+        return useSpecialGauge;
+    }
+
+    public double getThreshold() {
+        return gaugeThreshold;
     }
 }

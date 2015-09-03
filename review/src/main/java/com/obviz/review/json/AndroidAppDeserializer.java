@@ -1,4 +1,4 @@
-package com.obviz.review.adapters;
+package com.obviz.review.json;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -22,8 +22,13 @@ public class AndroidAppDeserializer implements JsonDeserializer<AndroidApp> {
 
         Iterator<OpinionValue> it = app.getOpinions().iterator();
         while (it.hasNext()) {
-            if (!it.next().isValid()) {
+            OpinionValue opinion = it.next();
+
+            if (!opinion.isValid()) {
                 it.remove();
+            } else {
+
+                opinion.totalReviews = app.getNbParsedReviews();
             }
         }
 
