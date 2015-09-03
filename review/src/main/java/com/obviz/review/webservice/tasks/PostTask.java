@@ -3,6 +3,7 @@ package com.obviz.review.webservice.tasks;
 import android.net.Uri;
 import android.util.Log;
 import com.google.gson.JsonSyntaxException;
+import com.obviz.review.Constants;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.RequestCallback;
 import org.apache.commons.io.IOUtils;
@@ -85,9 +86,9 @@ public class PostTask extends HttpTask<Boolean> {
             });
 
             try {
-                return mFuture.get();
+                return mFuture.get(Constants.TIMEOUT, TimeUnit.SECONDS);
 
-            } catch (CancellationException | ExecutionException | InterruptedException ignored) {} finally {
+            } catch (TimeoutException | CancellationException | ExecutionException | InterruptedException ignored) {} finally {
 
                 connection.disconnect();
             }

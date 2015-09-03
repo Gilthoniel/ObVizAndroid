@@ -199,7 +199,7 @@ public class GeneralWebService extends WebService {
         builder.encodedPath(Constants.URL);
         builder.appendQueryParameter("cmd", Constants.GET_TOPIC_TITLES);
 
-        get(builder, callback, null);
+        ConnectionService.instance.executeGetRequest(builder, callback, null, false);
     }
 
     public void getCategories(RequestCallback<List<Category>> callback) {
@@ -208,7 +208,7 @@ public class GeneralWebService extends WebService {
         builder.encodedPath(Constants.URL);
         builder.appendQueryParameter("cmd", Constants.GET_CATEGORIES);
 
-        get(builder, callback, null);
+        ConnectionService.instance.executeGetRequest(builder, callback, null, false);
     }
 
     public void getSuperCategories(RequestCallback<List<SuperCategory>> callback) {
@@ -217,7 +217,7 @@ public class GeneralWebService extends WebService {
         builder.encodedPath(Constants.URL);
         builder.appendQueryParameter("cmd", Constants.GET_CATEGORIES_TYPES);
 
-        get(builder, callback, null);
+        ConnectionService.instance.executeGetRequest(builder, callback, null, false);
     }
 
     /* POST requests */

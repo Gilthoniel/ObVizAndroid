@@ -30,6 +30,8 @@ public class Constants {
 
     public static final String APP_VIEWED = "App_Viewed";
 
+    public static final int TIMEOUT = 20;
+
     /** INTENTS **/
 
     public static final String INTENT_APP_ID = "com.obviz.review.INTENT_APP_ID";

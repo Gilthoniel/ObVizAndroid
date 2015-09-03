@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
+import com.obviz.review.Constants;
 import com.obviz.review.managers.CacheManager;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.webservice.ConnectionService;
@@ -13,10 +14,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Created by gaylor on 27.07.15.
@@ -72,8 +70,8 @@ public class ImageTask extends HttpTask<Bitmap> {
 
             try {
 
-                return mFuture.get();
-            } catch (CancellationException | InterruptedException | ExecutionException ignored) {} finally {
+                return mFuture.get(Constants.TIMEOUT, TimeUnit.SECONDS);
+            } catch (TimeoutException | CancellationException | InterruptedException | ExecutionException ignored) {} finally {
 
                 in.close();
             }

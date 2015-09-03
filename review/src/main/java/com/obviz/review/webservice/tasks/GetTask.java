@@ -13,10 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Created by gaylor on 27.07.15.
@@ -93,7 +90,7 @@ public class GetTask<T> extends HttpTask<T> {
                     }
                 });
 
-                return mFuture.get();
+                return mFuture.get(Constants.TIMEOUT, TimeUnit.SECONDS);
 
             } catch (ExecutionException e) {
 
@@ -101,6 +98,11 @@ public class GetTask<T> extends HttpTask<T> {
                 for (StackTraceElement trace : e.getCause().getStackTrace()) {
                     Log.i("__FUTURE__", "-> "+trace);
                 }
+
+            } catch (TimeoutException e) {
+
+                Log.i("__FUTURE__", "Future timeout.");
+                error = RequestCallback.Errors.CONNECTION;
 
             } catch (InterruptedException | CancellationException ignored) {} finally {
 

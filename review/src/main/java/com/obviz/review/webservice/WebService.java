@@ -21,7 +21,7 @@ public abstract class WebService {
      */
     public <T> HttpTask<T> get(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
-        return ConnectionService.instance.executeGetRequest(builder, callback, cacheKey);
+        return ConnectionService.instance.executeGetRequest(builder, callback, cacheKey, true);
     }
 
     /**

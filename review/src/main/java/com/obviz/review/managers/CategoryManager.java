@@ -36,6 +36,7 @@ public class CategoryManager {
 
         instance.mLock = new ReentrantLock();
         instance.mLock.lock();
+        //Log.i("_INSTANCE_", instance.mLock.toString());
 
         instance.mCategories = new HashMap<>();
         instance.mTypes = new HashMap<>();
@@ -59,7 +60,7 @@ public class CategoryManager {
             mLock.unlock();
             return mCategories.get(category);
 
-        } else if(isInternetAvailable()) {
+        } else if (isInternetAvailable()) {
 
             mObservers.add(observer);
             GeneralWebService.instance().getSuperCategories(new SuperCategoryCallback());
@@ -70,6 +71,7 @@ public class CategoryManager {
 
     public Collection<SuperCategory> getSupers() {
 
+        //Log.i("_INSTANCE_", mLock.toString());
         mLock.lock();
 
         Collection<SuperCategory> list = mTypeTitles.values();
