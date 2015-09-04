@@ -13,4 +13,16 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/pref_tutorial_title"
+        android:key="pref_key_tutorial">
+
+        <CheckBoxPreference
+            android:key="@string/pref_key_tutorial_enable"
+            android:summary="@string/pref_tutorial_enable_summary"
+            android:title="@string/pref_tutorial_enable_title"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -76,9 +77,9 @@ public class GeneralWebService extends WebService {
         builder.appendQueryParameter("cmd", Constants.SEARCH_APP);
         builder.appendQueryParameter("name", query);
 
-        RequestCallback<List<AndroidApp>> callback = new RequestCallback<List<AndroidApp>>() {
+        RequestCallback<LinkedList<AndroidApp>> callback = new RequestCallback<LinkedList<AndroidApp>>() {
             @Override
-            public void onSuccess(List<AndroidApp> result) {
+            public void onSuccess(LinkedList<AndroidApp> result) {
 
                 // Display the empty text of there's no result
                 adapter.setState(GridAdapter.State.NONE);
@@ -96,7 +97,7 @@ public class GeneralWebService extends WebService {
 
             @Override
             public Type getType() {
-                return new TypeToken<List<AndroidApp>>(){}.getType();
+                return new TypeToken<LinkedList<AndroidApp>>(){}.getType();
             }
         };
 
@@ -168,9 +169,9 @@ public class GeneralWebService extends WebService {
             }
         }
 
-        return get(builder, new RequestCallback<List<AndroidApp>>() {
+        return get(builder, new RequestCallback<LinkedList<AndroidApp>>() {
             @Override
-            public void onSuccess(List<AndroidApp> result) {
+            public void onSuccess(LinkedList<AndroidApp> result) {
 
                 // Display the empty text if there is no result
                 adapter.setState(GridAdapter.State.NONE);
@@ -188,7 +189,7 @@ public class GeneralWebService extends WebService {
 
             @Override
             public Type getType() {
-                return new TypeToken<List<AndroidApp>>(){}.getType();
+                return new TypeToken<LinkedList<AndroidApp>>(){}.getType();
             }
         }, key);
     }

@@ -37,7 +37,7 @@ public class TopicsManager {
      * Call at the beginning of the application
      * @param context Context of the application
      */
-    protected static void init(Context context) {
+    public static void init(Context context) {
         instance = new TopicsManager(context);
     }
 
@@ -49,7 +49,7 @@ public class TopicsManager {
      * Retry to get the information if the lock is available
      * This function is called by the Network listener when the connection turn on
      */
-    protected void awake() {
+    public void awake() {
         if (mObservers.size() > 0 && !mLock.isLocked()) {
             new Initialization().execute();
         }

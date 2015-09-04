@@ -54,4 +54,8 @@ public class Constants {
 
     public static final int POSITIVE_COLOR = 0xff57B05E;
     public static final int NEGATIVE_COLOR = 0xffCC6B6B;
+
+    /** Tutorial **/
+    public static final String KEY_HOME = "TUTORIAL_HOME";
+    public static final String KEY_DETAILS = "TUTORIAL_DETAILS";
 }

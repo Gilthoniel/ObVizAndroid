@@ -25,6 +25,8 @@
     <string name="go_to">See more</string>
     <string name="title_activity_package">My Applications</string>
     <string name="action_clear">Clear History</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="action_spinner_app">Choose app</string>
 
     <!-- Toast messages -->
     <string name="app_not_found">Application not found</string>
@@ -40,10 +42,23 @@
     <!-- Titles -->
     <string name="rating_title">Rating</string>
     <string name="date_title">Publication date</string>
-    <string name="action_spinner_app">Choose app</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preferences -->
     <string name="pref_notifications_title">Notifications</string>
     <string name="pref_notifs_enable_summary">Enable or disable the notifications</string>
     <string name="pref_notifs_enable_title">Enable</string>
     <string name="pref_key_notifs_enable">PREF_KEY_NOTIFS_ENABLE</string>
+    <string name="pref_tutorial_title">Tutorial</string>
+    <string name="pref_key_tutorial_enable">PREF_KEY_TUTORIAL_ENABLE</string>
+    <string name="pref_tutorial_enable_summary">Enable or disable the tutorial when you enter the first time in an activity</string>
+    <string name="pref_tutorial_enable_title">Enable</string>
+
+    <!-- Tutorial -->
+    <string name="tutorial_home_title">Categories</string>
+    <string name="tutorial_home_content">You can choose a category to filter the trend applications</string>
+
+    <string name="tutorial_details_title">Alternatives</string>
+    <string name="tutorial_details_content">
+        Click here to compare the application with your choice. You will check the difference between the opinions
+    </string>
 </resources>
