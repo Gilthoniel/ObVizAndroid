@@ -30,14 +30,19 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
     private ArrayAdapter<String> mSpinnerAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle states) {
+        super.onCreate(states);
         setContentView(R.layout.activity_reviews);
 
-        // Intent management
-        Intent intent = getIntent();
-        mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
-        topicID = intent.getIntExtra(Constants.INTENT_TOPIC_ID, -1);
+        // Get intent or states
+        if (states != null) {
+            mApplication = states.getParcelable(Constants.STATE_APP);
+            topicID = states.getInt(Constants.STATE_TOPIC);
+        } else {
+            Intent intent = getIntent();
+            mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
+            topicID = intent.getIntExtra(Constants.INTENT_TOPIC_ID, -1);
+        }
 
         // Initiate the fragment list
         GridRecyclerView mGridView = (GridRecyclerView) findViewById(R.id.grid_view);
@@ -102,20 +107,13 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onSaveInstanceState(Bundle states) {
 
-        mAdapter.onLoadMore();
+        states.putParcelable(Constants.STATE_APP, mApplication);
+        states.putInt(Constants.STATE_TOPIC, topicID);
+
+        super.onSaveInstanceState(states);
     }
-
-    @Override
-    public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
-        topicID = (int) intent.getLongExtra(Constants.INTENT_TOPIC_ID, -1);
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -41,6 +41,7 @@ public class TrendingFragment extends Fragment {
         if (getView() != null) {
             final GridRecyclerView grid = (GridRecyclerView) getView().findViewById(R.id.grid_view);
             final AppBoxAdapter trendingAdapter = new AppBoxAdapter();
+            // Launch the details activity when the user click on a app box
             trendingAdapter.addOnItemClickListener(new GridAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
@@ -51,6 +52,7 @@ public class TrendingFragment extends Fragment {
                 }
             });
 
+            // Define the maximum number of displayed items related to the screen size
             int max;
             switch (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) {
                 case Configuration.SCREENLAYOUT_SIZE_LARGE:
@@ -78,6 +80,7 @@ public class TrendingFragment extends Fragment {
                     if (spinner.getTag() == null || (Integer) spinner.getTag() != position) {
                         spinner.setTag(position);
 
+                        // If a request is already launch, we cancelled it before
                         if (request != null) {
                             request.cancel();
                         }

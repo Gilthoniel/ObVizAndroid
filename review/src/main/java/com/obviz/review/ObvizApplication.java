@@ -24,7 +24,7 @@ public class ObvizApplication extends Application {
         CategoryManager.init(getApplicationContext());
         DatabaseService.init(getApplicationContext());
         CacheManager.init(getApplicationContext());
-        TopicsManager.init();
+        TopicsManager.init(getApplicationContext());
         ImagesManager.init();
 
         // Add segments for the gauges

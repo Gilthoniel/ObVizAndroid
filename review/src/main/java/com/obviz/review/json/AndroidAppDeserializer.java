@@ -8,6 +8,7 @@ import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.OpinionValue;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -31,6 +32,9 @@ public class AndroidAppDeserializer implements JsonDeserializer<AndroidApp> {
                 opinion.totalReviews = app.getNbParsedReviews();
             }
         }
+
+        Collections.sort(app.getOpinions());
+        Collections.reverse(app.getOpinions());
 
         return app;
     }

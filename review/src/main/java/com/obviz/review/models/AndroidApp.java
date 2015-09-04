@@ -137,11 +137,8 @@ public class AndroidApp implements Parcelable, Serializable {
     public int getBestOpinion() {
 
         if (opinionsSummary != null && opinionsSummary.size() > 0) {
-            if (!Utils.checkSorting(opinionsSummary)) {
-                Collections.sort(opinionsSummary);
-            }
 
-            return opinionsSummary.get(opinionsSummary.size() - 1).topicID;
+            return opinionsSummary.get(0).topicID;
         } else {
 
             return -1;
@@ -151,11 +148,8 @@ public class AndroidApp implements Parcelable, Serializable {
     public int getWorstOpinion() {
 
         if (opinionsSummary != null && opinionsSummary.size() > 0) {
-            if (!Utils.checkSorting(opinionsSummary)) {
-                Collections.sort(opinionsSummary);
-            }
 
-            return opinionsSummary.get(0).topicID;
+            return opinionsSummary.get(opinionsSummary.size() - 1).topicID;
         } else {
 
             return -1;

@@ -9,4 +9,14 @@
 
     </style>
 
+    <!-- Theme for main application -->
+    <style name="MainAppTheme" parent="AppTheme">
+        <item name="colorAccent">@color/appColor</item>
+    </style>
+
+    <!-- Theme for the compared app -->
+    <style name="ComparedAppTheme" parent="AppTheme">
+        <item name="colorAccent">@color/comparisonColor</item>
+    </style>
+
 </resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_notifications_title"
+        android:key="pref_key_notifs">
+
+        <CheckBoxPreference
+            android:key="@string/pref_key_notifs_enable"
+            android:summary="@string/pref_notifs_enable_summary"
+            android:title="@string/pref_notifs_enable_title"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

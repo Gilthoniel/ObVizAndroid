@@ -11,6 +11,40 @@
         layout="@layout/grid_app_box"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/toolbar"/>
+        android:id="@+id/opinions"
+        android:layout_below="@+id/information"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/information"
+        android:layout_below="@+id/toolbar"
+        android:measureWithLargestChild="false"
+        android:gravity="center"
+        android:padding="10dp">
+
+        <RadioButton
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Application"
+            android:id="@+id/radio_app"
+            android:checked="true"
+            android:enabled="true"
+            android:buttonTint="@color/appColor"
+            android:theme="@style/MainAppTheme"
+            android:layout_weight="1"/>
+
+        <RadioButton
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Other app"
+            android:id="@+id/radio_comparison"
+            android:checked="true"
+            android:buttonTint="@color/comparisonColor"
+            android:theme="@style/ComparedAppTheme"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
 </RelativeLayout>

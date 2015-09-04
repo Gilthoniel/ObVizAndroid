@@ -68,12 +68,10 @@ public class ConnectionService {
      * @param <T> Type of the return object
      * @return An instance of the task (cancellable)
      */
-    public <T> HttpTask<T> executeGetRequest(Uri.Builder builder, RequestCallback<T> callback, String cacheKey, boolean cancellable) {
+    public <T> HttpTask<T> executeGetRequest(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
         HttpTask<T> task = new GetTask<>(callback, cacheKey);
-        if (cancellable) {
-            addRequest(task);
-        }
+        addRequest(task);
 
         return (HttpTask<T>) task.executeOnExecutor(executor, builder);
     }

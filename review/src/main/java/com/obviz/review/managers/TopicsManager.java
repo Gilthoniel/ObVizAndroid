@@ -1,18 +1,18 @@
 package com.obviz.review.managers;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
-import com.google.gson.reflect.TypeToken;
 import com.obviz.review.models.Topic;
+import com.obviz.review.service.NetworkChangeReceiver;
 import com.obviz.review.webservice.GeneralWebService;
-import com.obviz.review.webservice.RequestCallback;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by gaylor on 28.07.15.
- * Topic titles, etc ...
+ * Manager to get the Topics
  */
 public class TopicsManager {
 
@@ -22,44 +22,64 @@ public class TopicsManager {
     private Map<Integer, Topic> mTopics;
     private Set<TopicsObserver> mObservers;
     private ReentrantLock mLock;
+    private Context mContext;
 
-    private TopicsManager() {
-        mTopics = new HashMap<>();
-        mObservers = new HashSet<>();
+    private TopicsManager(Context context) {
 
         mLock = new ReentrantLock();
-        mLock.lock();
+        mObservers = new HashSet<>();
+        mContext = context;
 
-        GeneralWebService.instance().getTopics(new TopicsCallback());
+        new Initialization().execute();
     }
 
-    public static void init() {
-        instance = new TopicsManager();
+    /**
+     * Call at the beginning of the application
+     * @param context Context of the application
+     */
+    protected static void init(Context context) {
+        instance = new TopicsManager(context);
     }
 
     public static TopicsManager instance() {
         return instance;
     }
 
-    public Topic getTopic(int topicID, TopicsObserver observer) {
-        if (topicID < 0) {
-            return null;
+    /**
+     * Retry to get the information if the lock is available
+     * This function is called by the Network listener when the connection turn on
+     */
+    protected void awake() {
+        if (mObservers.size() > 0 && !mLock.isLocked()) {
+            new Initialization().execute();
         }
+    }
 
-        mLock.lock();
+    /**
+     * Get a topic by its ID, or null if the data are not already loaded
+     * @param topicID ID of the topic
+     * @param observer instance of the observer where the signal must be sent
+     * @return the topic or null
+     */
+    public Topic getTopic(int topicID, TopicsObserver observer) {
 
-        if (mTopics.containsKey(topicID)) {
+        if (mTopics != null && mTopics.containsKey(topicID)) {
 
-            mLock.unlock();
             return mTopics.get(topicID);
         }
 
-        mObservers.add(observer);
-        GeneralWebService.instance().getTopics(new TopicsCallback());
-
+        if (topicID > 0) {
+            plannedInit(observer);
+        }
         return null;
     }
 
+    /**
+     * Get the title of the topic or an empty String if the data are not loaded
+     * @param topicID ID of the topic
+     * @param observer Observer where to send the signal of loading
+     * @return Title or empty String
+     */
     public String getTitle(int topicID, TopicsObserver observer) {
 
         Topic topic = getTopic(topicID, observer);
@@ -70,38 +90,55 @@ public class TopicsManager {
         }
     }
 
-    public interface TopicsObserver {
-        void onTopicsLoaded();
+    /**
+     * Check if we can plan an initialization
+     * @param observer Observer of the initialization
+     */
+    private void plannedInit(TopicsObserver observer) {
+
+        mObservers.add(observer);
+
+        if (!mLock.isLocked() && NetworkChangeReceiver.isInternetAvailable(mContext)) {
+            new Initialization().execute();
+        }
     }
 
-    private class TopicsCallback implements RequestCallback<List<Topic>> {
-
+    /**
+     * Background task for initialization
+     */
+    private class Initialization extends AsyncTask<Void, Void, Void> {
         @Override
-        public void onSuccess(List<Topic> result) {
+        protected Void doInBackground(Void... voids) {
 
-            instance.mTopics.clear();
+            mLock.lock();
 
-            for (Topic topic : result) {
-                mTopics.put(topic.getID(), topic);
+            mTopics = new HashMap<>();
+
+            List<Topic> topics = GeneralWebService.instance().getTopics();
+            if (topics != null) {
+                for (Topic topic : topics) {
+                    mTopics.put(topic.getID(), topic);
+                }
             }
 
             mLock.unlock();
 
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
             for (TopicsObserver observer : mObservers) {
                 observer.onTopicsLoaded();
             }
             mObservers.clear();
         }
+    }
 
-        @Override
-        public void onFailure(Errors error) {
-            mLock.unlock();
-            Log.e("__TOPICS__", "Error when loading topics: " + error);
-        }
-
-        @Override
-        public Type getType() {
-            return new TypeToken<List<Topic>>(){}.getType();
-        }
+    /**
+     * Interface to signal observers that the topics are loaded
+     */
+    public interface TopicsObserver {
+        void onTopicsLoaded();
     }
 }

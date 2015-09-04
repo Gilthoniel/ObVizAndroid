@@ -23,10 +23,11 @@ import com.obviz.reviews.R;
 public class ActivitySearch extends AppCompatActivity {
 
     private AppBoxAdapter mAdapter;
+    private String mQuery;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle states) {
+        super.onCreate(states);
         setContentView(R.layout.activity_search);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -38,15 +39,18 @@ public class ActivitySearch extends AppCompatActivity {
 
         // Get the intent
         Intent intent = getIntent();
-        String query;
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query = intent.getStringExtra(SearchManager.QUERY);
+            mQuery = intent.getStringExtra(SearchManager.QUERY);
 
             // Add the query in the database
-            DatabaseService.instance().insertHistoryEntry(query);
+            DatabaseService.instance().insertHistoryEntry(mQuery);
+
+        } else if (states != null) {
+
+            mQuery = states.getString(Constants.STATE_SEARCH);
         } else {
 
-            query = intent.getStringExtra(Constants.INTENT_SEARCH);
+            mQuery = intent.getStringExtra(Constants.INTENT_SEARCH);
         }
 
         GridRecyclerView grid = (GridRecyclerView) findViewById(R.id.grid_view);
@@ -55,7 +59,7 @@ public class ActivitySearch extends AppCompatActivity {
         grid.setAdapter(mAdapter);
 
         // Perform the search
-        GeneralWebService.instance().searchApp(query, mAdapter);
+        GeneralWebService.instance().searchApp(mQuery, mAdapter);
     }
 
     @Override
@@ -66,6 +70,11 @@ public class ActivitySearch extends AppCompatActivity {
         ConnectionService.instance.cancel();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle states) {
+        states.putString(Constants.STATE_SEARCH, mQuery);
+        super.onSaveInstanceState(states);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

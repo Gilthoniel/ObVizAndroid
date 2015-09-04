@@ -17,12 +17,13 @@ import com.obviz.reviews.R;
 public class DrawerAdapter extends BaseAdapter {
 
     public static final String[] TITLES = new String[] {
-            "Trending", "My Applications", "Search History", "Favorite"
+            "Trending", "My Applications", "Search History", "Favorite", "Settings"
     };
     public static final int[] ICONS = new int[] {
             R.drawable.ic_trending_up_black_24dp,
             R.drawable.ic_apps_black_24dp,
             R.drawable.ic_history_black_24dp,
+            R.drawable.ic_favorite_black_24dp,
             R.drawable.ic_favorite_black_24dp
     };
 

@@ -1,10 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/details_id"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context="com.obviz.review.DetailsActivity">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/details_id"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:context="com.obviz.review.DetailsActivity">
 
     <include
             android:id="@+id/toolbar"
@@ -21,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/details"
-        android:layout_below="@+id/toolbar"
+        android:layout_below="@+id/title_2"
         android:padding="10dp"
         android:layout_toLeftOf="@+id/grid_view"
         android:layout_alignParentLeft="true"
@@ -140,33 +141,33 @@
 
     </RelativeLayout>
 
-    <GridView
+    <com.obviz.review.views.GridRecyclerView
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/grid_view"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:numColumns="1"
-        android:columnWidth="160dp"
-        android:layout_below="@+id/textView9"
-        android:stretchMode="none"/>
+        android:layout_below="@+id/title_1"
+        android:scrollbars="vertical"
+        app:columnWidth="@dimen/app_box_width"/>
 
 
     <com.obviz.review.views.GridRecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/opinions_grid"
-        android:layout_below="@+id/details"
         android:layout_toLeftOf="@+id/grid_view"
         android:layout_toStartOf="@+id/grid_view"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        app:columnWidth="@dimen/app_box_width"
+        android:layout_below="@+id/title_3"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Alternatives"
-        android:id="@+id/textView9"
+        android:id="@+id/title_1"
         android:layout_below="@+id/toolbar"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -176,5 +177,32 @@
         android:textSize="20sp"
         android:textColor="#ff000000"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Details"
+        android:id="@+id/title_2"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbar"
+        android:layout_toLeftOf="@+id/title_1"
+        android:layout_toStartOf="@+id/title_1"
+        android:padding="10dp"
+        android:textSize="20sp"
+        android:textColor="#ff000000"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Opinions"
+        android:id="@+id/title_3"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textColor="#ff000000"
+        android:textSize="20sp"
+        android:padding="10dp"
+        android:layout_below="@+id/details"/>
 
 </RelativeLayout>
