@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
+
+import com.obviz.review.fragments.DiscoverFragment;
 import com.obviz.review.fragments.FavoriteFragment;
 import com.obviz.review.fragments.HistoryFragment;
 import com.obviz.review.fragments.PackageFragment;
@@ -25,10 +27,12 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
         switch (position) {
 
             case 1:
-                return new PackageFragment();
+                return new DiscoverFragment();
             case 2:
-                return new HistoryFragment();
+                return new PackageFragment();
             case 3:
+                return new HistoryFragment();
+            case 4:
                 return new FavoriteFragment();
             default:
                 return new TrendingFragment();
