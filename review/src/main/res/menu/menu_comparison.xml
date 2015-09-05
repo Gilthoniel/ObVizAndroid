@@ -3,10 +3,4 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.obviz.review.ComparisonActivity">
 
-    <item
-        android:id="@+id/action_go_to"
-        android:title="@string/go_to"
-        android:icon="@drawable/ic_done_white_24dp"
-        app:showAsAction="ifRoom|withText" />
-
 </menu>

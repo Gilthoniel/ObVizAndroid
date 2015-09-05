@@ -46,10 +46,16 @@ public class Constants {
 
     public static final String STATE_APP = "com.obviz.review.APP";
     public static final String STATE_TOPIC = "com.obviz.review.TOPIC";
+    public static final String STATE_SEARCH = "com.obviz.review.SEARCH";
+    public static final String STATE_COMPARISON = "com.obviz.reviewe.COMPARISON";
 
     /** Gauge **/
     public static final List<GaugeChart.Segment> CHART_SEGMENTS = new LinkedList<>();
 
     public static final int POSITIVE_COLOR = 0xff57B05E;
     public static final int NEGATIVE_COLOR = 0xffCC6B6B;
+
+    /** Tutorial **/
+    public static final String KEY_HOME = "TUTORIAL_HOME";
+    public static final String KEY_DETAILS = "TUTORIAL_DETAILS";
 }

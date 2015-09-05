@@ -26,24 +26,16 @@ import java.io.Serializable;
  */
 public class DetailsOpinionsFragment extends Fragment {
 
-    private GridRecyclerView mGridView;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {
         View view = inflater.inflate(R.layout.grid_app_box, container, false);
 
-        mGridView = (GridRecyclerView) view.findViewById(R.id.grid_view);
+        GridRecyclerView gridView = (GridRecyclerView) view.findViewById(R.id.grid_view);
+        AndroidApp app = getArguments().getParcelable(Constants.STATE_APP);
+
+        populateOpinions(gridView, app);
 
         return view;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle states) {
-        super.onActivityCreated(states);
-
-        AndroidApp app = ((DetailsActivity) getActivity()).getListApplications().get(0);
-
-        populateOpinions(mGridView, app);
     }
 
     public static void populateOpinions(final GridRecyclerView grid, final AndroidApp app) {
@@ -53,8 +45,6 @@ public class DetailsOpinionsFragment extends Fragment {
             @Override
             public void onClick(int position) {
                 OpinionValue opinion = adapter.getItem(position);
-
-
 
                 Intent intent = new Intent(grid.getContext(), ReviewsActivity.class);
 

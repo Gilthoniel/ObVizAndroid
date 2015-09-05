@@ -9,12 +9,16 @@ import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
 import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.CacheManager;
-import com.obviz.review.managers.CategoryManager;
 import com.obviz.review.models.*;
 import com.obviz.review.webservice.tasks.HttpTask;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -73,9 +77,9 @@ public class GeneralWebService extends WebService {
         builder.appendQueryParameter("cmd", Constants.SEARCH_APP);
         builder.appendQueryParameter("name", query);
 
-        RequestCallback<List<AndroidApp>> callback = new RequestCallback<List<AndroidApp>>() {
+        RequestCallback<LinkedList<AndroidApp>> callback = new RequestCallback<LinkedList<AndroidApp>>() {
             @Override
-            public void onSuccess(List<AndroidApp> result) {
+            public void onSuccess(LinkedList<AndroidApp> result) {
 
                 // Display the empty text of there's no result
                 adapter.setState(GridAdapter.State.NONE);
@@ -93,7 +97,7 @@ public class GeneralWebService extends WebService {
 
             @Override
             public Type getType() {
-                return new TypeToken<List<AndroidApp>>(){}.getType();
+                return new TypeToken<LinkedList<AndroidApp>>(){}.getType();
             }
         };
 
@@ -156,7 +160,7 @@ public class GeneralWebService extends WebService {
         builder.appendQueryParameter("cmd", Constants.GET_TRENDING_APPS);
         if (superCategory != null) {
             List<String> json = new ArrayList<>();
-            for (Category category : CategoryManager.instance().getCategories(superCategory._id)) {
+            for (Category category : superCategory.categories) {
                 json.add(category.category);
             }
 
@@ -165,9 +169,9 @@ public class GeneralWebService extends WebService {
             }
         }
 
-        return get(builder, new RequestCallback<List<AndroidApp>>() {
+        return get(builder, new RequestCallback<LinkedList<AndroidApp>>() {
             @Override
-            public void onSuccess(List<AndroidApp> result) {
+            public void onSuccess(LinkedList<AndroidApp> result) {
 
                 // Display the empty text if there is no result
                 adapter.setState(GridAdapter.State.NONE);
@@ -185,7 +189,7 @@ public class GeneralWebService extends WebService {
 
             @Override
             public Type getType() {
-                return new TypeToken<List<AndroidApp>>(){}.getType();
+                return new TypeToken<LinkedList<AndroidApp>>(){}.getType();
             }
         }, key);
     }
@@ -193,31 +197,62 @@ public class GeneralWebService extends WebService {
     /**
      * Load the list of topics for the opinions of the app
      */
-    public void getTopics(RequestCallback<List<Topic>> callback) {
+    public List<Topic> getTopics() {
 
-        Uri.Builder builder = new Uri.Builder();
-        builder.encodedPath(Constants.URL);
-        builder.appendQueryParameter("cmd", Constants.GET_TOPIC_TITLES);
+        try {
+            Uri.Builder builder = new Uri.Builder();
+            builder.encodedPath(Constants.URL);
+            builder.appendQueryParameter("cmd", Constants.GET_TOPIC_TITLES);
 
-        ConnectionService.instance.executeGetRequest(builder, callback, null, false);
+            URL url = new URL(builder.build().toString());
+            URLConnection connection = url.openConnection();
+
+            return MessageParser.fromJson(new InputStreamReader(connection.getInputStream()),
+                    new TypeToken<List<Topic>>(){}.getType());
+
+        } catch (IOException e) {
+
+            Log.e("__TOPICS__", "Message: " + e.getMessage());
+            return null;
+        }
     }
 
-    public void getCategories(RequestCallback<List<Category>> callback) {
+    public List<Category> getCategories() {
 
-        Uri.Builder builder = new Uri.Builder();
-        builder.encodedPath(Constants.URL);
-        builder.appendQueryParameter("cmd", Constants.GET_CATEGORIES);
+        try {
+            Uri.Builder builder = new Uri.Builder();
+            builder.encodedPath(Constants.URL);
+            builder.appendQueryParameter("cmd", Constants.GET_CATEGORIES);
 
-        ConnectionService.instance.executeGetRequest(builder, callback, null, false);
+            URL url = new URL(builder.build().toString());
+            URLConnection connection = url.openConnection();
+            return MessageParser.fromJson(new InputStreamReader(connection.getInputStream()),
+                    new TypeToken<List<Category>>(){}.getType());
+
+        } catch (IOException e) {
+
+            Log.e("__CATEGORIES__", "Message: " + e.getMessage());
+            return null;
+        }
     }
 
-    public void getSuperCategories(RequestCallback<List<SuperCategory>> callback) {
+    public List<SuperCategory> getSuperCategories() {
 
-        Uri.Builder builder = new Uri.Builder();
-        builder.encodedPath(Constants.URL);
-        builder.appendQueryParameter("cmd", Constants.GET_CATEGORIES_TYPES);
+        try {
+            Uri.Builder builder = new Uri.Builder();
+            builder.encodedPath(Constants.URL);
+            builder.appendQueryParameter("cmd", Constants.GET_CATEGORIES_TYPES);
 
-        ConnectionService.instance.executeGetRequest(builder, callback, null, false);
+            URL url = new URL(builder.build().toString());
+            URLConnection connection = url.openConnection();
+            return MessageParser.fromJson(new InputStreamReader(connection.getInputStream()),
+                    new TypeToken<List<SuperCategory>>(){}.getType());
+
+        } catch (IOException e) {
+
+            Log.e("__CATEGORIES__", "Message: " + e.getMessage());
+            return null;
+        }
     }
 
     /* POST requests */

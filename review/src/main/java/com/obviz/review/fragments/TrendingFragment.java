@@ -10,11 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
 import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.adapters.SuperCategoryAdapter;
+import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.tasks.HttpTask;
@@ -41,6 +46,7 @@ public class TrendingFragment extends Fragment {
         if (getView() != null) {
             final GridRecyclerView grid = (GridRecyclerView) getView().findViewById(R.id.grid_view);
             final AppBoxAdapter trendingAdapter = new AppBoxAdapter();
+            // Launch the details activity when the user click on a app box
             trendingAdapter.addOnItemClickListener(new GridAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
@@ -51,6 +57,7 @@ public class TrendingFragment extends Fragment {
                 }
             });
 
+            // Define the maximum number of displayed items related to the screen size
             int max;
             switch (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) {
                 case Configuration.SCREENLAYOUT_SIZE_LARGE:
@@ -78,6 +85,7 @@ public class TrendingFragment extends Fragment {
                     if (spinner.getTag() == null || (Integer) spinner.getTag() != position) {
                         spinner.setTag(position);
 
+                        // If a request is already launch, we cancelled it before
                         if (request != null) {
                             request.cancel();
                         }
@@ -91,5 +99,18 @@ public class TrendingFragment extends Fragment {
                 }
             });
         }
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle states) {
+        /* Enable Tutorial */
+        Target target = new ViewTarget(R.id.spinner, getActivity());
+        TutorialManager.Builder builder = new TutorialManager.Builder();
+        builder.mTitle = getResources().getString(R.string.tutorial_home_title);
+        builder.mText = getResources().getString(R.string.tutorial_home_content);
+        builder.mTarget = target;
+        builder.mKey = Constants.KEY_HOME;
+
+        builder.show(getActivity());
     }
 }

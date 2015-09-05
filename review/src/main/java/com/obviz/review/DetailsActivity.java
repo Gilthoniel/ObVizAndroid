@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.obviz.review.adapters.DetailsPagerAdapter;
 import com.obviz.review.adapters.GaugeAdapter;
 import com.obviz.review.database.DatabaseService;
@@ -22,6 +24,7 @@ import com.obviz.review.fragments.DetailsFragment;
 import com.obviz.review.fragments.DetailsOpinionsFragment;
 import com.obviz.review.managers.CategoryManager;
 import com.obviz.review.managers.ImageObserver;
+import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.ConnectionService;
@@ -115,6 +118,25 @@ public class DetailsActivity extends AppCompatActivity
         if (mMenu != null) {
             mMenu.findItem(R.id.action_install).setEnabled(true);
         }
+    }
+
+    @Override
+    public void onPostCreate(Bundle states)  {
+        super.onPostCreate(states);
+
+        /* Tutorial */
+        Target target;
+        if (findViewById(R.id.title_1) != null) {
+            target = new ViewTarget(R.id.title_1, this);
+        } else {
+            target = new ViewTarget(R.id.tabs, this);
+        }
+        TutorialManager.Builder builder = new TutorialManager.Builder();
+        builder.mTarget = target;
+        builder.mTitle = getResources().getString(R.string.tutorial_details_title);
+        builder.mText = getResources().getString(R.string.tutorial_details_content);
+        builder.mKey = Constants.KEY_DETAILS;
+        builder.show(this);
     }
 
     @Override

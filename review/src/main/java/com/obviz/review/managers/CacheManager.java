@@ -5,12 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
-import com.obviz.review.Constants;
-import com.obviz.review.models.Category;
 import com.obviz.review.models.SuperCategory;
 
 import java.io.*;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -152,7 +149,7 @@ public class CacheManager {
      * @param key Key of the entry
      * @param object Object : MUST implement Serializable
      */
-    public void add(String key, Object object, int expiration) {
+    public <T extends Object & Serializable> void add(String key, T object, int expiration) {
 
         synchronized (mDiskCacheLock) {
             try {
@@ -177,7 +174,12 @@ public class CacheManager {
         }
     }
 
-    public void add(String key, Object object) {
+    /**
+     * Add an object to the cache without expiration time
+     * @param key Key of the object
+     * @param object Must implement Serializable
+     */
+    public <T extends Object & Serializable> void add(String key, T object) {
         add(key, object, 0);
     }
 
@@ -209,6 +211,10 @@ public class CacheManager {
         }
     }
 
+    /**
+     * Helper for the keys of the cache
+     * Keys must correspond to mPattern
+     */
     public static class KeyBuilder {
 
         public static final KeyBuilder instance = new KeyBuilder();

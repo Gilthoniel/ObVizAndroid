@@ -31,12 +31,9 @@ public class DetailsFragment extends Fragment implements ImageObserver, Category
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle states) {
 
-        if (states != null) {
-
-            mApplication = states.getParcelable(Constants.STATE_APP);
-        } else {
-
-            mApplication = getArguments().getParcelable(Constants.STATE_APP);
+        mApplication = getArguments().getParcelable(Constants.STATE_APP);
+        if (mApplication == null) {
+            throw new IllegalStateException("Arguments must be defined to instantiate this fragment");
         }
 
         RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_details, parent, false);
@@ -47,13 +44,6 @@ public class DetailsFragment extends Fragment implements ImageObserver, Category
         populateDetailsField(mApplication, view, this);
 
         return view;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle states) {
-        states.putParcelable(Constants.STATE_APP, mApplication);
-
-        super.onSaveInstanceState(states);
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.obviz.review.Constants;
 import com.obviz.review.webservice.tasks.HttpTask;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -19,9 +20,9 @@ public abstract class WebService {
      * @param callback call when the request is over
      * @param <T> Type of the object requested
      */
-    public <T> HttpTask<T> get(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
+    public <T extends Serializable> HttpTask<T> get(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
-        return ConnectionService.instance.executeGetRequest(builder, callback, cacheKey, true);
+        return ConnectionService.instance.executeGetRequest(builder, callback, cacheKey);
     }
 
     /**

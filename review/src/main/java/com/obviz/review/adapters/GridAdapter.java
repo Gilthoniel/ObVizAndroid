@@ -33,48 +33,86 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
         mMax = 0;
     }
 
+    /**
+     * Change the state of the empty view
+     * @param state Can be NONE, LOADING or ERRORS
+     */
     public void setState(State state) {
         mState = state;
     }
 
+    /**
+     * With a value > 0, enable the maximum displayed items
+     * @param value number of max items displayed
+     */
     public void setMax(int value) {
         mMax = value;
     }
 
+    /**
+     * Add items in the list and notify the view
+     * @param collection values to add
+     */
     public void addAll(Collection<T> collection) {
         items.addAll(collection);
         notifyDataSetChanged();
     }
 
+    /**
+     * Add one item and notify the view
+     * @param item Item to add
+     */
     public void add(T item) {
         items.add(item);
         notifyDataSetChanged();
     }
 
+    /**
+     * Mix the order of the items
+     */
     public void shuffle() {
         Collections.shuffle(items);
         notifyDataSetChanged();
     }
 
+    /**
+     * Get the object of the item at the position choosen
+     * @param position of the item
+     * @return the item
+     */
     public T getItem(int position) {
         return items.get(position);
     }
 
+    /**
+     * Empty the list and notify the list
+     */
     public void clear() {
         items.clear();
         notifyDataSetChanged();
     }
 
+    /**
+     * Add a listener for the click on an item
+     * @param listener OnItemClickListener
+     */
     public void addOnItemClickListener(OnItemClickListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Subclass must override this function to return a value for the TYPE_ITEM
+     * @param parent Parent of the Grid
+     * @param viewType Type of the item which must be created
+     * @return the view fo the child
+     */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
+        // Inflate the view for the good type
         switch (viewType) {
             case TYPE_LOADER:
                 view = inflater.inflate(R.layout.grid_loader, parent, false);
@@ -109,6 +147,7 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
         view.position = position;
 
         if (items.size() > position) {
+            // If we have an item type, we populate it with the information
             view.onPopulate(items.get(position));
         }
     }
@@ -120,7 +159,7 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
 
             return TYPE_ITEM;
         } else {
-
+            // If the list of items is empty, we return the type of the view related to the state
             switch (mState) {
                 case NONE:
                     return TYPE_EMPTY;
@@ -135,7 +174,9 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
     @Override
     public int getItemCount() {
 
+        // Return 1 if the list is zero, to display the empty view
         if (mMax <= 0) {
+
             return items.size() > 0 ? items.size() : 1;
         } else {
 
@@ -143,8 +184,12 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
         }
     }
 
+    /**
+     * Child of the RecyclerView
+     */
     public abstract class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        // position of the child in the grid view
         private int position;
 
         public ViewHolder(View view) {
@@ -155,6 +200,7 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
 
         @Override
         public void onClick(View v) {
+            // Notify the listeners that a click occurred on this child
             for (OnItemClickListener listener : listeners) {
                 listener.onClick(position);
             }
@@ -163,6 +209,9 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
         public abstract void onPopulate(T item);
     }
 
+    /**
+     * Child click interface
+     */
     public interface OnItemClickListener {
         void onClick(int position);
     }

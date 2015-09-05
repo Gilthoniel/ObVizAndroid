@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 /**
  * Created by gaylor on 29.07.15.
- *
+ * Display the reviews for the two apps and a specific topic
  */
 public class ComparisonReviewsFragment extends Fragment {
 

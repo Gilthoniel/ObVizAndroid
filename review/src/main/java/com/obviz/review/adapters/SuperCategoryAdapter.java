@@ -1,7 +1,6 @@
 package com.obviz.review.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +15,9 @@ import java.util.List;
 
 /**
  * Created by gaylor on 08/31/2015.
- * Adapter for the super categories
+ * Spinner adapter for the super categories
  */
-public class SuperCategoryAdapter extends BaseAdapter {
+public class SuperCategoryAdapter extends BaseAdapter implements CategoryManager.CategoryObserver {
 
     private Context mContext;
     private List<SuperCategory> mCategories;
@@ -27,12 +26,18 @@ public class SuperCategoryAdapter extends BaseAdapter {
         mContext = context;
         mCategories = new LinkedList<>();
         mCategories.add(SuperCategory.getBaseSuperCategory());
-        for (SuperCategory category : CategoryManager.instance().getSupers()) {
+
+        onCategoriesLoaded();
+    }
+
+    @Override
+    public void onCategoriesLoaded() {
+
+        for (SuperCategory category : CategoryManager.instance().getSupers(this)) {
             if (category.active) {
                 mCategories.add(category);
             }
         }
-
         notifyDataSetChanged();
     }
 

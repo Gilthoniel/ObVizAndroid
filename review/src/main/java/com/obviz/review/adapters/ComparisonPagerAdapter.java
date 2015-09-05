@@ -11,7 +11,7 @@ import java.util.*;
 
 /**
  * Created by gaylor on 29.07.15.
- *
+ * Pager for the ReviewsComparisonActivity
  */
 public class ComparisonPagerAdapter extends FragmentPagerAdapter {
 

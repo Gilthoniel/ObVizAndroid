@@ -6,9 +6,12 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import com.obviz.review.HomeActivity;
+import com.obviz.review.SettingsActivity;
 import com.obviz.reviews.R;
 
 import java.util.Calendar;
@@ -50,7 +53,18 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
         }
     }
 
+    /**
+     * Helper to set an alarm if it is enable
+     * @param context Context of the application
+     */
     public static void setAlarm(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String key = context.getResources().getString(R.string.pref_key_notifs_enable);
+        if (!preferences.getBoolean(key, true)) {
+            Log.i("__ALARM__", "disabled");
+            return;
+        }
+
         // Set the notification alarm task if not already done
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent alarmIntent = new Intent(context, AlarmTaskReceiver.class);

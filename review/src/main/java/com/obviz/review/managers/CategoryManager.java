@@ -1,16 +1,12 @@
 package com.obviz.review.managers;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-import com.google.gson.reflect.TypeToken;
+import android.os.AsyncTask;
 import com.obviz.review.models.Category;
 import com.obviz.review.models.SuperCategory;
+import com.obviz.review.service.NetworkChangeReceiver;
 import com.obviz.review.webservice.GeneralWebService;
-import com.obviz.review.webservice.RequestCallback;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,148 +19,110 @@ public class CategoryManager {
     private static CategoryManager instance;
 
     private Map<String, Category> mCategories;
-    private Map<Integer, List<Category>> mTypes;
-    private Map<Integer, SuperCategory> mTypeTitles;
+    private Map<Integer, SuperCategory> mTypes;
     private Set<CategoryObserver> mObservers;
-    private Context mContext;
     private ReentrantLock mLock;
+    private Context mContext;
 
-    private CategoryManager() {}
+    private CategoryManager(Context context) {
+        mLock = new ReentrantLock();
+        mObservers = new HashSet<>();
+        mContext = context;
+
+        new Initialization().execute();
+    }
 
     public static void init(Context context) {
-        instance = new CategoryManager();
-
-        instance.mLock = new ReentrantLock();
-        instance.mLock.lock();
-        //Log.i("_INSTANCE_", instance.mLock.toString());
-
-        instance.mCategories = new HashMap<>();
-        instance.mTypes = new HashMap<>();
-        instance.mTypeTitles = new HashMap<>();
-        instance.mObservers = new HashSet<>();
-        instance.mContext = context;
-
-        GeneralWebService.instance().getSuperCategories(new SuperCategoryCallback());
+        instance = new CategoryManager(context);
     }
 
     public static CategoryManager instance() {
         return instance;
     }
 
-    public Category getFrom(String category, CategoryObserver observer) {
+    public void awake() {
+        if (mObservers.size() > 0 && !mLock.isLocked()) {
+            new Initialization().execute();
+        }
+    }
 
-        mLock.lock();
+    public Category getFrom(String category, CategoryObserver observer) {
 
         if (mCategories.containsKey(category)) {
 
-            mLock.unlock();
             return mCategories.get(category);
 
-        } else if (isInternetAvailable()) {
-
-            mObservers.add(observer);
-            GeneralWebService.instance().getSuperCategories(new SuperCategoryCallback());
         }
 
+        plannedInit(observer);
         return Category.instanceDefault;
     }
 
-    public Collection<SuperCategory> getSupers() {
+    public Collection<SuperCategory> getSupers(CategoryObserver observer) {
 
-        //Log.i("_INSTANCE_", mLock.toString());
-        mLock.lock();
-
-        Collection<SuperCategory> list = mTypeTitles.values();
-
-        mLock.unlock();
-
-        return list;
-    }
-
-    public List<Category> getCategories(int id) {
-
-        if (id == 0) {
-            return Collections.emptyList();
+        if (mTypes != null && !mTypes.isEmpty()) {
+            return mTypes.values();
         }
 
-        mLock.lock();
-        List<Category> list = mTypes.get(id);
-        mLock.unlock();
-
-        return list;
+        plannedInit(observer);
+        return Collections.emptyList();
     }
 
     public interface CategoryObserver {
         void onCategoriesLoaded();
     }
 
-    private static class SuperCategoryCallback implements RequestCallback<List<SuperCategory>> {
+    /* PRIVATE FUNCTIONS */
 
-        @Override
-        public void onSuccess(List<SuperCategory> result) {
+    private void plannedInit(CategoryObserver observer) {
+        mObservers.add(observer);
 
-            instance.mTypes.clear();
-            instance.mTypeTitles.clear();
-            instance.mCategories.clear();
-
-            for (SuperCategory type : result) {
-                instance.mTypes.put(type._id, new LinkedList<Category>());
-                instance.mTypeTitles.put(type._id, type);
-            }
-
-            GeneralWebService.instance().getCategories(new CategoryCallback());
-        }
-
-        @Override
-        public void onFailure(Errors error) {
-            Log.e("__SUPER_CATEGORIES__", "Error when loading: "+error);
-            instance.mLock.unlock();
-        }
-
-        @Override
-        public Type getType() {
-            return new TypeToken<List<SuperCategory>>(){}.getType();
+        if (!mLock.isLocked() && NetworkChangeReceiver.isInternetAvailable(mContext)) {
+            new Initialization().execute();
         }
     }
 
-    private static class CategoryCallback implements RequestCallback<List<Category>> {
+    private class Initialization extends AsyncTask<Void, Void, Void> {
 
         @Override
-        public void onSuccess(List<Category> result) {
-            for (Category category : result) {
-                instance.mCategories.put(category.category, category);
+        protected Void doInBackground(Void... voids) {
 
-                for (int type : category.types) {
-                    instance.mTypes.get(type).add(category);
+            mLock.lock();
+
+            mCategories = new HashMap<>();
+            mTypes = new HashMap<>();
+
+            List<Category> categories = GeneralWebService.instance().getCategories();
+            List<SuperCategory> types = GeneralWebService.instance().getSuperCategories();
+
+            if (types != null) {
+                for (SuperCategory type : types) {
+                    type.categories = new LinkedList<>();
+                    mTypes.put(type._id, type);
+                }
+
+                if (categories != null) {
+                    for (Category category : categories) {
+                        mCategories.put(category.category, category);
+
+                        for (int type : category.types) {
+                            mTypes.get(type).categories.add(category);
+                        }
+                    }
                 }
             }
 
-            instance.mLock.unlock();
+            mLock.unlock();
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void nothing) {
             for (CategoryObserver observer : instance.mObservers) {
                 observer.onCategoriesLoaded();
             }
-            instance.mObservers.clear();
+            mObservers.clear();
         }
-
-        @Override
-        public void onFailure(Errors error) {
-            Log.e("__CATEGORIES__", "Error when loading: "+error);
-            instance.mLock.unlock();
-        }
-
-        @Override
-        public Type getType() {
-            return new TypeToken<List<Category>>(){}.getType();
-        }
-    }
-
-    /* PRIVATE FUNCTIONS */
-
-    private boolean isInternetAvailable() {
-
-        ConnectivityManager manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info = manager.getActiveNetworkInfo();
-
-        return info != null && info.isConnected();
     }
 }

@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RadioButton;
 import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.GaugeAdapter;
 import com.obviz.review.adapters.GridAdapter;
@@ -34,15 +36,43 @@ public class ComparisonActivity extends AppCompatActivity implements GaugeAdapte
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle states) {
+        super.onCreate(states);
         setContentView(R.layout.activity_comparison);
 
-        Intent intent = getIntent();
-        mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
-        mComparison = intent.getParcelableExtra(Constants.INTENT_COMPARISON_APP);
+        if (states == null) {
+
+            Intent intent = getIntent();
+            mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
+            mComparison = intent.getParcelableExtra(Constants.INTENT_COMPARISON_APP);
+        } else {
+
+            mApplication = states.getParcelable(Constants.STATE_APP);
+            mComparison = states.getParcelable(Constants.STATE_COMPARISON);
+        }
 
         if (mApplication != null && mComparison != null) {
+
+            RadioButton radioApp = (RadioButton) findViewById(R.id.radio_app);
+            radioApp.setText(mApplication.getName());
+            radioApp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
+
+            RadioButton radioComparison = (RadioButton) findViewById(R.id.radio_comparison);
+            radioComparison.setText(mComparison.getName());
+            radioComparison.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(), DetailsActivity.class);
+                    intent.putExtra(Constants.INTENT_APP, (Parcelable) mComparison);
+
+                    startActivity(intent);
+                }
+            });
 
             GridRecyclerView grid = (GridRecyclerView) findViewById(R.id.grid_view);
             final GaugeAdapter adapter = new GaugeAdapter(this);
@@ -78,27 +108,15 @@ public class ComparisonActivity extends AppCompatActivity implements GaugeAdapte
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_comparison, menu);
-        return true;
+    public void onSaveInstanceState(Bundle states) {
+
+        states.putParcelable(Constants.STATE_APP, mApplication);
+        states.putParcelable(Constants.STATE_COMPARISON, mComparison);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.action_go_to:
-                Intent intent = new Intent(this, DetailsActivity.class);
-                intent.putExtra(Constants.INTENT_APP, (Parcelable) mComparison);
-
-                startActivity(intent);
-                break;
-
-            case android.R.id.home:
-                onBackPressed();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_comparison, menu);
+        return true;
     }
 }

@@ -28,20 +28,24 @@ public class DetailsPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
+        Fragment fragment;
+        Bundle args = new Bundle();
+        args.putParcelable(Constants.STATE_APP, mApplication);
+
         switch (position) {
             case 2:
-                return new DetailsComparisonFragment();
+                fragment = new DetailsComparisonFragment();
+                break;
             case 1:
-                return new DetailsOpinionsFragment();
+                fragment = new DetailsOpinionsFragment();
+                break;
             default:
-                DetailsFragment fragment = new DetailsFragment();
-
-                Bundle args = new Bundle();
-                args.putParcelable(Constants.STATE_APP, mApplication);
-
-                fragment.setArguments(args);
-                return fragment;
+                fragment = new DetailsFragment();
+                break;
         }
+
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override

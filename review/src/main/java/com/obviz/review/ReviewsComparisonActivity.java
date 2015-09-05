@@ -24,35 +24,38 @@ import java.util.List;
 
 public class ReviewsComparisonActivity extends AppCompatActivity implements TopicsManager.TopicsObserver {
 
-    private ViewPager mPager;
-    private SlidingTabLayout mTabs;
-    private ComparisonPagerAdapter mAdapter;
     private AndroidApp mApplication;
     private AndroidApp mComparison;
     private int mTopicID;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle states) {
+        super.onCreate(states);
         setContentView(R.layout.activity_reviews_comparison);
 
-        Intent intent = getIntent();
-        mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
-        mComparison = intent.getParcelableExtra(Constants.INTENT_COMPARISON_APP);
-        mTopicID = intent.getIntExtra(Constants.INTENT_TOPIC_ID, -1);
+        if (states != null) {
+            mApplication = states.getParcelable(Constants.STATE_APP);
+            mComparison = states.getParcelable(Constants.STATE_COMPARISON);
+            mTopicID = states.getInt(Constants.STATE_TOPIC);
+        } else {
+            Intent intent = getIntent();
+            mApplication = intent.getParcelableExtra(Constants.INTENT_APP);
+            mComparison = intent.getParcelableExtra(Constants.INTENT_COMPARISON_APP);
+            mTopicID = intent.getIntExtra(Constants.INTENT_TOPIC_ID, -1);
+        }
 
         // Try to acquire the topic title
         onTopicsLoaded();
 
         /* Tabs initialization */
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mAdapter = new ComparisonPagerAdapter(getSupportFragmentManager(), mTopicID);
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
+        ComparisonPagerAdapter mAdapter = new ComparisonPagerAdapter(getSupportFragmentManager(), mTopicID);
         mAdapter.addPage(mApplication);
         mAdapter.addPage(mComparison);
 
         mPager.setAdapter(mAdapter);
 
-        mTabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        SlidingTabLayout mTabs = (SlidingTabLayout) findViewById(R.id.tabs);
         mTabs.setDistributeEvenly(true);
         mTabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
@@ -78,6 +81,16 @@ public class ReviewsComparisonActivity extends AppCompatActivity implements Topi
         super.onPause();
 
         ConnectionService.instance.cancel();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle states) {
+
+        states.putParcelable(Constants.STATE_APP, mApplication);
+        states.putParcelable(Constants.STATE_COMPARISON, mComparison);
+        states.putInt(Constants.STATE_TOPIC, mTopicID);
+
+        super.onSaveInstanceState(states);
     }
 
     @Override

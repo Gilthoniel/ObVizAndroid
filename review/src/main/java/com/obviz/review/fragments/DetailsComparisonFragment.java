@@ -28,23 +28,15 @@ import java.util.Iterator;
  */
 public class DetailsComparisonFragment extends Fragment {
 
-    private View mParent;
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {
 
-        mParent = inflater.inflate(R.layout.grid_app_box, container, false);
-        return mParent;
-    }
+        View view = inflater.inflate(R.layout.grid_app_box, container, false);
 
-    @Override
-    public void onActivityCreated(Bundle states) {
-        super.onActivityCreated(states);
+        AndroidApp application = getArguments().getParcelable(Constants.STATE_APP);
+        populateAlternatives(application, view);
 
-        DetailsActivity parent = (DetailsActivity) getActivity();
-        AndroidApp mApplication = parent.getListApplications().get(0);
-
-        populateAlternatives(mApplication, mParent);
+        return view;
     }
 
     public static void populateAlternatives(final AndroidApp application, final View view) {
@@ -54,6 +46,7 @@ public class DetailsComparisonFragment extends Fragment {
         adapter.addOnItemClickListener(new GridAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
+                // Launch the ComparisonActivity with a click on an opinion
                 AndroidApp app = adapter.getItem(position);
 
                 Intent intent = new Intent(view.getContext(), ComparisonActivity.class);
@@ -83,9 +76,7 @@ public class DetailsComparisonFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(Errors error) {
-
-                }
+                public void onFailure(Errors error) {}
 
                 @Override
                 public Type getType() {

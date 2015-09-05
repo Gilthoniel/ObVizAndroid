@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.obviz.reviews" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.obviz.reviews" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="ANDROID.PERMISSION.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="ANDROID.PERMISSION.DELETE_CACHE_FILES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.access_network_state" />
 
     <application
+        android:name="com.obviz.review.ObvizApplication"
         android:allowBackup="true"
         android:icon="@drawable/favicon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="com.obviz.review.ObvizApplication">
-
+        android:theme="@style/AppTheme" >
         <activity
             android:name="com.obviz.review.HomeActivity"
             android:label="@string/app_name"
@@ -70,13 +70,21 @@
 
         <receiver
             android:name="com.obviz.review.service.AlarmTaskReceiver"
-            android:enabled="true">
-
+            android:enabled="true" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-
         </receiver>
+        <receiver android:name="com.obviz.review.service.NetworkChangeReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.obviz.review.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
 </manifest>

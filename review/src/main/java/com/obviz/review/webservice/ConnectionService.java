@@ -7,6 +7,7 @@ import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.review.webservice.tasks.ImageTask;
 import com.obviz.review.webservice.tasks.PostTask;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -68,12 +69,10 @@ public class ConnectionService {
      * @param <T> Type of the return object
      * @return An instance of the task (cancellable)
      */
-    public <T> HttpTask<T> executeGetRequest(Uri.Builder builder, RequestCallback<T> callback, String cacheKey, boolean cancellable) {
+    public <T extends Serializable> HttpTask<T> executeGetRequest(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
         HttpTask<T> task = new GetTask<>(callback, cacheKey);
-        if (cancellable) {
-            addRequest(task);
-        }
+        addRequest(task);
 
         return (HttpTask<T>) task.executeOnExecutor(executor, builder);
     }
