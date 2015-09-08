@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import com.obviz.review.managers.CategoryManager;
 import com.obviz.review.managers.TopicsManager;
+import com.obviz.review.webservice.ConnectionService;
 
 /**
  * Created by gaylor on 09/04/2015.
@@ -20,6 +21,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         if (isInternetAvailable(context)) {
             CategoryManager.instance().awake();
             TopicsManager.instance().awake();
+            ConnectionService.instance().awakeAll();
         }
     }
 

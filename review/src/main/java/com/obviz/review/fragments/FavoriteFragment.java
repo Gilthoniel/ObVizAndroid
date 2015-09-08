@@ -1,7 +1,9 @@
 package com.obviz.review.fragments;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -14,10 +16,10 @@ import android.widget.Toast;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
 import com.obviz.review.adapters.FavoriteAdapter;
+import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
-import com.obviz.review.webservice.WebService;
 import com.obviz.reviews.R;
 
 import java.lang.reflect.Type;
@@ -26,9 +28,40 @@ import java.lang.reflect.Type;
  * Created by gaylor on 08/25/2015.
  * Fragment where we find the favorite application of the user
  */
-public class FavoriteFragment extends ListFragment {
+public class FavoriteFragment extends ListFragment implements HomeFragment {
 
     private FavoriteAdapter mAdapter;
+    private Context mContext;
+
+    @Override
+    public void showTutorial() {
+        if (getView() == null) {
+            return;
+        }
+
+        TutorialManager.single((Activity) mContext)
+                .setTarget(getView().findViewById(R.id.showcase_target))
+                .setContentText(getResources().getString(R.string.tutorial_favorite))
+                .singleUse(Constants.TUTORIAL_FAVORITE_KEY)
+                .show();
+    }
+
+    @Override
+    public String getTitle() {
+        return "Favorite";
+    }
+
+    @Override
+    public int getIcon() {
+        return R.drawable.ic_favorite_black_24dp;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        mContext = context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle states) {

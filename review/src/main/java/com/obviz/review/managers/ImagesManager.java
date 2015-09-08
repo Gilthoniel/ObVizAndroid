@@ -4,10 +4,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import com.obviz.review.webservice.GeneralWebService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by gaylor on 23.07.15.
@@ -28,14 +25,6 @@ public class ImagesManager {
     }
 
     public static ImagesManager instance() {
-        return instance;
-    }
-
-    /**
-     * Get the singleton
-     * @return instance
-     */
-    static public ImagesManager getInstance() {
         return instance;
     }
 
@@ -103,16 +92,13 @@ public class ImagesManager {
 
             // add the observer for this image
             if (!mObservers.containsKey(key)) {
-                List<ImageObserver> observers = new ArrayList<>();
-                observers.add(mObserver);
-
-                mObservers.put(key, observers);
+                mObservers.put(key, new LinkedList<ImageObserver>());
 
                 GeneralWebService.instance().loadImage(mUrl);
-            } else {
-                // The image is already loading
-                mObservers.get(key).add(mObserver);
             }
+
+            // The image is already loading
+            mObservers.get(key).add(mObserver);
 
             return null;
         }

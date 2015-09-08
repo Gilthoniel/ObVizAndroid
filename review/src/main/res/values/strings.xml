@@ -8,25 +8,27 @@
 
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
-    <string name="title_activity_activity_search">Results</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_details">Application</string>
     <string name="image_description">Image</string>
     <string name="action_compare">Compare</string>
     <string name="list_empty">No items</string>
-    <string name="title_activity_reviews">Reviews</string>
-    <string name="title_activity_comparison">Comparison</string>
     <string name="loading">Data are loading. Be patient or press back button.</string>
     <string name="spinner">Topics</string>
-    <string name="title_activity_reviews_comparison">Comparison reviews</string>
     <string name="action_install">Install</string>
     <string name="go_to">See more</string>
-    <string name="title_activity_package">My Applications</string>
     <string name="action_clear">Clear History</string>
-    <string name="title_activity_settings">SettingsActivity</string>
     <string name="action_spinner_app">Choose app</string>
+
+    <!-- Activities' title -->
+    <string name="title_activity_search">Results</string>
+    <string name="title_activity_details">Application</string>
+    <string name="title_activity_reviews">Reviews</string>
+    <string name="title_activity_comparison">Comparison</string>
+    <string name="title_activity_reviews_comparison">Comparison reviews</string>
+    <string name="title_activity_package">My Applications</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- Toast messages -->
     <string name="app_not_found">Application not found</string>
@@ -52,13 +54,23 @@
     <string name="pref_key_tutorial_enable">PREF_KEY_TUTORIAL_ENABLE</string>
     <string name="pref_tutorial_enable_summary">Enable or disable the tutorial when you enter the first time in an activity</string>
     <string name="pref_tutorial_enable_title">Enable</string>
+    <string name="pref_key_tutorial_refresh">PREF_KEY_TUTORIAL_REFRESH</string>
+    <string name="pref_tutorial_refrehs_summary">Reset the watched state of the tutorial. Click here if you want to watch the tutorial again.</string>
+    <string name="pref_tutorial_refresh_title">Refresh</string>
 
     <!-- Tutorial -->
-    <string name="tutorial_home_title">Categories</string>
+    <string name="tutorial_accept">Got it!</string>
     <string name="tutorial_home_content">You can choose a category to filter the trend applications</string>
 
-    <string name="tutorial_details_title">Alternatives</string>
     <string name="tutorial_details_content">
         Click here to compare the application with your choice. You will check the difference between the opinions
+    </string>
+    <string name="tutorial_opinions">
+        Each chart represent an aspect of the application and you can watch the opinions about it. If you click on a
+        chart, you\'ll see the reviews which speak about.
+    </string>
+    <string name="tutorial_favorite">
+        When you watch an application in details, you can add it in favorite, and you will be able to retrieve them
+        here !
     </string>
 </resources>

@@ -1,5 +1,6 @@
 package com.obviz.review.webservice;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -28,8 +29,6 @@ import java.util.List;
 public class GeneralWebService extends WebService {
 
     private static GeneralWebService instance;
-
-    private GeneralWebService() {}
 
     public static void init() {
 

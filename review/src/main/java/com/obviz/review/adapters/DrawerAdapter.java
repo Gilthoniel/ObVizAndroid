@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.obviz.review.SettingsActivity;
+import com.obviz.review.fragments.HomeFragment;
 import com.obviz.reviews.R;
 
 /**
@@ -16,22 +18,13 @@ import com.obviz.reviews.R;
  */
 public class DrawerAdapter extends BaseAdapter {
 
-    public static final String[] TITLES = new String[] {
-            "Trending", "My Applications", "Search History", "Favorite", "Settings"
-    };
-    public static final int[] ICONS = new int[] {
-            R.drawable.ic_trending_up_black_24dp,
-            R.drawable.ic_apps_black_24dp,
-            R.drawable.ic_history_black_24dp,
-            R.drawable.ic_favorite_black_24dp,
-            R.drawable.ic_favorite_black_24dp
-    };
-
     private Context mContext;
+    private HomePagerAdapter mHomeAdapter;
     private int activeItem = 0;
 
-    public DrawerAdapter(Context context) {
+    public DrawerAdapter(Context context, HomePagerAdapter adapter) {
         mContext = context;
+        mHomeAdapter = adapter;
     }
 
     public void setActiveItem(int value) {
@@ -41,12 +34,13 @@ public class DrawerAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return TITLES.length;
+        return mHomeAdapter.getFragments().size();
     }
 
     @Override
-    public Object getItem(int i) {
-        return TITLES[i];
+    public HomeFragment getItem(int i) {
+
+        return mHomeAdapter.getFragments().get(i);
     }
 
     @Override
@@ -64,8 +58,10 @@ public class DrawerAdapter extends BaseAdapter {
             layout = (RelativeLayout) LayoutInflater.from(mContext).inflate(R.layout.drawer_item_row, parent, false);
         }
 
+        HomeFragment fragment = getItem(position);
+
         TextView title = (TextView) layout.findViewById(R.id.drawer_item_text);
-        title.setText(TITLES[position]);
+        title.setText(fragment.getTitle());
 
         if (activeItem == position) {
             title.setTextColor(0xffffffff);
@@ -76,7 +72,7 @@ public class DrawerAdapter extends BaseAdapter {
         }
 
         ImageView icon = (ImageView) layout.findViewById(R.id.drawer_item_image);
-        icon.setImageResource(ICONS[position]);
+        icon.setImageResource(fragment.getIcon());
 
         return layout;
     }

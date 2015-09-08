@@ -22,9 +22,24 @@ import com.obviz.reviews.R;
  * Created by gaylor on 8/3/2015.
  * Display the list of the last researches
  */
-public class HistoryFragment extends ListFragment {
+public class HistoryFragment extends ListFragment implements HomeFragment {
 
     private HistoryAdapter mAdapter;
+
+    @Override
+    public void showTutorial() {
+
+    }
+
+    @Override
+    public String getTitle() {
+        return "Search History";
+    }
+
+    @Override
+    public int getIcon() {
+        return R.drawable.ic_history_black_24dp;
+    }
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle states) {
 

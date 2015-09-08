@@ -1,7 +1,9 @@
 package com.obviz.review.webservice;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import com.obviz.review.service.NetworkChangeReceiver;
 import com.obviz.review.webservice.tasks.GetTask;
 import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.review.webservice.tasks.ImageTask;
@@ -19,14 +21,28 @@ import java.util.concurrent.Executors;
  */
 public class ConnectionService {
 
-    public static final ConnectionService instance = new ConnectionService();
+    private static ConnectionService instance;
 
     private ExecutorService executor;
     private Set<HttpTask<?>> requests;
+    private Context mContext;
 
-    private ConnectionService() {
+    private ConnectionService(Context context) {
         executor = Executors.newCachedThreadPool();
         requests = new HashSet<>();
+        mContext = context;
+    }
+
+    public static ConnectionService instance() {
+        if (instance == null) {
+            throw new IllegalStateException("Must be initialized");
+        }
+
+        return instance;
+    }
+
+    public static void init(Context context) {
+        instance = new ConnectionService(context);
     }
 
     public ExecutorService getExecutor() {
@@ -47,6 +63,15 @@ public class ConnectionService {
 
     public synchronized void removeRequest(HttpTask<?> task) {
         requests.remove(task);
+    }
+
+    public void awakeAll() {
+
+        for (HttpTask<?> task : requests) {
+            if (!task.isCancelled()) {
+                task.executeOnExecutor(executor);
+            }
+        }
     }
 
     /**
@@ -71,18 +96,25 @@ public class ConnectionService {
      */
     public <T extends Serializable> HttpTask<T> executeGetRequest(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
-        HttpTask<T> task = new GetTask<>(callback, cacheKey);
+        GetTask<T> task = new GetTask<>(builder, callback, cacheKey);
         addRequest(task);
 
-        return (HttpTask<T>) task.executeOnExecutor(executor, builder);
+        // Execute only if we have internet, else we know that the request will fail
+        if (NetworkChangeReceiver.isInternetAvailable(mContext)) {
+            task.executeOnExecutor(executor);
+        } else {
+            task.getCallback().onFailure(RequestCallback.Errors.CONNECTION);
+        }
+
+        return task;
     }
 
     public <T> HttpTask<T> executePostRequest(Uri.Builder builder, RequestCallback<Boolean> callback) {
 
-        PostTask task = new PostTask(callback);
+        PostTask task = new PostTask(builder, callback);
         addRequest(task);
 
-        return (HttpTask<T>) task.executeOnExecutor(executor, builder);
+        return (HttpTask<T>) task.executeOnExecutor(executor);
     }
 
     /**
@@ -95,9 +127,9 @@ public class ConnectionService {
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(url);
 
-        ImageTask task = new ImageTask();
+        ImageTask task = new ImageTask(builder);
         requests.add(task);
 
-        return (ImageTask) task.executeOnExecutor(executor, builder);
+        return (ImageTask) task.executeOnExecutor(executor);
     }
 }

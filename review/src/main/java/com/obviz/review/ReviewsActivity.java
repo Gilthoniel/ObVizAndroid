@@ -80,7 +80,7 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 // Stop the current requests
-                ConnectionService.instance.cancel();
+                ConnectionService.instance().cancel();
 
                 // Get the good topic id related to the position of the item
                 final int topicID = mApplication.getOpinions().get(position).topicID;
@@ -102,7 +102,7 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
     public void onPause() {
         super.onPause();
 
-        ConnectionService.instance.cancel();
+        ConnectionService.instance().cancel();
         mAdapter.clear();
     }
 

@@ -27,13 +27,19 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
     private RequestCallback.Errors error;
     private String mKey;
 
-    public GetTask(RequestCallback<T> callback, String cacheKey) {
+    public GetTask(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
+        super(builder);
+
         this.callback = callback;
 
         error = RequestCallback.Errors.SUCCESS;
         mKey = cacheKey;
 
         mFuture = null;
+    }
+
+    public RequestCallback<T> getCallback() {
+        return callback;
     }
 
     @Override
@@ -48,7 +54,7 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
     }
 
     @Override
-    protected T doInBackground(final Uri.Builder... builders) {
+    protected T doInBackground(Void... voids) {
         // Try to acquire from the cache
         if (mKey != null) {
             T object = CacheManager.instance().get(mKey);
@@ -57,17 +63,13 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
             }
         }
 
-        if (builders.length <= 0) {
-            return null;
-        }
-
         try {
-            URL url = new URL(builders[0].build().toString());
+            URL url = new URL(mUrl.build().toString());
             final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             Log.d("__INTERNET__", "Connection open for params:" + url);
 
             try {
-                mFuture = ConnectionService.instance.getExecutor().submit(new Callable<T>() {
+                mFuture = ConnectionService.instance().getExecutor().submit(new Callable<T>() {
                     @Override
                     public T call() throws Exception {
 
@@ -123,7 +125,7 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
     protected void onPostExecute(T result) {
 
         // Remove from the active request list
-        ConnectionService.instance.removeRequest(this);
+        ConnectionService.instance().removeRequest(this);
 
         // Use the callback here, because this function is executed in the UI Thread !
         if (result != null) {
@@ -139,6 +141,6 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
 
         error = RequestCallback.Errors.CANCELLATION;
         callback.onFailure(error);
-        ConnectionService.instance.removeRequest(this);
+        ConnectionService.instance().removeRequest(this);
     }
 }

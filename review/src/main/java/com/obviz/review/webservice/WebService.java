@@ -1,12 +1,14 @@
 package com.obviz.review.webservice;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-import com.obviz.review.Constants;
+import com.obviz.review.service.NetworkChangeReceiver;
 import com.obviz.review.webservice.tasks.HttpTask;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by gaylor on 27.06.15.
@@ -22,7 +24,8 @@ public abstract class WebService {
      */
     public <T extends Serializable> HttpTask<T> get(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
-        return ConnectionService.instance.executeGetRequest(builder, callback, cacheKey);
+
+        return ConnectionService.instance().executeGetRequest(builder, callback, cacheKey);
     }
 
     /**
@@ -33,7 +36,7 @@ public abstract class WebService {
     public void post(Uri.Builder builder, RequestCallback<Boolean> callback) {
 
         // POST request without caching
-        ConnectionService.instance.executePostRequest(builder, callback);
+        ConnectionService.instance().executePostRequest(builder, callback);
     }
 
     /**
@@ -43,7 +46,6 @@ public abstract class WebService {
     public void loadImage(String url) {
 
         Log.i("__IMAGE__", "Try to acquire image");
-
-        ConnectionService.instance.loadImage(url);
+        ConnectionService.instance().loadImage(url);
     }
 }

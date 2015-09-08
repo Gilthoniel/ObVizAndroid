@@ -67,7 +67,7 @@ public class ActivitySearch extends AppCompatActivity {
         super.onPause();
 
         // Stop all the possible web requests
-        ConnectionService.instance.cancel();
+        ConnectionService.instance().cancel();
     }
 
     @Override

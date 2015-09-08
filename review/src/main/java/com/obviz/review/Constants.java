@@ -1,7 +1,12 @@
 package com.obviz.review;
 
+import com.obviz.review.fragments.FavoriteFragment;
+import com.obviz.review.fragments.HistoryFragment;
+import com.obviz.review.fragments.PackageFragment;
+import com.obviz.review.fragments.TrendingFragment;
 import com.obviz.review.views.GaugeChart;
 
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,8 +22,15 @@ public class Constants {
     public static final int NUMBER_TRENDING_APPS = 10;
     public static final int NUMBER_REVIEW_PER_BLOCK = 20;
 
+    public static final Type[] HOME_FRAGMENTS = new Type[] {
+            TrendingFragment.class,
+            PackageFragment.class,
+            HistoryFragment.class,
+            FavoriteFragment.class
+    };
+
     /** Commands **/
-    public static final String URL = "http://vps186042.ovh.net/ObVizService";
+    public static final String URL = "http://ns3369837.ip-37-187-91.eu/ObVizService";
 
     public static final String GET_APP = "Get_App";
     public static final String SEARCH_APP = "Search_Apps";
@@ -56,6 +68,7 @@ public class Constants {
     public static final int NEGATIVE_COLOR = 0xffCC6B6B;
 
     /** Tutorial **/
-    public static final String KEY_HOME = "TUTORIAL_HOME";
-    public static final String KEY_DETAILS = "TUTORIAL_DETAILS";
+    public static final String TUTORIAL_HOME_KEY = "TUTORIAL_HOME";
+    public static final String TUTORIAL_FAVORITE_KEY = "TUTORIAL_FAVORITE";
+    public static final String TUTORIAL_DETAILS_KEY = "TUTORIAL_DETAILS";
 }

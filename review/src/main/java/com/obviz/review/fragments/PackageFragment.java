@@ -22,7 +22,22 @@ import com.obviz.reviews.R;
 import java.lang.reflect.Type;
 
 
-public class PackageFragment extends ListFragment {
+public class PackageFragment extends ListFragment implements HomeFragment {
+
+    @Override
+    public void showTutorial() {
+
+    }
+
+    @Override
+    public String getTitle() {
+        return "My Applications";
+    }
+
+    @Override
+    public int getIcon() {
+        return R.drawable.ic_apps_black_24dp;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {

@@ -80,7 +80,7 @@ public class ReviewsComparisonActivity extends AppCompatActivity implements Topi
     public void onPause() {
         super.onPause();
 
-        ConnectionService.instance.cancel();
+        ConnectionService.instance().cancel();
     }
 
     @Override
