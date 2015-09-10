@@ -51,9 +51,25 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
 
                 mFragments.add(new FavoriteFragment());
             }
+            else if (type == DiscoverFragment.class) {
+
+                mFragments.add(new DiscoverFragment());
+            }
         }
 
         mFragments.add(SettingsActivity.homeFragment);
+    }
+
+    public Boolean onBackPressed(int currentItem){
+        if(mFragments.get(currentItem).getClass() == DiscoverFragment.class){
+            DiscoverFragment f = (DiscoverFragment)  mFragments.get(currentItem);
+            Boolean hasSuperCategories = f.onBackPressed();
+            if(hasSuperCategories==true)
+                return false;
+            return true;
+        }
+
+        return false;
     }
 
     public List<HomeFragment> getFragments() {

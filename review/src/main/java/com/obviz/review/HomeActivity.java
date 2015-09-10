@@ -156,17 +156,12 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //todo: change here:
-        Log.d("DiscoverFragment", "onBackPressed Called");
+        Boolean isDiscoverFragment = mPagerAdapter.onBackPressed(mPager.getCurrentItem());
+        Log.d("HomeActivity", "isDiscoverFragment "+isDiscoverFragment.toString());
 
-        Intent setIntent = new Intent(Intent.ACTION_MAIN);
-        setIntent.addCategory(Intent.CATEGORY_HOME);
-        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(setIntent);
+        if(!isDiscoverFragment)
+            super.onBackPressed();
 
-
-
-        return;
     }
 
     /**

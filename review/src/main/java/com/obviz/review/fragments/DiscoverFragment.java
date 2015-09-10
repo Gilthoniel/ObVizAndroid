@@ -1,5 +1,7 @@
 package com.obviz.review.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -14,7 +16,9 @@ import com.obviz.review.DiscoverAppsActivity;
 import com.obviz.review.ReviewsActivity;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.adapters.SuperCategoryGridAdapter;
+import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.models.Category;
 import com.obviz.review.models.CategoryBase;
 import com.obviz.review.views.GridRecyclerView;
 import com.obviz.reviews.R;
@@ -28,8 +32,11 @@ import java.util.List;
  * Created by gaylor on 05-Aug-15.
  *
  */
-public class DiscoverFragment extends Fragment {
+public class DiscoverFragment extends Fragment implements HomeFragment {
 
+    private boolean mTutoRequested = false;
+    private Context mContext;
+    SuperCategoryGridAdapter mDiscoverAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle states) {
@@ -37,6 +44,47 @@ public class DiscoverFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_discover, parent, false);
     }
 
+    @Override
+    //TODO: the tutorial is just copied here. Must add relevant content
+    public void showTutorial() {
+        if (getView() == null) {
+            mTutoRequested = true;
+            return;
+        } else {
+            mTutoRequested = false;
+        }
+
+        /*TutorialManager.single((Activity) mContext)
+                .setTarget(getView().findViewById(R.id.spinner))
+                .setContentText(getResources().getString(R.string.tutorial_home_content))
+                .singleUse(Constants.TUTORIAL_HOME_KEY)
+                .show();*/
+    }
+
+    @Override
+    public String getTitle() {
+
+        return "Discover";
+    }
+
+    @Override
+    public int getIcon() {
+        return R.drawable.ic_search_black_24dp;
+    }
+
+    public Boolean onBackPressed(){
+        if( mDiscoverAdapter.getItemCount()>0)
+            for(CategoryBase c: mDiscoverAdapter.getItems()){
+                Log.d("Debug types",c.getClass().toString());
+                if(c.getClass()== Category.class){
+                    // re initialize the adapter content
+                    mDiscoverAdapter.onCategoriesLoaded();
+                    return false;
+                }
+            }
+
+        return true;
+    }
 
     @Override
     public void onActivityCreated(Bundle states) {
@@ -45,17 +93,17 @@ public class DiscoverFragment extends Fragment {
         if (getView() != null) {
             final GridRecyclerView grid = (GridRecyclerView) getView().findViewById(R.id.grid_view);
 
-            final SuperCategoryGridAdapter discoverAdapter = new SuperCategoryGridAdapter();
+            mDiscoverAdapter = new SuperCategoryGridAdapter();
 
             //final AppBoxAdapter trendingAdapter = new AppBoxAdapter();
 
-            discoverAdapter.addOnItemClickListener(new GridAdapter.OnItemClickListener() {
+            mDiscoverAdapter.addOnItemClickListener(new GridAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
-                    CategoryBase cat = discoverAdapter.getItem(position);
-                    discoverAdapter.clear();
+                    CategoryBase cat = mDiscoverAdapter.getItem(position);
+                    mDiscoverAdapter.clear();
                     if(cat.getCategories().size()>1)
-                        discoverAdapter.getChildCategories(cat);
+                        mDiscoverAdapter.getChildCategories(cat);
                     else
                     {
                         Intent intent = new Intent(getContext(), DiscoverAppsActivity.class);
@@ -69,8 +117,8 @@ public class DiscoverFragment extends Fragment {
                         intent.putIntegerArrayListExtra(Constants.INTENT_TOPIC_IDS, topics);
 
                         //TODO: this will crash if the contents of the best apps array is null!
-                        intent.putParcelableArrayListExtra(Constants.INTENT_APPS_BEST, new ArrayList<AndroidApp>(discoverAdapter.getBestApps(cat)));
-                        intent.putParcelableArrayListExtra(Constants.INTENT_APPS_WORST, new ArrayList<AndroidApp>(discoverAdapter.getWorstApps(cat)));
+                        intent.putParcelableArrayListExtra(Constants.INTENT_APPS_BEST, new ArrayList<AndroidApp>(mDiscoverAdapter.getBestApps(cat)));
+                        intent.putParcelableArrayListExtra(Constants.INTENT_APPS_WORST, new ArrayList<AndroidApp>(mDiscoverAdapter.getWorstApps(cat)));
 
                         intent.putIntegerArrayListExtra(Constants.INTENT_TOPIC_IDS, topics);
 
@@ -80,7 +128,7 @@ public class DiscoverFragment extends Fragment {
                 }
             });
 
-            grid.setAdapter(discoverAdapter);
+            grid.setAdapter(mDiscoverAdapter);
 
 
         }
