@@ -23,6 +23,11 @@
             android:title="@string/pref_tutorial_enable_title"
             android:defaultValue="true" />
 
+        <Preference
+            android:key="@string/pref_key_tutorial_refresh"
+            android:summary="@string/pref_tutorial_refresh_summary"
+            android:title="@string/pref_tutorial_refresh_title" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

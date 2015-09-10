@@ -10,4 +10,7 @@
 
     <!-- Color for the reviews -->
     <color name="reviewTitleColor">#ff000000</color>
+
+    <!-- Colors for the tutorial -->
+    <color name="tutorialBackground">#c8000000</color>
 </resources>

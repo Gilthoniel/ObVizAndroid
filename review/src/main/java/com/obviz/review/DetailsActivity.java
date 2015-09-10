@@ -9,13 +9,12 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.github.amlcurran.showcaseview.targets.Target;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.obviz.review.adapters.DetailsPagerAdapter;
 import com.obviz.review.adapters.GaugeAdapter;
 import com.obviz.review.database.DatabaseService;
@@ -89,6 +88,7 @@ public class DetailsActivity extends AppCompatActivity
             DetailsPagerAdapter adapter = new DetailsPagerAdapter(getSupportFragmentManager(), app);
 
             pager.setAdapter(adapter);
+            pager.addOnPageChangeListener(new PageChangeListener());
 
             SlidingTabLayout tabs = (SlidingTabLayout) findViewById(R.id.tabs);
             tabs.setDistributeEvenly(true);
@@ -121,30 +121,11 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPostCreate(Bundle states)  {
-        super.onPostCreate(states);
-
-        /* Tutorial */
-        Target target;
-        if (findViewById(R.id.title_1) != null) {
-            target = new ViewTarget(R.id.title_1, this);
-        } else {
-            target = new ViewTarget(R.id.tabs, this);
-        }
-        TutorialManager.Builder builder = new TutorialManager.Builder();
-        builder.mTarget = target;
-        builder.mTitle = getResources().getString(R.string.tutorial_details_title);
-        builder.mText = getResources().getString(R.string.tutorial_details_content);
-        builder.mKey = Constants.KEY_DETAILS;
-        builder.show(this);
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
 
         // Stop web requests
-        ConnectionService.instance.cancel();
+        ConnectionService.instance().cancel();
     }
 
     @Override
@@ -240,5 +221,41 @@ public class DetailsActivity extends AppCompatActivity
     public void onCategoriesLoaded() {
         ((TextView) findViewById(R.id.app_category))
                 .setText(CategoryManager.instance().getFrom(app.getCategory(), this).title);
+    }
+
+    private class PageChangeListener implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageSelected(int position) {
+            switch (position) {
+                case 1:
+                    final GridRecyclerView grid = (GridRecyclerView) findViewById(R.id.grid_view);
+
+                    grid.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (grid.findViewHolderForPosition(0) == null) {
+                                return;
+                            }
+
+                            TutorialManager.single(DetailsActivity.this)
+                                    .setTarget(grid.findViewHolderForPosition(0).itemView)
+                                    .setContentText(getString(R.string.tutorial_opinions))
+                                    .singleUse(Constants.TUTORIAL_DETAILS_KEY)
+                                    .show();
+                        }
+                    });
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+        @Override
+        public void onPageScrollStateChanged(int state) {}
     }
 }

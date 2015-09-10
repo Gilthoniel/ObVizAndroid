@@ -15,6 +15,14 @@ import com.obviz.review.fragments.FavoriteFragment;
 import com.obviz.review.fragments.HistoryFragment;
 import com.obviz.review.fragments.PackageFragment;
 import com.obviz.review.fragments.TrendingFragment;
+import com.obviz.review.Constants;
+import com.obviz.review.HomeActivity;
+import com.obviz.review.SettingsActivity;
+import com.obviz.review.fragments.*;
+
+import java.lang.reflect.Type;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by gaylor on 31.07.15.
@@ -22,31 +30,52 @@ import com.obviz.review.fragments.TrendingFragment;
  */
 public class HomePagerAdapter extends FragmentPagerAdapter {
 
+    public List<HomeFragment> mFragments;
+
     public HomePagerAdapter(FragmentManager manager) {
         super(manager);
+
+        mFragments = new LinkedList<>();
+        for (Type type : Constants.HOME_FRAGMENTS) {
+
+            if (type == TrendingFragment.class) {
+
+                mFragments.add(new TrendingFragment());
+            } else if (type == PackageFragment.class) {
+
+                mFragments.add(new PackageFragment());
+            } else if (type == HistoryFragment.class) {
+
+                mFragments.add(new HistoryFragment());
+            } else if (type == FavoriteFragment.class) {
+
+                mFragments.add(new FavoriteFragment());
+            }
+        }
+
+        mFragments.add(SettingsActivity.homeFragment);
+    }
+
+    public List<HomeFragment> getFragments() {
+
+        return mFragments;
+    }
+
+    @Override
+    public String getPageTitle(int position) {
+
+        return mFragments.get(position).getTitle();
     }
 
     @Override
     public Fragment getItem(int position) {
 
-        switch (position) {
-
-            case 1:
-                return new DiscoverFragment();
-            case 2:
-                return new PackageFragment();
-            case 3:
-                return new HistoryFragment();
-            case 4:
-                return new FavoriteFragment();
-            default:
-                return new TrendingFragment();
-        }
+        return (Fragment) mFragments.get(position);
     }
 
     @Override
     public int getCount() {
-        return DrawerAdapter.TITLES.length;
+        return mFragments.size() - 1;
     }
 
 

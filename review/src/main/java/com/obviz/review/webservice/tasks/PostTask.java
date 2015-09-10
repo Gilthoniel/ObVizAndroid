@@ -23,7 +23,9 @@ public class PostTask extends HttpTask<Boolean> {
     private RequestCallback<Boolean> callback;
     private RequestCallback.Errors error;
 
-    public PostTask(RequestCallback<Boolean> callback) {
+    public PostTask(Uri.Builder builder, RequestCallback<Boolean> callback) {
+        super(builder);
+
         this.callback = callback;
 
         error = RequestCallback.Errors.SUCCESS;
@@ -43,19 +45,15 @@ public class PostTask extends HttpTask<Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(final Uri.Builder... builders) {
-
-        if (builders.length <= 0) {
-            return null;
-        }
+    protected Boolean doInBackground(Void... voids) {
 
         try {
-            final Uri uri = builders[0].build();
+            final Uri uri = mUrl.build();
             URL url = new URL(uri.getPath());
             final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             Log.d("__INTERNET__", "Post request with params:" + uri);
 
-            mFuture = ConnectionService.instance.getExecutor().submit(new Callable<Boolean>() {
+            mFuture = ConnectionService.instance().getExecutor().submit(new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
                     try {
@@ -106,7 +104,7 @@ public class PostTask extends HttpTask<Boolean> {
     protected void onPostExecute(Boolean result) {
 
         // Remove from the active request list
-        ConnectionService.instance.removeRequest(this);
+        ConnectionService.instance().removeRequest(this);
 
         // Use the callback here, because this function is executed in the UI Thread !
         if (result) {
@@ -123,6 +121,6 @@ public class PostTask extends HttpTask<Boolean> {
     @Override
     protected void onCancelled(Boolean result) {
 
-        ConnectionService.instance.removeRequest(this);
+        ConnectionService.instance().removeRequest(this);
     }
 }

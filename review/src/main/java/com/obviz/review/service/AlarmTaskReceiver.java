@@ -36,6 +36,13 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
 
         } else {
 
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            if (!prefs.getBoolean(context.getResources().getString(R.string.pref_key_notifs_enable), true)) {
+                // Notifications are disabled so we do nothing
+                removeAlarm(context);
+                return;
+            }
+
             /* Notification for the user */
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.favicon)
@@ -67,8 +74,7 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
 
         // Set the notification alarm task if not already done
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent alarmIntent = new Intent(context, AlarmTaskReceiver.class);
-        PendingIntent pending = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+        PendingIntent pending = createPending(context);
 
         // Remove the current alarm if it already exists
         alarmManager.cancel(pending);
@@ -82,5 +88,22 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
                 1000 * 60 * 60 * 24 * 7, pending);
 
         Log.d("__ALARM__", "Notification Task planned");
+    }
+
+    /**
+     * Helper to remove the alarm for the notifications
+     * @param context Context of the application
+     */
+    public static void removeAlarm(Context context) {
+
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pending = createPending(context);
+
+        manager.cancel(pending);
+    }
+
+    private static PendingIntent createPending(Context context) {
+        Intent alarmIntent = new Intent(context, AlarmTaskReceiver.class);
+        return PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
     }
 }

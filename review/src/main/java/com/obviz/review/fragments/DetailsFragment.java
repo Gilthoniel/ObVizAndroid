@@ -57,7 +57,7 @@ public class DetailsFragment extends Fragment implements ImageObserver, Category
     }
 
     public  static <T extends ImageObserver & CategoryManager.CategoryObserver> void populateDetailsField(AndroidApp app, View view, T activity) {
-        ImagesManager.getInstance().get(app.getLogo(), activity);
+        ImagesManager.instance().get(app.getLogo(), activity);
 
         TextView name = (TextView) view.findViewById(R.id.app_name);
         name.setText(app.getName());

@@ -165,7 +165,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
                         appLogo.setImageBitmap(mImages.get(a.getLogo()));
                     else{
                         mImages.put(a.getLogo(), null);
-                        ImagesManager.getInstance().get(a.getLogo(),SuperCategoryGridAdapter.this);
+                        ImagesManager.instance().get(a.getLogo(),SuperCategoryGridAdapter.this);
                     }
 
                     //TODO: tackle case click on each app:
@@ -196,7 +196,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
                 logo.setImageBitmap(mImages.get(categoryBase.getImage(mView.getContext())));
             } else {
                 mImages.put(categoryBase.getImage(mView.getContext()), null);
-                ImagesManager.getInstance().get(categoryBase.getImage(mView.getContext()), SuperCategoryGridAdapter.this);
+                ImagesManager.instance().get(categoryBase.getImage(mView.getContext()), SuperCategoryGridAdapter.this);
             }
 
             //if we still have no image -> make invisible

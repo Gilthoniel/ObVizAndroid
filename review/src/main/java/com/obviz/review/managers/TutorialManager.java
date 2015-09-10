@@ -2,12 +2,11 @@ package com.obviz.review.managers;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.Target;
+import android.os.Build;
 import com.obviz.reviews.R;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 /**
  * Created by gaylor on 09/04/2015.
@@ -15,54 +14,32 @@ import com.obviz.reviews.R;
  */
 public class TutorialManager {
 
-    public static class Builder {
+    public static MaterialShowcaseView.Builder single(Activity activity) {
 
-        public String mText;
-        public String mTitle;
-        public Target mTarget;
-        public String mKey;
-
-        public void show(Activity activity) {
-
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
-            String keyTutorialEnabled = activity.getResources().getString(R.string.pref_key_tutorial_enable);
-
-            if (preferences.getBoolean(keyTutorialEnabled, true) && !preferences.getBoolean(mKey, false)) {
-                new ShowcaseView.Builder(activity, true)
-                        .setTarget(mTarget)
-                        .setContentTitle(mTitle)
-                        .setContentText(mText)
-                        .setShowcaseEventListener(new EventListener(mKey, activity))
-                        .setStyle(R.style.CustomTutorialTheme)
-                        .build();
-            }
-        }
+        return new MaterialShowcaseView.Builder(activity)
+                .setDismissText("Got it!")
+                .setMaskColour(getColor(activity, R.color.tutorialBackground));
     }
 
-    /**
-     * Event listener for the "Got it" button
-     */
-    public static class EventListener implements OnShowcaseEventListener{
+    public static MaterialShowcaseSequence sequence(Activity activity){
 
-        private String mKey;
-        private Context mContext;
+        ShowcaseConfig config = new ShowcaseConfig();
+        config.setMaskColor(getColor(activity, R.color.tutorialBackground));
 
-        public EventListener(String key, Context context) {
-            mKey = key;
-            mContext = context;
+        MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(activity);
+        sequence.setConfig(config);
+
+        return sequence;
+    }
+
+    private static int getColor(Context context, int id) {
+
+        if (Build.VERSION.SDK_INT >= 23) {
+
+            return context.getResources().getColor(id, context.getTheme());
+        } else {
+
+            return context.getResources().getColor(id);
         }
-
-        @Override
-        public void onShowcaseViewHide(ShowcaseView showcaseView) {
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
-            editor.putBoolean(mKey, true);
-            editor.apply();
-        }
-
-        @Override
-        public void onShowcaseViewDidHide(ShowcaseView showcaseView) {}
-
-        @Override
-        public void onShowcaseViewShow(ShowcaseView showcaseView) {}
     }
 }

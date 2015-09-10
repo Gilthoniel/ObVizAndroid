@@ -32,8 +32,6 @@ public class GeneralWebService extends WebService {
 
     private static GeneralWebService instance;
 
-    private GeneralWebService() {}
-
     public static void init() {
 
         instance = new GeneralWebService();

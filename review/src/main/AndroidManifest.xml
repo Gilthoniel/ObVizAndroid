@@ -30,7 +30,7 @@
         </activity>
         <activity
             android:name="com.obviz.review.ActivitySearch"
-            android:label="@string/title_activity_activity_search"
+            android:label="@string/title_activity_search"
             android:parentActivityName="com.obviz.review.HomeActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -61,11 +61,21 @@
         </activity>
         <activity
             android:name="com.obviz.review.ComparisonActivity"
-            android:label="@string/title_activity_comparison" >
+            android:label="@string/title_activity_comparison">
         </activity>
         <activity
             android:name="com.obviz.review.ReviewsComparisonActivity"
-            android:label="@string/title_activity_reviews_comparison" >
+            android:label="@string/title_activity_reviews_comparison">
+        </activity>
+        <activity
+            android:name="com.obviz.review.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="com.obviz.review.HomeActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.obviz.review.DetailsActivity" />
+
         </activity>
 
         <receiver
@@ -81,15 +91,13 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name="com.obviz.review.SettingsActivity"
-            android:label="@string/title_activity_settings" >
-        </activity>
+
 
         <activity
             android:name="com.obviz.review.DiscoverAppsActivity"
             android:label="@string/title_activity_discover_apps" >
         </activity>
+
 
     </application>
 

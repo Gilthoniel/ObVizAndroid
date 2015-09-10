@@ -125,7 +125,7 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
                     }
                 };
             case TYPE_ERROR:
-                view = inflater.inflate(R.layout.grid_empty, parent, false);
+                view = inflater.inflate(R.layout.grid_error, parent, false);
                 return new ViewHolder(view) {
                     @Override
                     public void onPopulate(T item) {
@@ -182,7 +182,7 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
             return items.size() > 0 ? items.size() : 1;
         } else {
 
-            return items.size() > 0 ? Math.max(mMax, items.size()) : 1;
+            return items.size() > 0 ? Math.min(mMax, items.size()) : 1;
         }
     }
 
@@ -203,9 +203,12 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
 
         @Override
         public void onClick(View v) {
-            // Notify the listeners that a click occurred on this child
-            for (OnItemClickListener listener : listeners) {
-                listener.onClick(position);
+
+            if (items.size() > 0) {
+                // Notify the listeners that a click occurred on this child
+                for (OnItemClickListener listener : listeners) {
+                    listener.onClick(position);
+                }
             }
         }
 

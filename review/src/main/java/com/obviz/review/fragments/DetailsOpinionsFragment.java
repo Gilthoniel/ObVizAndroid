@@ -5,21 +5,22 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
 import com.obviz.review.DiscoverAppsActivity;
+
 import com.obviz.review.ReviewsActivity;
 import com.obviz.review.adapters.GaugeAdapter;
 import com.obviz.review.adapters.GridAdapter;
+import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.OpinionValue;
 import com.obviz.review.views.GridRecyclerView;
 import com.obviz.reviews.R;
-
-import java.io.Serializable;
 
 /**
  * Created by gaylor on 23.07.15.
@@ -27,14 +28,16 @@ import java.io.Serializable;
  */
 public class DetailsOpinionsFragment extends Fragment {
 
+    GridRecyclerView mGridView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle states) {
         View view = inflater.inflate(R.layout.grid_app_box, container, false);
 
-        GridRecyclerView gridView = (GridRecyclerView) view.findViewById(R.id.grid_view);
+        mGridView = (GridRecyclerView) view.findViewById(R.id.grid_view);
         AndroidApp app = getArguments().getParcelable(Constants.STATE_APP);
 
-        populateOpinions(gridView, app);
+        populateOpinions(mGridView, app);
 
         return view;
     }

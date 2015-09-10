@@ -11,8 +11,6 @@ import com.obviz.review.webservice.ConnectionService;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.*;
 
@@ -25,6 +23,10 @@ public class ImageTask extends HttpTask<Bitmap> {
     private String url;
     private Future<Bitmap> mFuture = null;
 
+    public ImageTask(Uri.Builder builder) {
+        super(builder);
+    }
+
     @Override
     public void cancel() {
 
@@ -36,10 +38,10 @@ public class ImageTask extends HttpTask<Bitmap> {
     }
 
     @Override
-    protected Bitmap doInBackground(final Uri.Builder... urls) {
+    protected Bitmap doInBackground(Void... voids) {
 
         try {
-            url = urls[0].toString();
+            url = mUrl.toString();
 
             // Take the image with a square size of 100px
             String littleSizeUrl = url.replaceFirst("\\d+$", "100");
@@ -47,7 +49,7 @@ public class ImageTask extends HttpTask<Bitmap> {
             InputStream in = new URL(littleSizeUrl).openStream();
             final Bitmap bitmap = BitmapFactory.decodeStream(in);
 
-            mFuture = ConnectionService.instance.getExecutor().submit(new Callable<Bitmap>() {
+            mFuture = ConnectionService.instance().getExecutor().submit(new Callable<Bitmap>() {
                 @Override
                 public Bitmap call() throws Exception {
 
@@ -87,16 +89,16 @@ public class ImageTask extends HttpTask<Bitmap> {
     @Override
     protected void onPostExecute(Bitmap result) {
 
-        ConnectionService.instance.removeRequest(this);
+        ConnectionService.instance().removeRequest(this);
 
         if (result != null) {
-            ImagesManager.getInstance().addBitmap(url, result);
+            ImagesManager.instance().addBitmap(url, result);
         }
     }
 
     @Override
     protected void onCancelled(Bitmap result) {
 
-        ConnectionService.instance.removeRequest(this);
+        ConnectionService.instance().removeRequest(this);
     }
 }

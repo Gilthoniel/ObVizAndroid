@@ -8,7 +8,9 @@ import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.service.AlarmTaskReceiver;
 import com.obviz.review.views.GaugeChart;
+import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
 /**
  * Created by gaylor on 08/11/2015.
@@ -20,6 +22,7 @@ public class ObvizApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        ConnectionService.init(getApplicationContext());
         GeneralWebService.init();
         CategoryManager.init(getApplicationContext());
         DatabaseService.init(getApplicationContext());

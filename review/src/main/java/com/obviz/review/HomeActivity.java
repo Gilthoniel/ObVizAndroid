@@ -18,12 +18,9 @@ import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Spinner;
-import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
-import com.github.amlcurran.showcaseview.targets.Target;
 import com.obviz.review.adapters.DrawerAdapter;
 import com.obviz.review.adapters.HomePagerAdapter;
-import com.obviz.review.managers.TutorialManager;
+import com.obviz.review.fragments.HomeFragment;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.reviews.R;
 
@@ -33,6 +30,8 @@ public class HomeActivity extends AppCompatActivity {
     private MenuItem mItemSearchView;
     private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
+    private ViewPager mPager;
+    private HomePagerAdapter mPagerAdapter;
 
     /**
      * Called when the activity is first created.
@@ -52,41 +51,29 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         /* Init View Pager */
-        final ViewPager pager = (ViewPager) findViewById(R.id.home_pager);
-        pager.setAdapter(new HomePagerAdapter(getSupportFragmentManager()));
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageSelected(int index) {
-                setTitle(DrawerAdapter.TITLES[index]);
-                mAdapter.setActiveItem(index);
-            }
-
-            @Override
-            public void onPageScrolled(int index, float offset, int offsetPixels) {
-                mAdapter.setActiveItem(index);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {}
-        });
+        mPager = (ViewPager) findViewById(R.id.home_pager);
+        mPagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+        mPager.addOnPageChangeListener(new PageChangeListener());
 
         /* Init Drawer Menu */
         ListView listView = (ListView) findViewById(R.id.nav_list);
         listView.addHeaderView(LayoutInflater.from(getApplicationContext()).inflate(R.layout.drawer_header, listView, false));
 
-        mAdapter = new DrawerAdapter(getApplicationContext());
+        mAdapter = new DrawerAdapter(getApplicationContext(), mPagerAdapter);
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 if (position > 0) {
-                    if (position == DrawerAdapter.TITLES.length) {
+                    if (position > mPagerAdapter.getCount()) {
+
                         Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
                         startActivity(intent);
                     } else {
-                        setTitle((String) mAdapter.getItem(position - 1));
+                        setTitle(mPagerAdapter.getPageTitle(position));
 
-                        pager.setCurrentItem(position - 1);
+                        mPager.setCurrentItem(position - 1);
                         mDrawer.closeDrawers();
                     }
                 }
@@ -106,8 +93,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         };
         mDrawer.setDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
-        setTitle((String) mAdapter.getItem(0));
+        setTitle(mPagerAdapter.getPageTitle(0));
     }
 
     /**
@@ -121,13 +107,18 @@ public class HomeActivity extends AppCompatActivity {
         if (mItemSearchView != null) {
             mItemSearchView.collapseActionView();
         }
+
+        mDrawerToggle.syncState();
+        mDrawer.closeDrawers();
+
+        showTutorials(mPager.getCurrentItem());
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        ConnectionService.instance.cancel();
+        ConnectionService.instance().cancel();
     }
 
     /**
@@ -165,6 +156,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        //todo: change here:
         Log.d("DiscoverFragment", "onBackPressed Called");
 
         Intent setIntent = new Intent(Intent.ACTION_MAIN);
@@ -172,6 +164,40 @@ public class HomeActivity extends AppCompatActivity {
         setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(setIntent);
 
+
+
         return;
+    }
+
+    /**
+     * Show the tutorial for a certain fragment related to the position
+     * @param position of the fragment in the pager
+     */
+    private void showTutorials(int position) {
+
+        mPagerAdapter.getFragments().get(position).showTutorial();
+    }
+
+    /**
+     * React when the user change the page with the menu or the fingers
+     */
+    private class PageChangeListener implements ViewPager.OnPageChangeListener {
+        @Override
+        public void onPageSelected(int index) {
+            // Adapt title
+            setTitle(mPagerAdapter.getPageTitle(index));
+            mAdapter.setActiveItem(index);
+
+            // Tutorials
+            showTutorials(index);
+        }
+
+        @Override
+        public void onPageScrolled(int index, float offset, int offsetPixels) {
+            mAdapter.setActiveItem(index);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int i) {}
     }
 }

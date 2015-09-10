@@ -100,7 +100,7 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
     public void onPause() {
         super.onPause();
 
-        ConnectionService.instance.cancel();
+        ConnectionService.instance().cancel();
         mAdapter.clear();
     }
 

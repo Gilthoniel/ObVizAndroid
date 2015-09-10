@@ -95,7 +95,7 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
                 logo.setImageBitmap(mImages.get(app.getLogo()));
             } else {
                 mImages.put(app.getLogo(), null);
-                ImagesManager.getInstance().get(app.getLogo(), AppBoxAdapter.this);
+                ImagesManager.instance().get(app.getLogo(), AppBoxAdapter.this);
             }
 
             TextView bestOpinion = (TextView) mView.findViewById(R.id.mostOpinion);
