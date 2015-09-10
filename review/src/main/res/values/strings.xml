@@ -6,6 +6,8 @@
     <string name="main_menu_home">Home</string>
     <string name="search_hint">Search an app…</string>
 
+    <string name="title_activity_discover_apps">Best and worst</string>
+
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="title_activity_activity_search">Results</string>
@@ -60,5 +62,8 @@
     <string name="tutorial_details_title">Alternatives</string>
     <string name="tutorial_details_content">
         Click here to compare the application with your choice. You will check the difference between the opinions
+    </string>
+    <string name="category_image_link">
+        http://ns3369837.ip-37-187-91.eu/assets/images/icons/colored/
     </string>
 </resources>

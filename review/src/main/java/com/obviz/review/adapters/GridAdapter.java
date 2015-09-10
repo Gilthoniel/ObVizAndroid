@@ -83,7 +83,9 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
     public T getItem(int position) {
         return items.get(position);
     }
-
+    public List<T> getItems() {
+        return items;
+    }
     /**
      * Empty the list and notify the list
      */
@@ -183,6 +185,7 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
             return items.size() > 0 ? Math.max(mMax, items.size()) : 1;
         }
     }
+
 
     /**
      * Child of the RecyclerView

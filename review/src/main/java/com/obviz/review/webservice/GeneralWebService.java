@@ -1,11 +1,13 @@
 package com.obviz.review.webservice;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
 import com.obviz.review.adapters.GridAdapter;
+import com.obviz.review.adapters.SuperCategoryGridAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
 import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.CacheManager;
@@ -18,6 +20,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -146,21 +149,62 @@ public class GeneralWebService extends WebService {
         }, key);
     }
 
-    public HttpTask<?> getTrendingApps(final GridAdapter<AndroidApp> adapter, @Nullable SuperCategory superCategory) {
+    ///
+    // C
+    // get apps given a specific query (e.g. design) from a category or a type:
 
-        // Show the loading icon
-        adapter.setState(GridAdapter.State.LOADING);
-        // Clear the list to show the empty view
-        adapter.clear();
 
-        final String key = CacheManager.KeyBuilder.forTrending(superCategory);
+    public HttpTask<?> getTopApps(final SuperCategoryGridAdapter adapter, final CategoryBase category, final String appType) {
 
+        // have to create the builder for each category!
+
+        if(category.getTitle()!=null)
+            Log.d("BASE-CAT",category.getTitle());
+        else
+            Log.d("BASE-CAT", "Nameless Category - THIS SHOULD NOT HAPPEN");
+
+        //for each element in the grid i want to do what is done in getTrendingApps.
+        //TODO: change the command below:
+        Uri.Builder builder = new Uri.Builder();
+        if(appType.equals("best"))
+            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, "POSITIVE");
+        if(appType.equals("worst"))
+            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, "NEGATIVE");
+
+        final String key = null;
+        // Here return the httpTask like below and update the map in the adapter
+
+        return get(builder, new RequestCallback<LinkedList<AndroidApp>>() {
+            @Override
+            public void onSuccess(LinkedList<AndroidApp> result) {
+
+                // Display the empty text if there is no result
+                adapter.addAlltoMap(result,category, appType);
+            }
+
+            @Override
+            public void onFailure(Errors error) {
+
+                adapter.setState(GridAdapter.State.ERRORS);
+            }
+
+            @Override
+            public Type getType() {
+                return new TypeToken<LinkedList<AndroidApp>>(){}.getType();
+            }
+        }, key);
+    }
+
+    //
+    ///
+
+    private Uri.Builder constructBuilder(CategoryBase categoryBase, String command, String posNeg){
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(Constants.URL);
-        builder.appendQueryParameter("cmd", Constants.GET_TRENDING_APPS);
-        if (superCategory != null) {
+        builder.appendQueryParameter("cmd", command);
+        if (categoryBase != null) {
             List<String> json = new ArrayList<>();
-            for (Category category : superCategory.categories) {
+            for (Category category : categoryBase.getCategories()) {
                 json.add(category.category);
             }
 
@@ -168,6 +212,51 @@ public class GeneralWebService extends WebService {
                 builder.appendQueryParameter("categories", MessageParser.toJson(json));
             }
         }
+
+        //TODO: CHANGE THIS TO THE REAL IDS OF THE TOPICS WE WANT:
+        //then the list of parameters that we want to add:
+        List<Integer> topicIds = Arrays.asList(1);
+        builder.appendQueryParameter("topic_ids", MessageParser.toJson(topicIds));
+
+        builder.appendQueryParameter("type", posNeg);
+
+        Log.d("QUERY",builder.toString());
+
+        return builder;
+    }
+
+
+    private Uri.Builder constructBuilder(CategoryBase categoryBase, String command){
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", command);
+        if (categoryBase != null) {
+            List<String> json = new ArrayList<>();
+            for (Category category : categoryBase.getCategories()) {
+                json.add(category.category);
+            }
+
+            if (json.size() > 0) {
+                builder.appendQueryParameter("categories", MessageParser.toJson(json));
+            }
+        }
+        return builder;
+    }
+
+    public HttpTask<?> getTrendingApps(final GridAdapter<AndroidApp> adapter, @Nullable SuperCategory superCategory) {
+
+        // Show the loading icon
+        adapter.setState(GridAdapter.State.LOADING);
+        // Clear the list to show the empty view
+        adapter.clear();
+
+
+
+        final String key = null;
+                //CacheManager.KeyBuilder.forTrending(superCategory);
+
+        Uri.Builder builder = constructBuilder(superCategory, Constants.GET_TRENDING_APPS);
+
 
         return get(builder, new RequestCallback<LinkedList<AndroidApp>>() {
             @Override
@@ -178,7 +267,6 @@ public class GeneralWebService extends WebService {
 
                 adapter.addAll(result);
                 adapter.shuffle(); // Random selection of the trending apps
-                adapter.notifyDataSetChanged();
             }
 
             @Override

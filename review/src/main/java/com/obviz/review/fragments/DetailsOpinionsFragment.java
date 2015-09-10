@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
+import com.obviz.review.DiscoverAppsActivity;
 import com.obviz.review.ReviewsActivity;
 import com.obviz.review.adapters.GaugeAdapter;
 import com.obviz.review.adapters.GridAdapter;
@@ -46,7 +47,7 @@ public class DetailsOpinionsFragment extends Fragment {
             public void onClick(int position) {
                 OpinionValue opinion = adapter.getItem(position);
 
-                Intent intent = new Intent(grid.getContext(), ReviewsActivity.class);
+                Intent intent = new Intent(grid.getContext(), DiscoverAppsActivity.class);
 
                 intent.putExtra(Constants.INTENT_APP, (Parcelable) app);
                 intent.putExtra(Constants.INTENT_TOPIC_ID, opinion.topicID);

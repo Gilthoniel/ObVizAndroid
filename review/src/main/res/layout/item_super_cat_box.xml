@@ -10,25 +10,21 @@
     android:clickable="true">
 
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:id="@+id/app_logo"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/cat_image"
         android:scaleType="fitCenter"
         android:padding="5dp"
-        />
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Application name\nApplication Name"
-        android:id="@+id/app_name"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/app_logo"
+        android:text="Category name\Category Name"
+        android:id="@+id/cat_name"
         android:padding="5dp"
         android:textColor="#ff6e6e6e"
         android:gravity="center"
@@ -36,79 +32,64 @@
         android:textSize="12sp"
         android:maxHeight="40dp"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/cat_image"
+        android:layout_alignBottom="@+id/cat_image" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/app_name"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_below="@+id/cat_name"
         android:padding="5dp"
         android:background="#ffededed">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Most positive opinion"
-            android:id="@+id/mostOpinion"
-            android:textSize="10sp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/trending_up"
-            android:textColor="#ff000000"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Worst opinion"
-            android:id="@+id/worstOpinion"
-            android:textSize="10sp"
-            android:layout_below="@+id/mostOpinion"
-            android:layout_alignStart="@+id/mostOpinion"
-            android:layout_alignLeft="@+id/mostOpinion"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentRight="true"
-            android:layout_toRightOf="@+id/trending_down"
-            android:textColor="#ff000000"/>
 
         <ImageView
             android:layout_width="20dp"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:id="@+id/trending_up"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:src="@drawable/trending_up"
-            android:layout_alignParentBottom="false"
-            android:layout_alignBottom="@+id/mostOpinion"/>
+            android:src="@drawable/trending_up" />
 
         <ImageView
             android:layout_width="20dp"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:id="@+id/trending_down"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="false"
             android:src="@drawable/trending_down"
-            android:layout_below="@+id/trending_up"
-            android:layout_alignBottom="@+id/worstOpinion"/>
+            android:layout_alignParentTop="false"
+            android:layout_alignParentBottom="false"
+            android:layout_below="@+id/trending_up" />
+
+        <LinearLayout
+            android:id="@+id/best_apps"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/trending_up"
+            android:layout_centerHorizontal="true"
+            android:layout_toRightOf="@+id/trending_up"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/trending_up"></LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/worst_apps"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/trending_down"
+            android:layout_centerHorizontal="true"
+            android:layout_toRightOf="@+id/trending_down"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@+id/trending_down"></LinearLayout>
+
 
     </RelativeLayout>
 
-    <com.obviz.review.views.GaugeChart
-        android:id="@+id/gauge_chart"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:angle="240"
-        app:text="Global"
-        android:padding="15dp"
-        android:minHeight="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/app_logo"
-        android:layout_toEndOf="@+id/app_logo"
-        android:layout_alignBottom="@+id/app_logo"/>
+
 
 </RelativeLayout>

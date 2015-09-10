@@ -85,6 +85,12 @@
             android:name="com.obviz.review.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+
+        <activity
+            android:name="com.obviz.review.DiscoverAppsActivity"
+            android:label="@string/title_activity_discover_apps" >
+        </activity>
+
     </application>
 
 </manifest>
