@@ -64,9 +64,8 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
         if(mFragments.get(currentItem).getClass() == DiscoverFragment.class){
             DiscoverFragment f = (DiscoverFragment)  mFragments.get(currentItem);
             Boolean hasSuperCategories = f.onBackPressed();
-            if(hasSuperCategories==true)
-                return false;
-            return true;
+
+            return !hasSuperCategories;
         }
 
         return false;

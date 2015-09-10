@@ -101,11 +101,14 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
                 @Override
                 public void onClick(int position) {
                     CategoryBase cat = mDiscoverAdapter.getItem(position);
-                    mDiscoverAdapter.clear();
-                    if(cat.getCategories().size()>1)
+
+                    if(cat.getCategories().size()>1) {
+
+                        mDiscoverAdapter.clear();
                         mDiscoverAdapter.getChildCategories(cat);
-                    else
-                    {
+
+                    } else {
+
                         Intent intent = new Intent(getContext(), DiscoverAppsActivity.class);
 
                         intent.putExtra(Constants.INTENT_CATEGORY, (Parcelable) cat);

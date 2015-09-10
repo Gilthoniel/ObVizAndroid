@@ -69,23 +69,32 @@
             android:id="@+id/best_apps"
             android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:layout_alignBottom="@+id/trending_up"
             android:layout_centerHorizontal="true"
             android:layout_toRightOf="@+id/trending_up"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/trending_up"></LinearLayout>
+            android:layout_alignTop="@+id/trending_up">
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/worst_apps"
             android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:layout_alignTop="@+id/trending_down"
             android:layout_centerHorizontal="true"
             android:layout_toRightOf="@+id/trending_down"
             android:layout_alignParentRight="true"
-            android:layout_alignBottom="@+id/trending_down"></LinearLayout>
+            android:layout_alignBottom="@+id/trending_down">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/imageView"
+                android:scaleType="centerCrop"/>
+        </LinearLayout>
 
 
     </RelativeLayout>
