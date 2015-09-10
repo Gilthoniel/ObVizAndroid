@@ -208,6 +208,10 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
             fillAppLogos(categoryBase, R.id.best_apps, mAppsBest);
             fillAppLogos(categoryBase, R.id.worst_apps, mAppsWorst);
 
+            //pre-fill the horizontal scroll with two topics from:
+            // http://ns3369837.ip-37-187-91.eu/ObVizServiceAdmin?cmd=Get_App_Topics&type=DEFINED
+
+
         }
     }
 }
