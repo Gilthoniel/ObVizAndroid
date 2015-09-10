@@ -39,6 +39,7 @@ public class Constants {
     public static final String GET_TRENDING_APPS = "Get_Trending_Apps";
     public static final String GET_CATEGORIES = "Get_App_Categories";
     public static final String GET_CATEGORIES_TYPES = "Get_App_Categories_Types";
+    public static final String GET_APPS_FILTERED = "Get_Apps_Filtered";
 
     public static final String APP_VIEWED = "App_Viewed";
 
@@ -54,7 +55,18 @@ public class Constants {
     public static final String INTENT_COMPARISON_APP_ID = "com.obviz.review.INTENT_COMPARISON_APP_ID";
     public static final String INTENT_SEARCH = "com.obviz.review.INTENT_SEARCH";
 
+    public static final String INTENT_CATEGORY = "com.obviz.review.INTENT_CATEGORY";
+    public static final String INTENT_TOPIC_IDS = "com.obviz.review.INTENT_TOPIC_IDS";
+    public static final String INTENT_APPS_BEST = "com.obviz.review.INTENT_APPS_best";
+    public static final String INTENT_APPS_WORST = "com.obviz.review.INTENT_APPS_WORST";
+
+
     /** STATES **/
+
+    public static final String STATE_CATEGORY = "com.obviz.review.CATEGORY";
+    public static final String STATE_TOPIC_IDS = "com.obviz.review.TOPIC_IDS";
+    public static final String STATE_APPS_BEST = "com.obviz.review.APPS_best";
+    public static final String STATE_APPS_WORST = "com.obviz.review.APPS_WORST";
 
     public static final String STATE_APP = "com.obviz.review.APP";
     public static final String STATE_TOPIC = "com.obviz.review.TOPIC";

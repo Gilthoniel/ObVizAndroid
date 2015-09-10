@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.obviz.review.Constants;
+import com.obviz.review.DetailsActivity;
 import com.obviz.review.ReviewsActivity;
 import com.obviz.review.adapters.GaugeAdapter;
 import com.obviz.review.adapters.GridAdapter;

@@ -1,5 +1,6 @@
 package com.obviz.review.adapters;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -65,4 +66,7 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return mFragments.size() - 1;
     }
+
+
+
 }
