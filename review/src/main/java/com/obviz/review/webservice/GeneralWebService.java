@@ -1,6 +1,5 @@
 package com.obviz.review.webservice;
 
-import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -114,7 +113,7 @@ public class GeneralWebService extends WebService {
         adapter.setState(GridAdapter.State.LOADING);
 
         // Key for the cache
-        final String key = CacheManager.KeyBuilder.forReviews(appID, page, size);
+        final String key = CacheManager.KeyBuilder.forReviews(appID, topicID, page, size);
 
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(Constants.URL);

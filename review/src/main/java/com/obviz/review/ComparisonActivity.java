@@ -46,10 +46,12 @@ public class ComparisonActivity extends AppCompatActivity implements GaugeAdapte
 
         if (url.equals(mApplication.getLogo())) {
             mAppButton.setCompoundDrawablesWithIntrinsicBounds(new BitmapDrawable(getResources(), bitmap), null, null, null);
+            mAppButton.setCompoundDrawablePadding(10);
         }
 
         if (url.equals(mComparison.getLogo())) {
-            mComButton.setCompoundDrawablesWithIntrinsicBounds(null, null, new BitmapDrawable(getResources(), bitmap), null);
+            mComButton.setCompoundDrawablesWithIntrinsicBounds(new BitmapDrawable(getResources(), bitmap), null, null, null);
+            mComButton.setCompoundDrawablePadding(10);
         }
     }
 

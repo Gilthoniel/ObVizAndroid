@@ -228,8 +228,8 @@ public class CacheManager {
             mCleaner = Pattern.compile("[^a-zA-Z0-9-_]");
         }
 
-        public static String forReviews(String appID, int page, int size) {
-            return "reviews_" + clean(appID) + "_" + page + "_" + size;
+        public static String forReviews(String appID, int topicID, int page, int size) {
+            return "reviews_" + clean(appID) + "_" + page + "_" + size + "_" + topicID;
         }
 
         public static String forSearch(String query) {

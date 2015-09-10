@@ -63,6 +63,9 @@ public class GridRecyclerView extends RecyclerView {
 
             int spanCount = Math.max(1, getMeasuredWidth() / (int) mColumnWidth);
             mManager.setSpanCount(spanCount);
+        } else {
+
+            mManager.setSpanCount(mNumColumns);
         }
     }
 

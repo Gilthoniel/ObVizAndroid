@@ -31,7 +31,7 @@
             android:text="Application"
             android:id="@+id/app_button"
             android:textColor="@color/appColor"
-            android:paddingLeft="10dp"/>
+            android:padding="20dp"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
             android:text="Other"
             android:id="@+id/comparison_button"
             android:textColor="@color/comparisonColor"
-            android:paddingRight="10dp"/>
+            android:padding="20dp"/>
 
     </LinearLayout>
 
