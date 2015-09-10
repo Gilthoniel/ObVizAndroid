@@ -154,6 +154,21 @@ public class HomeActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public void onBackPressed() {
+        //todo: change here:
+        Log.d("DiscoverFragment", "onBackPressed Called");
+
+        Intent setIntent = new Intent(Intent.ACTION_MAIN);
+        setIntent.addCategory(Intent.CATEGORY_HOME);
+        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(setIntent);
+
+
+
+        return;
+    }
+
     /**
      * Show the tutorial for a certain fragment related to the position
      * @param position of the fragment in the pager

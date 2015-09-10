@@ -105,14 +105,13 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
     @Override
     public void onCategoriesLoaded() {
 
+        super.clear();
         for (SuperCategory category : CategoryManager.instance().getSupers(this)) {
             if (category.active) {
                 super.add(category);
 
                 launchRequests(requestsBest, category, "best");
                 launchRequests(requestsWorst, category, "worst");
-
-
             }
         }
 
