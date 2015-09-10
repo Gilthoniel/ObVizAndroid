@@ -1,20 +1,12 @@
 package com.obviz.review.adapters;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.obviz.review.Constants;
-import com.obviz.review.ReviewsActivity;
 import com.obviz.review.managers.CategoryManager;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
@@ -23,15 +15,12 @@ import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.models.CategoryBase;
 import com.obviz.review.models.SuperCategory;
-import com.obviz.review.views.GaugeChart;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.reviews.R;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -160,6 +149,10 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
             if(mApps.containsKey(categoryBase)){
                 for (AndroidApp a: mApps.get(categoryBase)){
                     ImageView appLogo = new ImageView(mView.getContext());
+                    appLogo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    appLogo.setPadding(5, 5, 5, 5);
+                    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(bestAppsSet.getHeight(), bestAppsSet.getHeight());
+                    appLogo.setLayoutParams(params);
                     if(mImages.containsKey(a.getLogo()))
                         appLogo.setImageBitmap(mImages.get(a.getLogo()));
                     else{
@@ -174,7 +167,6 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
                 }
 
             }
-
 
 
         }
