@@ -21,11 +21,15 @@ import java.util.List;
 public class TopicsDialog extends DialogFragment {
 
     private List<Topic> mSelectedTopics = new LinkedList<>();
+    private OnDismissListener mListener;
 
     public List<Topic> getSelectedTopics() {
         return mSelectedTopics;
     }
 
+    public void addSelectedTopic(Topic t){
+        mSelectedTopics.add(t);
+    }
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle states) {
@@ -51,10 +55,12 @@ public class TopicsDialog extends DialogFragment {
                 }
             });
 
+
+
             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int i) {
-
+                    mListener.dialogDismiss(mSelectedTopics);
                     dialog.dismiss();
                 }
             });
@@ -63,6 +69,19 @@ public class TopicsDialog extends DialogFragment {
             Log.d("__DIALOG__", "Don't receive the list of topics");
         }
 
-        return builder.create();
+        AlertDialog dialog = builder.create();
+        for (Topic t: mSelectedTopics){
+            dialog.getListView().setItemChecked(mSelectedTopics.indexOf(t),true);
+        }
+
+        return dialog ;
+    }
+
+    public void setOnDismissListener(OnDismissListener dismissListener){
+        mListener=dismissListener;
+    }
+
+    public interface OnDismissListener {
+        void dialogDismiss(List<Topic> selectedItems);
     }
 }

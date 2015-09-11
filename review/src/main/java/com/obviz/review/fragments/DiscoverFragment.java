@@ -53,6 +53,9 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
     @Override
     public void onTopicsLoaded() {
         mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
+
+        Log.i("TEST", "Size: "+mTopics.size());
+        createDialog();
         populateSelectedTopics(DEFAULT_TOPICS);
     }
 
@@ -143,6 +146,7 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
             // __FRIDAY_9112015__
             // get available topics or put the fragment in the observers list
             mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
+            createDialog();
             populateSelectedTopics(DEFAULT_TOPICS);
 
             // open the dialog when the user click on the scroll view
@@ -159,23 +163,42 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
 
     // __FRIDAY_9112015__
 
+    private void createDialog() {
+        // Instantiate the dialog
+        mDialog = new TopicsDialog();
+
+        Bundle args = new Bundle(); // put the list of topics for the dialog creation
+        args.putParcelableArrayList(Constants.STATE_TOPIC, mTopics);
+
+        mDialog.setArguments(args);
+        mDialog.setOnDismissListener(new TopicsDialog.OnDismissListener() {
+            @Override
+            public void dialogDismiss(List<Topic> selectedItems) {
+                // use the list to populate the Layout!
+                Set<Integer> ids = new HashSet<Integer>();
+                for (Topic t : selectedItems) {
+                    ids.add(t.getID());
+                }
+                populateSelectedTopics(ids);
+            }
+        });
+
+        if(mTopics.size()>1) {
+            mDialog.addSelectedTopic(mTopics.get(0));
+            mDialog.addSelectedTopic(mTopics.get(1));
+        }
+    }
+
     /**
      * Fill the horizontal scroll view with the selected buttons
      * @param ids IDs of the selected topics
      */
     private void populateSelectedTopics(Set<Integer> ids) {
 
-        // Instantiate the dialog
-        mDialog = new TopicsDialog();
-
-        Bundle args = new Bundle(); // put the list of topics for the dialog creation
-        args.putParcelableArrayList(Constants.STATE_TOPIC, mTopics);
-        mDialog.setArguments(args);
-
         if (getView() != null) {
             // Horizontal linear layout where we populate the buttons
             LinearLayout layout = (LinearLayout) getView().findViewById(R.id.topics_container);
-
+            layout.removeAllViews();
             // Iteration over all the topics
             for (Topic topic : mTopics) {
                 // We add the button only if the set contains the id
