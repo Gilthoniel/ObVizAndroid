@@ -33,6 +33,15 @@ public class TopicsManager {
         new Initialization().execute();
     }
 
+    public List<Topic> getTopics(String type){
+        List<Topic> ret = new ArrayList<>();
+        for (Topic t:mTopics.values()){
+            if(t.getType().equals(type))
+                ret.add(t);
+        }
+        return ret;
+    }
+
     /**
      * Call at the beginning of the application
      * @param context Context of the application

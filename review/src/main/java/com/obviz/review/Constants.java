@@ -21,6 +21,7 @@ public class Constants {
     public static final int CACHE_EXPIRATION_TIME = 1000 * 60 * 60 * 24; // in ms
     public static final int NUMBER_TRENDING_APPS = 10;
     public static final int NUMBER_REVIEW_PER_BLOCK = 20;
+    public static final int NUMBER_APPS_PER_BLOCK = 7;
 
     public static final Type[] HOME_FRAGMENTS = new Type[] {
             TrendingFragment.class,
@@ -40,6 +41,7 @@ public class Constants {
     public static final String GET_CATEGORIES = "Get_App_Categories";
     public static final String GET_CATEGORIES_TYPES = "Get_App_Categories_Types";
     public static final String GET_APPS_FILTERED = "Get_Apps_Filtered";
+    public static final String GET_APP_TOPICS = "Get_App_Topics";
 
     public static final String APP_VIEWED = "App_Viewed";
 

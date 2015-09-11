@@ -74,6 +74,7 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
         // Initiate the fragment list
         mGridView = (GridRecyclerView) findViewById(R.id.grid_view);
         mAdapter= new AppBoxAdapter();
+        mAdapter.setCategory(mCategory);
 
 
         // Launch the details activity when the user click on a app box
@@ -93,7 +94,7 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
         mAdapter.addAll(mbestApps);
         mAdapter.shuffle(); // Random selection of the trending apps
 
-        mGridView.setAdapter(mAdapter);
+        mGridView.setInfiniteAdapter(mAdapter);
     }
 
     @Override

@@ -67,6 +67,7 @@ public class ReviewsAdapter extends GridAdapter<Review> implements InfiniteScrol
     public void onLoadMore() {
         if (mPage < mMaxPage) {
             // Load and update the page if we aren't at the last page
+
             GeneralWebService.instance().getReviews(mAppID, mTopicID, mPage, Constants.NUMBER_REVIEW_PER_BLOCK, this);
             mPage++;
         }

@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
+import com.obviz.review.DiscoverAppsActivity;
+import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.adapters.SuperCategoryGridAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
@@ -142,7 +144,7 @@ public class GeneralWebService extends WebService {
 
             @Override
             public Type getType() {
-                return new TypeToken<Review.Pager>() {}.getType();
+                return Review.Pager.class;
             }
         }, key);
     }
@@ -150,6 +152,41 @@ public class GeneralWebService extends WebService {
     ///
     // C
     // get apps given a specific query (e.g. design) from a category or a type:
+
+    public void getApps(final CategoryBase category, final int pageNo, final int noAppsPerPage, final AppBoxAdapter adapter){
+        //for each element in the grid i want to do what is done in getTrendingApps.
+        Uri.Builder builder = new Uri.Builder();
+
+        Log.d("WEBSERVICE GET APPS", "PAGENO "+pageNo);
+
+        //TODO: CHANGE THIS TO THE REAL IDS OF THE TOPICS WE WANT:
+        //then the list of parameters that we want to add:
+        List<Integer> topicIds = Arrays.asList(1);
+        builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", noAppsPerPage, pageNo);
+        final String key = null;
+
+        get(builder, new RequestCallback<AndroidApp.Pager>() {
+            @Override
+            public void onSuccess(AndroidApp.Pager result) {
+
+                // Display the empty text if there is no result
+                adapter.setMaxPage(result.nbTotalPages);
+                adapter.addAll(result.apps);
+                adapter.setState(GridAdapter.State.NONE);
+            }
+
+            @Override
+            public void onFailure(Errors error) {
+
+                adapter.setState(GridAdapter.State.ERRORS);
+            }
+
+            @Override
+            public Type getType() {
+                return AndroidApp.Pager.class;
+            }
+        }, key);
+    }
 
 
     public HttpTask<?> getTopApps(final SuperCategoryGridAdapter adapter, final CategoryBase category, final String appType) {
@@ -162,22 +199,24 @@ public class GeneralWebService extends WebService {
             Log.d("BASE-CAT", "Nameless Category - THIS SHOULD NOT HAPPEN");
 
         //for each element in the grid i want to do what is done in getTrendingApps.
-        //TODO: change the command below:
         Uri.Builder builder = new Uri.Builder();
+        //TODO: CHANGE THIS TO THE REAL IDS OF THE TOPICS WE WANT:
+        //then the list of parameters that we want to add:
+        List<Integer> topicIds = Arrays.asList(1);
         if(appType.equals("best"))
-            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, "POSITIVE");
+            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", 7, -1);
         if(appType.equals("worst"))
-            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, "NEGATIVE");
+            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "NEGATIVE", 7, -1);
 
         final String key = null;
         // Here return the httpTask like below and update the map in the adapter
 
-        return get(builder, new RequestCallback<LinkedList<AndroidApp>>() {
+        return get(builder, new RequestCallback<AndroidApp.Pager>() {
             @Override
-            public void onSuccess(LinkedList<AndroidApp> result) {
+            public void onSuccess(AndroidApp.Pager result) {
 
                 // Display the empty text if there is no result
-                adapter.addAlltoMap(result,category, appType);
+                adapter.addAlltoMap(result.apps,category, appType);
             }
 
             @Override
@@ -188,7 +227,7 @@ public class GeneralWebService extends WebService {
 
             @Override
             public Type getType() {
-                return new TypeToken<LinkedList<AndroidApp>>(){}.getType();
+                return AndroidApp.Pager.class;
             }
         }, key);
     }
@@ -196,7 +235,19 @@ public class GeneralWebService extends WebService {
     //
     ///
 
-    private Uri.Builder constructBuilder(CategoryBase categoryBase, String command, String posNeg){
+
+    private Uri.Builder constructTopicBuilder(String command, String topicType){
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", command);
+        builder.appendQueryParameter("type", topicType);
+        Log.d("QUERY", builder.toString());
+
+        return builder;
+    }
+
+
+    private Uri.Builder constructBuilder(CategoryBase categoryBase, String command, List<Integer> topicIds, String posNeg, int nbPerPage, int pageNo){
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(Constants.URL);
         builder.appendQueryParameter("cmd", command);
@@ -211,14 +262,14 @@ public class GeneralWebService extends WebService {
             }
         }
 
-        //TODO: CHANGE THIS TO THE REAL IDS OF THE TOPICS WE WANT:
-        //then the list of parameters that we want to add:
-        List<Integer> topicIds = Arrays.asList(1);
+
         builder.appendQueryParameter("topic_ids", MessageParser.toJson(topicIds));
-
         builder.appendQueryParameter("type", posNeg);
-
-        Log.d("QUERY",builder.toString());
+        if(nbPerPage>0)
+            builder.appendQueryParameter("nb_per_page", Integer.toString(nbPerPage));
+        if(pageNo>=0)
+            builder.appendQueryParameter("page_nr", Integer.toString(pageNo));
+        Log.d("QUERY", builder.toString());
 
         return builder;
     }

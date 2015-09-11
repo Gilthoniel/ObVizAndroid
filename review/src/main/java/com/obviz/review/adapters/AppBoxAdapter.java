@@ -12,7 +12,10 @@ import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.models.Category;
 import com.obviz.review.views.GaugeChart;
+import com.obviz.review.views.InfiniteScrollable;
+import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
 import java.util.HashMap;
@@ -22,13 +25,31 @@ import java.util.Map;
  * Created by gaylor on 05-Aug-15.
  * Adapter for AndroidApp in a RecyclerView
  */
-public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsManager.TopicsObserver, ImageObserver {
+public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsManager.TopicsObserver, ImageObserver, InfiniteScrollable {
 
     private Map<String,Bitmap> mImages;
+    private int mPage;
+    private int mMaxPage;
+    private Category mCategory;
+
 
     public AppBoxAdapter() {
-
+        mPage = 1;
+        mMaxPage = 2;
         mImages = new HashMap<>();
+    }
+
+    public void setCategory(Category c){
+        mCategory=c;
+    }
+
+    /**
+     * Maximum number of page to display with the infinite scroller
+     * WARNING : It's the webservice which take care of that in most case
+     * @param value new maximum
+     */
+    public void setMaxPage(int value) {
+        mMaxPage = value;
     }
 
     /**
@@ -68,6 +89,24 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
         notifyDataSetChanged(); // update the view
     }
 
+
+    /**
+     * Implementation of the InfiniteScrollbar
+     * Occurred when the user is at the end of the scrollbar
+     */
+    @Override
+    public void onLoadMore() {
+        if (mPage < mMaxPage) {
+            // Load and update the page if we aren't at the last page
+
+            GeneralWebService.instance().getApps(mCategory, mPage, Constants.NUMBER_APPS_PER_BLOCK, this);
+
+            mPage++;
+        }
+    }
+
+
+
     /**
      * Child of the adapter
      */
@@ -80,6 +119,10 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
 
             mView = v;
         }
+
+
+
+
 
         /**
          * Populate an AndroidApp item of a RecyclerView

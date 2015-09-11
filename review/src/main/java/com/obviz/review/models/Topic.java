@@ -12,6 +12,7 @@ public class Topic implements Serializable {
     private static final long serialVersionUID = 8634619334632273342L;
 
     private int _id;
+    private String type;
     private String title;
     private String[] keys;
     private boolean useSpecialGauge;
@@ -20,6 +21,10 @@ public class Topic implements Serializable {
     public int getID() {
         return _id;
     }
+    public String getType() {
+        return type;
+    }
+
 
     public String getTitle() {
 
