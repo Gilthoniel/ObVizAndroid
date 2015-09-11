@@ -244,4 +244,9 @@ public class AndroidApp implements Parcelable, Serializable {
 
         return app;
     }
+
+    public class Pager implements Serializable {
+        public List<AndroidApp> apps;
+        public int nbTotalPages;
+    }
 }

@@ -21,6 +21,7 @@ import com.obviz.reviews.R;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,16 +31,16 @@ import java.util.Map;
 public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implements TopicsManager.TopicsObserver, ImageObserver, CategoryManager.CategoryObserver {
 
     private Map<String,Bitmap> mImages;
-    private Map<CategoryBase, LinkedList<AndroidApp>> mAppsBest;
-    private Map<CategoryBase, LinkedList<AndroidApp>> mAppsWorst;
+    private Map<CategoryBase, List<AndroidApp>> mAppsBest;
+    private Map<CategoryBase, List<AndroidApp>> mAppsWorst;
     private Map<CategoryBase, HttpTask<?>> requestsBest;
     private Map<CategoryBase, HttpTask<?>> requestsWorst;
 
-    public LinkedList<AndroidApp> getBestApps(CategoryBase categoryBase){
+    public List<AndroidApp> getBestApps(CategoryBase categoryBase){
         return mAppsBest.get(categoryBase);
     }
 
-    public LinkedList<AndroidApp> getWorstApps(CategoryBase categoryBase){
+    public List<AndroidApp> getWorstApps(CategoryBase categoryBase){
         return mAppsWorst.get(categoryBase);
     }
 
@@ -53,9 +54,10 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
         onCategoriesLoaded();
     }
 
-    public void addAlltoMap(LinkedList<AndroidApp> appList, CategoryBase category, String appType){
+    public void addAlltoMap(List<AndroidApp> appList, CategoryBase category, String appType){
         if(appType.equals("best"))
             this.mAppsBest.put(category,appList);
+
 
         if(appType.equals("worst"))
             this.mAppsWorst.put(category, appList);
@@ -143,7 +145,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
             mView = v;
         }
 
-        private void fillAppLogos(CategoryBase categoryBase, int viewId, Map<CategoryBase, LinkedList<AndroidApp>> mApps){
+        private void fillAppLogos(CategoryBase categoryBase, int viewId, Map<CategoryBase, List<AndroidApp>> mApps){
             LinearLayout bestAppsSet = (LinearLayout) mView.findViewById(viewId);
             bestAppsSet.removeAllViews();
             if(mApps.containsKey(categoryBase)){

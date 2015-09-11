@@ -10,17 +10,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.obviz.review.Constants;
 import com.obviz.review.DiscoverAppsActivity;
 import com.obviz.review.ReviewsActivity;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.adapters.SuperCategoryGridAdapter;
+import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.models.CategoryBase;
 import com.obviz.review.views.GridRecyclerView;
+import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
     private boolean mTutoRequested = false;
     private Context mContext;
     SuperCategoryGridAdapter mDiscoverAdapter;
+    List<Topic> mTopics;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle states) {
@@ -132,6 +136,15 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
             });
 
             grid.setAdapter(mDiscoverAdapter);
+
+
+            //get available topics
+            TopicsManager.instance().getTopics("DEFINED");
+
+            //horizontal scroll
+            for
+            Button btnTopic = new Button(getContext());
+            btnTopic.setText("");
 
 
         }
