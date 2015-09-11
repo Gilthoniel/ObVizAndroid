@@ -1,7 +1,5 @@
 package com.obviz.review.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -11,36 +9,52 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
+import android.widget.LinearLayout;
 import com.obviz.review.Constants;
 import com.obviz.review.DiscoverAppsActivity;
-import com.obviz.review.ReviewsActivity;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.adapters.SuperCategoryGridAdapter;
+import com.obviz.review.dialogs.TopicsDialog;
 import com.obviz.review.managers.TopicsManager;
-import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.models.CategoryBase;
+import com.obviz.review.models.Topic;
 import com.obviz.review.views.GridRecyclerView;
-import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 /**
  * Created by gaylor on 05-Aug-15.
  *
  */
-public class DiscoverFragment extends Fragment implements HomeFragment {
+public class DiscoverFragment extends Fragment implements HomeFragment, TopicsManager.TopicsObserver {
 
-    private boolean mTutoRequested = false;
-    private Context mContext;
-    SuperCategoryGridAdapter mDiscoverAdapter;
-    List<Topic> mTopics;
+    // __FRIDAY_9112015__
+    private final Set<Integer> DEFAULT_TOPICS = new HashSet<>();
+
+    private SuperCategoryGridAdapter mDiscoverAdapter;
+    private ArrayList<Topic> mTopics;
+    private TopicsDialog mDialog;
+
+    public DiscoverFragment() {
+        super();
+
+        DEFAULT_TOPICS.add(1);
+        DEFAULT_TOPICS.add(2);
+        DEFAULT_TOPICS.add(3);
+        DEFAULT_TOPICS.add(4);
+        DEFAULT_TOPICS.add(5);
+    }
+
+    // __FRIDAY_9112015__
+    @Override
+    public void onTopicsLoaded() {
+        mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
+        populateSelectedTopics(DEFAULT_TOPICS);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle states) {
@@ -51,18 +65,7 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
     @Override
     //TODO: the tutorial is just copied here. Must add relevant content
     public void showTutorial() {
-        if (getView() == null) {
-            mTutoRequested = true;
-            return;
-        } else {
-            mTutoRequested = false;
-        }
 
-        /*TutorialManager.single((Activity) mContext)
-                .setTarget(getView().findViewById(R.id.spinner))
-                .setContentText(getResources().getString(R.string.tutorial_home_content))
-                .singleUse(Constants.TUTORIAL_HOME_KEY)
-                .show();*/
     }
 
     @Override
@@ -137,16 +140,54 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
 
             grid.setAdapter(mDiscoverAdapter);
 
+            // __FRIDAY_9112015__
+            // get available topics or put the fragment in the observers list
+            mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
+            populateSelectedTopics(DEFAULT_TOPICS);
 
-            //get available topics
-            TopicsManager.instance().getTopics("DEFINED");
+            // open the dialog when the user click on the scroll view
+            // TODO: tutorial for the user to explain how to open the dialog
+            getView().findViewById(R.id.topics_container).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i("__DIALOG__", "Dialog is called");
+                    mDialog.show(getActivity().getSupportFragmentManager(), "TOPICS");
+                }
+            });
+        }
+    }
 
-            //horizontal scroll
-            for
-            Button btnTopic = new Button(getContext());
-            btnTopic.setText("");
+    // __FRIDAY_9112015__
 
+    /**
+     * Fill the horizontal scroll view with the selected buttons
+     * @param ids IDs of the selected topics
+     */
+    private void populateSelectedTopics(Set<Integer> ids) {
 
+        // Instantiate the dialog
+        mDialog = new TopicsDialog();
+
+        Bundle args = new Bundle(); // put the list of topics for the dialog creation
+        args.putParcelableArrayList(Constants.STATE_TOPIC, mTopics);
+        mDialog.setArguments(args);
+
+        if (getView() != null) {
+            // Horizontal linear layout where we populate the buttons
+            LinearLayout layout = (LinearLayout) getView().findViewById(R.id.topics_container);
+
+            // Iteration over all the topics
+            for (Topic topic : mTopics) {
+                // We add the button only if the set contains the id
+                if (ids.contains(topic.getID())) {
+                    Button button = new Button(getContext());
+                    button.setText(topic.getTitle());
+                    button.setClickable(false);
+                    button.setFocusable(false);
+
+                    layout.addView(button);
+                }
+            }
         }
     }
 }

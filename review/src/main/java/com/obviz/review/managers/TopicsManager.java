@@ -2,7 +2,6 @@ package com.obviz.review.managers;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import com.obviz.review.models.Topic;
 import com.obviz.review.service.NetworkChangeReceiver;
 import com.obviz.review.webservice.GeneralWebService;
@@ -33,15 +32,6 @@ public class TopicsManager {
         new Initialization().execute();
     }
 
-    public List<Topic> getTopics(String type){
-        List<Topic> ret = new ArrayList<>();
-        for (Topic t:mTopics.values()){
-            if(t.getType().equals(type))
-                ret.add(t);
-        }
-        return ret;
-    }
-
     /**
      * Call at the beginning of the application
      * @param context Context of the application
@@ -62,6 +52,28 @@ public class TopicsManager {
         if (mObservers.size() > 0 && !mLock.isLocked()) {
             new Initialization().execute();
         }
+    }
+
+    /**
+     * __FRIDAY_9112015__
+     * @param type Type of the topic
+     * @return List of filtered topics or an empty list if the topics aren't loaded
+     */
+    public List<Topic> getTopics(Topic.Type type, TopicsObserver observer){
+
+        // __FRIDAY_9112015__
+        if (mTopics != null) {
+            List<Topic> ret = new ArrayList<>();
+            for (Topic t:mTopics.values()){
+                if(t.getType() == type)
+                    ret.add(t);
+            }
+            return ret;
+        }
+
+        plannedInit(observer);
+
+        return Collections.emptyList();
     }
 
     /**
