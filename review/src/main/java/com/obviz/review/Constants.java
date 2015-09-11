@@ -74,6 +74,7 @@ public class Constants {
 
     public static final String STATE_APP = "com.obviz.review.APP";
     public static final String STATE_TOPIC = "com.obviz.review.TOPIC";
+    public static final String STATE_TOPICS_SELECTED = "com.obviz.review.TOPICS_SELECTED";
     public static final String STATE_SEARCH = "com.obviz.review.SEARCH";
     public static final String STATE_COMPARISON = "com.obviz.reviewe.COMPARISON";
 
