@@ -19,6 +19,10 @@ import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.reviews.R;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +70,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
     }
 
 
-    private void launchRequests(Map<CategoryBase, HttpTask<?>> requests, CategoryBase category, String requestType){
+    private void launchRequests(Map<CategoryBase, HttpTask<?>> requests, CategoryBase category, String requestType, List<Integer> topicIds){
         HttpTask<?> request=null;
         if(requests.containsKey(category)){
             request = requests.get(category);
@@ -76,33 +80,46 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
             request.cancel();
         }
 
-        request = GeneralWebService.instance().getTopApps(this, category, requestType);
+        request = GeneralWebService.instance().getTopApps(this, category, requestType, topicIds);
 
 
     }
 
-    public void getChildCategories(CategoryBase categoryBase){
+    public void getChildCategories(CategoryBase categoryBase, List<Integer> topicIds){
         //relaunch the adapter with the new contents
         for (Category category : categoryBase.getCategories()) {
             super.add(category);
-            launchRequests(requestsBest, category, "best");
-            launchRequests(requestsWorst, category, "worst");
+            launchRequests(requestsBest, category, "best", topicIds);
+            launchRequests(requestsWorst, category, "worst", topicIds);
         }
         notifyDataSetChanged();
     }
 
 
     //this is where we actually get the stuff from the Category manager!
-    @Override
+    //@Override
+
     public void onCategoriesLoaded() {
 
+    }
+
+    public void onCategoriesLoaded(List<Integer> topicIds) {
+
         super.clear();
-        for (SuperCategory category : CategoryManager.instance().getSupers(this)) {
+        List<SuperCategory> categoryList = new ArrayList<>(CategoryManager.instance().getSupers(this));
+        Collections.sort(categoryList, new Comparator<SuperCategory>() {
+            @Override
+            public int compare(SuperCategory sc1, SuperCategory sc2) {
+                return (sc1.getTitle().compareTo(sc2.getTitle()));
+            }
+        });
+
+        for (SuperCategory category : categoryList)  {
             if (category.active) {
                 super.add(category);
 
-                launchRequests(requestsBest, category, "best");
-                launchRequests(requestsWorst, category, "worst");
+                launchRequests(requestsBest, category, "best", topicIds);
+                launchRequests(requestsWorst, category, "worst", topicIds);
             }
         }
 

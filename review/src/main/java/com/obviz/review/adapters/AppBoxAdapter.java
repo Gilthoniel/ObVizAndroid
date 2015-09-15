@@ -18,7 +18,9 @@ import com.obviz.review.views.InfiniteScrollable;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,17 +33,19 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
     private int mPage;
     private int mMaxPage;
     private Category mCategory;
-
+    private List<Integer> mTopicIDs;
 
     public AppBoxAdapter() {
         mPage = 1;
         mMaxPage = 2;
         mImages = new HashMap<>();
+        mTopicIDs = new ArrayList<>();
     }
 
     public void setCategory(Category c){
         mCategory=c;
     }
+    public void setTopics(ArrayList<Integer> topicIDs){ mTopicIDs=topicIDs;}
 
     /**
      * Maximum number of page to display with the infinite scroller
@@ -99,7 +103,7 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
         if (mPage < mMaxPage) {
             // Load and update the page if we aren't at the last page
 
-            GeneralWebService.instance().getApps(mCategory, mPage, Constants.NUMBER_APPS_PER_BLOCK, this);
+            GeneralWebService.instance().getApps(mCategory, mPage, Constants.NUMBER_APPS_PER_BLOCK, this, mTopicIDs);
 
             mPage++;
         }
