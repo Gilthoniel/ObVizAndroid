@@ -34,17 +34,25 @@ public class TopicsDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle states) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Choose some topics");
+        builder.setTitle("Choose your topics");
+
 
         if (getArguments() != null) {
-            final List<Topic> topics = getArguments().getParcelableArrayList(Constants.STATE_TOPIC);
 
+            final List<Topic> topics = getArguments().getParcelableArrayList(Constants.STATE_TOPIC);
+            Log.d("TOPICS Dialog onCreate ", "no Topics: "+topics.size());
             CharSequence[] titles = new CharSequence[topics.size()];
+            boolean[] checkedItems= new boolean[topics.size()];
             for (int i = 0; i < titles.length; i++) {
-                titles[i] = topics.get(i).getTitle();
+                Topic t = topics.get(i);
+                titles[i] = t.getTitle();
+                if(mSelectedTopics.contains(t))
+                    checkedItems[i]=true;
+                else
+                    checkedItems[i]=false;
             }
 
-            builder.setMultiChoiceItems(titles, null, new DialogInterface.OnMultiChoiceClickListener() {
+            builder.setMultiChoiceItems(titles, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int position, boolean isChecked) {
                     if (isChecked) {
@@ -70,9 +78,9 @@ public class TopicsDialog extends DialogFragment {
         }
 
         AlertDialog dialog = builder.create();
-        for (Topic t: mSelectedTopics){
+        /*for (Topic t: mSelectedTopics){
             dialog.getListView().setItemChecked(mSelectedTopics.indexOf(t),true);
-        }
+        }*/
 
         return dialog ;
     }

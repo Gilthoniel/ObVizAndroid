@@ -48,6 +48,9 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
             topicIDs = states.getIntegerArrayList(Constants.STATE_TOPIC_IDS);
             mbestApps = states.getParcelableArrayList(Constants.STATE_APPS_BEST);
             mworstApps = states.getParcelableArrayList(Constants.STATE_APPS_WORST);
+
+
+
         } else {
             Intent intent = getIntent();
             mCategory = intent.getParcelableExtra(Constants.INTENT_CATEGORY);
@@ -75,6 +78,7 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
         mGridView = (GridRecyclerView) findViewById(R.id.grid_view);
         mAdapter= new AppBoxAdapter();
         mAdapter.setCategory(mCategory);
+        mAdapter.setTopics(topicIDs);
 
 
         // Launch the details activity when the user click on a app box

@@ -153,15 +153,12 @@ public class GeneralWebService extends WebService {
     // C
     // get apps given a specific query (e.g. design) from a category or a type:
 
-    public void getApps(final CategoryBase category, final int pageNo, final int noAppsPerPage, final AppBoxAdapter adapter){
+    public void getApps(final CategoryBase category, final int pageNo, final int noAppsPerPage, final AppBoxAdapter adapter, List<Integer> topicIds){
         //for each element in the grid i want to do what is done in getTrendingApps.
         Uri.Builder builder = new Uri.Builder();
 
         Log.d("WEBSERVICE GET APPS", "PAGENO "+pageNo);
 
-        //TODO: CHANGE THIS TO THE REAL IDS OF THE TOPICS WE WANT:
-        //then the list of parameters that we want to add:
-        List<Integer> topicIds = Arrays.asList(1);
         builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", noAppsPerPage, pageNo);
         final String key = null;
 
@@ -189,7 +186,7 @@ public class GeneralWebService extends WebService {
     }
 
 
-    public HttpTask<?> getTopApps(final SuperCategoryGridAdapter adapter, final CategoryBase category, final String appType) {
+    public HttpTask<?> getTopApps(final SuperCategoryGridAdapter adapter, final CategoryBase category, final String appType, List<Integer> topicIds) {
 
         // have to create the builder for each category!
 
@@ -200,9 +197,7 @@ public class GeneralWebService extends WebService {
 
         //for each element in the grid i want to do what is done in getTrendingApps.
         Uri.Builder builder = new Uri.Builder();
-        //TODO: CHANGE THIS TO THE REAL IDS OF THE TOPICS WE WANT:
-        //then the list of parameters that we want to add:
-        List<Integer> topicIds = Arrays.asList(1);
+
         if(appType.equals("best"))
             builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", 7, -1);
         if(appType.equals("worst"))

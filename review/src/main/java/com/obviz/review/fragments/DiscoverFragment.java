@@ -1,6 +1,7 @@
 package com.obviz.review.fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import com.obviz.review.Constants;
 import com.obviz.review.DiscoverAppsActivity;
 import com.obviz.review.adapters.GridAdapter;
@@ -23,6 +26,7 @@ import com.obviz.review.models.Topic;
 import com.obviz.review.views.GridRecyclerView;
 import com.obviz.reviews.R;
 
+import java.awt.font.TextAttribute;
 import java.util.*;
 
 
@@ -37,6 +41,7 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
 
     private SuperCategoryGridAdapter mDiscoverAdapter;
     private ArrayList<Topic> mTopics;
+    private ArrayList<Integer> mSelectedTopicIds;
     private TopicsDialog mDialog;
 
     public DiscoverFragment() {
@@ -44,16 +49,13 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
 
         DEFAULT_TOPICS.add(1);
         DEFAULT_TOPICS.add(2);
-        DEFAULT_TOPICS.add(3);
-        DEFAULT_TOPICS.add(4);
-        DEFAULT_TOPICS.add(5);
     }
 
     // __FRIDAY_9112015__
     @Override
     public void onTopicsLoaded() {
         mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
-
+        mSelectedTopicIds = new ArrayList<>();
         Log.i("TEST", "Size: "+mTopics.size());
         createDialog();
         populateSelectedTopics(DEFAULT_TOPICS);
@@ -88,7 +90,7 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
                 Log.d("Debug types",c.getClass().toString());
                 if(c.getClass()== Category.class){
                     // re initialize the adapter content
-                    mDiscoverAdapter.onCategoriesLoaded();
+                    mDiscoverAdapter.onCategoriesLoaded(mSelectedTopicIds);
                     return false;
                 }
             }
@@ -115,7 +117,7 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
                     if(cat.getCategories().size()>1) {
 
                         mDiscoverAdapter.clear();
-                        mDiscoverAdapter.getChildCategories(cat);
+                        mDiscoverAdapter.getChildCategories(cat, mSelectedTopicIds);
 
                     } else {
 
@@ -123,17 +125,12 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
 
                         intent.putExtra(Constants.INTENT_CATEGORY, (Parcelable) cat);
 
-                        //TODO: pass the real topics here
-                        ArrayList<Integer> topics = new ArrayList<Integer>(Arrays.asList(1));
-                        //int[] topics = new int[1];
-                        //topics[0]=1;
-                        intent.putIntegerArrayListExtra(Constants.INTENT_TOPIC_IDS, topics);
 
                         //TODO: this will crash if the contents of the best apps array is null!
                         intent.putParcelableArrayListExtra(Constants.INTENT_APPS_BEST, new ArrayList<AndroidApp>(mDiscoverAdapter.getBestApps(cat)));
                         intent.putParcelableArrayListExtra(Constants.INTENT_APPS_WORST, new ArrayList<AndroidApp>(mDiscoverAdapter.getWorstApps(cat)));
 
-                        intent.putIntegerArrayListExtra(Constants.INTENT_TOPIC_IDS, topics);
+                        intent.putIntegerArrayListExtra(Constants.INTENT_TOPIC_IDS, mSelectedTopicIds);
 
                         startActivity(intent);
 
@@ -174,19 +171,30 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
         mDialog.setOnDismissListener(new TopicsDialog.OnDismissListener() {
             @Override
             public void dialogDismiss(List<Topic> selectedItems) {
+                mSelectedTopicIds.clear();
                 // use the list to populate the Layout!
                 Set<Integer> ids = new HashSet<Integer>();
                 for (Topic t : selectedItems) {
                     ids.add(t.getID());
+                    mSelectedTopicIds.add(t.getID());
                 }
                 populateSelectedTopics(ids);
             }
         });
 
-        if(mTopics.size()>1) {
-            mDialog.addSelectedTopic(mTopics.get(0));
-            mDialog.addSelectedTopic(mTopics.get(1));
-        }
+        if(mTopics.size()>1)
+            for (int i=0; i<mTopics.size();i++){
+                Topic t = mTopics.get(i);
+                if(DEFAULT_TOPICS.contains(t.getID())){
+                    mDialog.addSelectedTopic(t);
+                    mSelectedTopicIds.add(t.getID());
+                }
+
+            }
+
+
+
+
     }
 
     /**
@@ -203,12 +211,19 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
             for (Topic topic : mTopics) {
                 // We add the button only if the set contains the id
                 if (ids.contains(topic.getID())) {
-                    Button button = new Button(getContext());
+                    /*Button button = new Button(getContext());
                     button.setText(topic.getTitle());
                     button.setClickable(false);
                     button.setFocusable(false);
 
-                    layout.addView(button);
+                    layout.addView(button);*/
+
+                    TextView tv = (TextView) new TextView(getContext());
+                    tv.setPadding(2,2,2,2);
+                    tv.setText(topic.getTitle());
+                    tv.setTextColor(Color.parseColor("#ffffff"));
+                    tv.setBackgroundResource(R.drawable.tags_rounded_corners);
+                    layout.addView(tv);
                 }
             }
         }
