@@ -80,5 +80,9 @@
     <string name="category_image_link">
         http://ns3369837.ip-37-187-91.eu/assets/images/icons/colored/
     </string>
+    <string name="pref_tutorial_cache">Cache</string>
+    <string name="pref_key_cache_empty">PREF_KEY_CACHE_EMPTY</string>
+    <string name="pref_cache_summary">Empty the cache</string>
+    <string name="pref_cache_empty_title">Clear</string>
 
 </resources>
