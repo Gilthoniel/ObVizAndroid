@@ -231,20 +231,23 @@ public class DetailsActivity extends AppCompatActivity
                 case 1:
                     final GridRecyclerView grid = (GridRecyclerView) findViewById(R.id.grid_view);
 
-                    grid.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (grid.findViewHolderForPosition(0) == null) {
-                                return;
-                            }
+                    if (app.getOpinions().size() > 0) {
+                        grid.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (grid.findViewHolderForPosition(0) == null) {
+                                    return;
+                                }
 
-                            TutorialManager.single(DetailsActivity.this)
-                                    .setTarget(grid.findViewHolderForPosition(0).itemView)
-                                    .setContentText(getString(R.string.tutorial_opinions))
-                                    .singleUse(Constants.TUTORIAL_DETAILS_KEY)
-                                    .show();
-                        }
-                    });
+                                TutorialManager.single(DetailsActivity.this)
+                                        .setTarget(grid.findViewHolderForPosition(0).itemView)
+                                        .setContentText(getString(R.string.tutorial_opinions))
+                                        .singleUse(Constants.TUTORIAL_DETAILS_KEY)
+                                        .setDelay(500)
+                                        .show();
+                            }
+                        });
+                    }
                     break;
 
                 default:

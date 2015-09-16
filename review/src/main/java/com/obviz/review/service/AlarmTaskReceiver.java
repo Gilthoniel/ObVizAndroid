@@ -83,6 +83,8 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 12);
         calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        calendar.add(Calendar.DAY_OF_WEEK, 7);
 
         alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(),
                 1000 * 60 * 60 * 24 * 7, pending);
@@ -104,6 +106,6 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
 
     private static PendingIntent createPending(Context context) {
         Intent alarmIntent = new Intent(context, AlarmTaskReceiver.class);
-        return PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+        return PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }
