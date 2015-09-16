@@ -6,6 +6,8 @@
     <string name="main_menu_home">Home</string>
     <string name="search_hint">Search an app…</string>
 
+    <string name="title_activity_discover_apps">Best and worst</string>
+
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
 
@@ -55,7 +57,7 @@
     <string name="pref_tutorial_enable_summary">Enable or disable the tutorial when you enter the first time in an activity</string>
     <string name="pref_tutorial_enable_title">Enable</string>
     <string name="pref_key_tutorial_refresh">PREF_KEY_TUTORIAL_REFRESH</string>
-    <string name="pref_tutorial_refrehs_summary">Reset the watched state of the tutorial. Click here if you want to watch the tutorial again.</string>
+    <string name="pref_tutorial_refresh_summary">Reset the watched state of the tutorial. Click here if you want to watch the tutorial again.</string>
     <string name="pref_tutorial_refresh_title">Refresh</string>
 
     <!-- Tutorial -->
@@ -73,8 +75,10 @@
         When you watch an application in details, you can add it in favorite, and you will be able to retrieve them
         here !
     </string>
-    <string name="pref_tutorial_cache">Cache</string>
-    <string name="pref_key_cache_empty">PREF_KEY_CACHE_EMPTY</string>
-    <string name="pref_cache_summary">Empty the cache if you need to extra space or if the app have a strange behaviour</string>
-    <string name="pref_cache_empty_title">Clear</string>
+
+    <!-- Resources -->
+    <string name="category_image_link">
+        http://ns3369837.ip-37-187-91.eu/assets/images/icons/colored/
+    </string>
+
 </resources>

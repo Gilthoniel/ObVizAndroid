@@ -1,5 +1,6 @@
 package com.obviz.review;
 
+import com.obviz.review.fragments.DiscoverFragment;
 import com.obviz.review.fragments.FavoriteFragment;
 import com.obviz.review.fragments.HistoryFragment;
 import com.obviz.review.fragments.PackageFragment;
@@ -25,6 +26,7 @@ public class Constants {
 
     public static final Type[] HOME_FRAGMENTS = new Type[] {
             TrendingFragment.class,
+            DiscoverFragment.class,
             PackageFragment.class,
             HistoryFragment.class,
             FavoriteFragment.class

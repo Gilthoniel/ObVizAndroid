@@ -4,6 +4,17 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
+
+
+import com.obviz.review.fragments.DiscoverFragment;
+
+import com.obviz.review.SettingsActivity;
+
+import com.obviz.review.fragments.FavoriteFragment;
+import com.obviz.review.fragments.HistoryFragment;
+import com.obviz.review.fragments.PackageFragment;
+import com.obviz.review.fragments.TrendingFragment;
 import com.obviz.review.Constants;
 import com.obviz.review.HomeActivity;
 import com.obviz.review.SettingsActivity;

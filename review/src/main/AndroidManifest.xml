@@ -77,6 +77,15 @@
                 android:value="com.obviz.review.DetailsActivity" />
 
         </activity>
+        <activity
+            android:name="com.obviz.review.DiscoverAppsActivity"
+            android:label="@string/title_activity_discover_apps"
+            android:parentActivityName="com.obviz.review.HomeActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.obviz.review.HomeActivity" />
+        </activity>
 
         <receiver
             android:name="com.obviz.review.service.AlarmTaskReceiver"
@@ -90,14 +99,6 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
-
-
-        <activity
-            android:name="com.obviz.review.DiscoverAppsActivity"
-            android:label="@string/title_activity_discover_apps" >
-        </activity>
-
 
     </application>
 

@@ -113,7 +113,6 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
         super.onPause();
 
         ConnectionService.instance().cancel();
-        mAdapter.clear();
     }
 
     @Override
