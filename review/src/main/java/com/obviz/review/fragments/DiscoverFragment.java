@@ -20,6 +20,7 @@ import com.obviz.review.adapters.SuperCategoryGridAdapter;
 import com.obviz.review.dialogs.TopicsDialog;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.models.CategoryBase;
 import com.obviz.review.models.Topic;
@@ -41,7 +42,6 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
 
     private SuperCategoryGridAdapter mDiscoverAdapter;
     private ArrayList<Topic> mTopics;
-    private ArrayList<Integer> mSelectedTopicIds;
     private TopicsDialog mDialog;
 
     public DiscoverFragment() {
@@ -55,10 +55,13 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
     @Override
     public void onTopicsLoaded() {
         mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
-        mSelectedTopicIds = new ArrayList<>();
-        Log.i("TEST", "Size: "+mTopics.size());
+        Log.i("MTOPICS", "Size: "+mTopics.size());
         createDialog();
         populateSelectedTopics(DEFAULT_TOPICS);
+
+        //i force the loading of categories. This only works when I have the topics so I do it here as well, not only in the onActivityCreated.
+        mDiscoverAdapter.setTopicsDialog(mDialog);
+        mDiscoverAdapter.onCategoriesLoaded();
     }
 
     @Override
@@ -90,7 +93,8 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
                 Log.d("Debug types",c.getClass().toString());
                 if(c.getClass()== Category.class){
                     // re initialize the adapter content
-                    mDiscoverAdapter.onCategoriesLoaded(mSelectedTopicIds);
+                    mDiscoverAdapter.setTopicsDialog(mDialog);
+                    mDiscoverAdapter.onCategoriesLoaded();
                     return false;
                 }
             }
@@ -103,9 +107,21 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
         super.onActivityCreated(states);
 
         if (getView() != null) {
+
+            // __FRIDAY_9112015__
+            // get available topics or put the fragment in the observers list
+            mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
+
+            createDialog();
+            populateSelectedTopics(DEFAULT_TOPICS);
+
+
+            // Grid adapter:
             final GridRecyclerView grid = (GridRecyclerView) getView().findViewById(R.id.grid_view);
 
             mDiscoverAdapter = new SuperCategoryGridAdapter();
+            mDiscoverAdapter.setTopicsDialog(mDialog);
+            mDiscoverAdapter.onCategoriesLoaded();
 
             //final AppBoxAdapter trendingAdapter = new AppBoxAdapter();
 
@@ -114,10 +130,10 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
                 public void onClick(int position) {
                     CategoryBase cat = mDiscoverAdapter.getItem(position);
 
-                    if(cat.getCategories().size()>1) {
+                    if (cat.getCategories().size() > 1) {
 
                         mDiscoverAdapter.clear();
-                        mDiscoverAdapter.getChildCategories(cat, mSelectedTopicIds);
+                        mDiscoverAdapter.getChildCategories(cat, mDialog.getSelectedTopicIds());
 
                     } else {
 
@@ -126,11 +142,13 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
                         intent.putExtra(Constants.INTENT_CATEGORY, (Parcelable) cat);
 
 
-                        //TODO: this will crash if the contents of the best apps array is null!
-                        intent.putParcelableArrayListExtra(Constants.INTENT_APPS_BEST, new ArrayList<AndroidApp>(mDiscoverAdapter.getBestApps(cat)));
-                        intent.putParcelableArrayListExtra(Constants.INTENT_APPS_WORST, new ArrayList<AndroidApp>(mDiscoverAdapter.getWorstApps(cat)));
+                        // No longer pass these to the new activity.
+                        //Demand them again, as they should be in the cache anyway.
+                        //intent.putParcelableArrayListExtra(Constants.INTENT_APPS_BEST, new ArrayList<AndroidFullApp>(mDiscoverAdapter.getBestApps(cat)));
+                        //intent.putParcelableArrayListExtra(Constants.INTENT_APPS_WORST, new ArrayList<AndroidFullApp>(mDiscoverAdapter.getWorstApps(cat)));
 
-                        intent.putIntegerArrayListExtra(Constants.INTENT_TOPIC_IDS, mSelectedTopicIds);
+                        ArrayList<Integer> topicIds = new ArrayList<Integer>(mDialog.getSelectedTopicIds());
+                        intent.putIntegerArrayListExtra(Constants.INTENT_TOPIC_IDS, topicIds);
 
                         startActivity(intent);
 
@@ -140,11 +158,7 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
 
             grid.setAdapter(mDiscoverAdapter);
 
-            // __FRIDAY_9112015__
-            // get available topics or put the fragment in the observers list
-            mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
-            createDialog();
-            populateSelectedTopics(DEFAULT_TOPICS);
+
 
             // open the dialog when the user click on the scroll view
             // TODO: tutorial for the user to explain how to open the dialog
@@ -171,30 +185,23 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
         mDialog.setOnDismissListener(new TopicsDialog.OnDismissListener() {
             @Override
             public void dialogDismiss(List<Topic> selectedItems) {
-                mSelectedTopicIds.clear();
                 // use the list to populate the Layout!
                 Set<Integer> ids = new HashSet<Integer>();
                 for (Topic t : selectedItems) {
                     ids.add(t.getID());
-                    mSelectedTopicIds.add(t.getID());
                 }
                 populateSelectedTopics(ids);
             }
         });
 
+        Log.i("MTOPICS CREATE DIALOG", "Size: " + mTopics.size());
         if(mTopics.size()>1)
-            for (int i=0; i<mTopics.size();i++){
+            for (int i=0; i<mTopics.size();i++) {
                 Topic t = mTopics.get(i);
-                if(DEFAULT_TOPICS.contains(t.getID())){
+                if (DEFAULT_TOPICS.contains(t.getID()))
                     mDialog.addSelectedTopic(t);
-                    mSelectedTopicIds.add(t.getID());
-                }
 
             }
-
-
-
-
     }
 
     /**

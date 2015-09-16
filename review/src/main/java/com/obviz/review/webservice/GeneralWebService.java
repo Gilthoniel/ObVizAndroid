@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
 import com.obviz.review.DiscoverAppsActivity;
 import com.obviz.review.adapters.AppBoxAdapter;
+import com.obviz.review.adapters.AppBoxFullAdapter;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.adapters.SuperCategoryGridAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
@@ -153,18 +154,19 @@ public class GeneralWebService extends WebService {
     // C
     // get apps given a specific query (e.g. design) from a category or a type:
 
-    public void getApps(final CategoryBase category, final int pageNo, final int noAppsPerPage, final AppBoxAdapter adapter, List<Integer> topicIds){
+    public void getApps(final CategoryBase category, final int pageNo, final int noAppsPerPage, final AppBoxFullAdapter adapter, List<Integer> topicIds){
         //for each element in the grid i want to do what is done in getTrendingApps.
         Uri.Builder builder = new Uri.Builder();
 
         Log.d("WEBSERVICE GET APPS", "PAGENO "+pageNo);
+        adapter.setState(GridAdapter.State.LOADING);
 
         builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", noAppsPerPage, pageNo);
         final String key = null;
 
-        get(builder, new RequestCallback<AndroidApp.Pager>() {
+        get(builder, new RequestCallback<AndroidFullApp.Pager>() {
             @Override
-            public void onSuccess(AndroidApp.Pager result) {
+            public void onSuccess(AndroidFullApp.Pager result) {
 
                 // Display the empty text if there is no result
                 adapter.setMaxPage(result.nbTotalPages);
@@ -180,7 +182,7 @@ public class GeneralWebService extends WebService {
 
             @Override
             public Type getType() {
-                return AndroidApp.Pager.class;
+                return AndroidFullApp.Pager.class;
             }
         }, key);
     }
@@ -206,23 +208,24 @@ public class GeneralWebService extends WebService {
         final String key = null;
         // Here return the httpTask like below and update the map in the adapter
 
-        return get(builder, new RequestCallback<AndroidApp.Pager>() {
+        return get(builder, new RequestCallback<AndroidFullApp.Pager>() {
             @Override
-            public void onSuccess(AndroidApp.Pager result) {
+            public void onSuccess(AndroidFullApp.Pager result) {
 
                 // Display the empty text if there is no result
+
                 adapter.addAlltoMap(result.apps,category, appType);
             }
 
             @Override
             public void onFailure(Errors error) {
-
+                Log.d("WEB getTopApps Failure", error.toString());
                 adapter.setState(GridAdapter.State.ERRORS);
             }
 
             @Override
             public Type getType() {
-                return AndroidApp.Pager.class;
+                return AndroidFullApp.Pager.class;
             }
         }, key);
     }

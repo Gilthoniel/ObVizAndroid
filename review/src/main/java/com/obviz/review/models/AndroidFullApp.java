@@ -15,13 +15,15 @@ import java.util.List;
  * Created by gaylor on 26.06.15.
  * Represent an application of the Google Play Store
  */
-public class AndroidFullApp implements  Serializable {
+public class AndroidFullApp implements Serializable {
 
     private static final long serialVersionUID = 35011231237709951L;
 
-    private AndroidApp androidApp;
-    private List<Review> reviews;
+    private AndroidApp app;
+    private List<Review> mostRelevantReviews;
 
+    public AndroidApp getApp() {return app;}
+    public List<Review> getReviews(){return mostRelevantReviews;}
 
     private AndroidFullApp() {}
 
@@ -30,4 +32,7 @@ public class AndroidFullApp implements  Serializable {
         public List<AndroidFullApp> apps;
         public int nbTotalPages;
     }
+
+
+
 }

@@ -7,11 +7,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.obviz.review.dialogs.TopicsDialog;
 import com.obviz.review.managers.CategoryManager;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.models.CategoryBase;
 import com.obviz.review.models.SuperCategory;
@@ -35,19 +38,25 @@ import java.util.Map;
 public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implements TopicsManager.TopicsObserver, ImageObserver, CategoryManager.CategoryObserver {
 
     private Map<String,Bitmap> mImages;
-    private Map<CategoryBase, List<AndroidApp>> mAppsBest;
-    private Map<CategoryBase, List<AndroidApp>> mAppsWorst;
+    private Map<CategoryBase, List<AndroidFullApp>> mAppsBest;
+    private Map<CategoryBase, List<AndroidFullApp>> mAppsWorst;
     private Map<CategoryBase, HttpTask<?>> requestsBest;
     private Map<CategoryBase, HttpTask<?>> requestsWorst;
+    private TopicsDialog mDialog;
 
-    public List<AndroidApp> getBestApps(CategoryBase categoryBase){
+    //private List<Integer> mTopicIds;
+
+    public List<AndroidFullApp> getBestApps(CategoryBase categoryBase){
         return mAppsBest.get(categoryBase);
     }
 
-    public List<AndroidApp> getWorstApps(CategoryBase categoryBase){
+    public List<AndroidFullApp> getWorstApps(CategoryBase categoryBase){
         return mAppsWorst.get(categoryBase);
     }
 
+    public void setTopicsDialog(TopicsDialog topicsDialog){mDialog=topicsDialog;}
+
+    //public void setTopics(List<Integer> topicIds){mTopicIds=topicIds;}
 
     public SuperCategoryGridAdapter() {
         requestsBest = new HashMap<>();
@@ -55,10 +64,10 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
         mAppsBest = new HashMap<>();
         mAppsWorst = new HashMap<>();
         mImages = new HashMap<>();
-        onCategoriesLoaded();
+        //mTopicIds = new ArrayList<>();
     }
 
-    public void addAlltoMap(List<AndroidApp> appList, CategoryBase category, String appType){
+    public void addAlltoMap(List<AndroidFullApp> appList, CategoryBase category, String appType){
         if(appType.equals("best"))
             this.mAppsBest.put(category,appList);
 
@@ -81,8 +90,6 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
         }
 
         request = GeneralWebService.instance().getTopApps(this, category, requestType, topicIds);
-
-
     }
 
     public void getChildCategories(CategoryBase categoryBase, List<Integer> topicIds){
@@ -100,11 +107,6 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
     //@Override
 
     public void onCategoriesLoaded() {
-
-    }
-
-    public void onCategoriesLoaded(List<Integer> topicIds) {
-
         super.clear();
         List<SuperCategory> categoryList = new ArrayList<>(CategoryManager.instance().getSupers(this));
         Collections.sort(categoryList, new Comparator<SuperCategory>() {
@@ -118,8 +120,8 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
             if (category.active) {
                 super.add(category);
 
-                launchRequests(requestsBest, category, "best", topicIds);
-                launchRequests(requestsWorst, category, "worst", topicIds);
+                launchRequests(requestsBest, category, "best", mDialog.getSelectedTopicIds());
+                launchRequests(requestsWorst, category, "worst", mDialog.getSelectedTopicIds());
             }
         }
 
@@ -162,11 +164,12 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
             mView = v;
         }
 
-        private void fillAppLogos(CategoryBase categoryBase, int viewId, Map<CategoryBase, List<AndroidApp>> mApps){
+        private void fillAppLogos(CategoryBase categoryBase, int viewId, Map<CategoryBase, List<AndroidFullApp>> mApps){
             LinearLayout bestAppsSet = (LinearLayout) mView.findViewById(viewId);
             bestAppsSet.removeAllViews();
             if(mApps.containsKey(categoryBase)){
-                for (AndroidApp a: mApps.get(categoryBase)){
+                for (AndroidFullApp fullApp: mApps.get(categoryBase)){
+                    AndroidApp a = fullApp.getApp();
                     ImageView appLogo = new ImageView(mView.getContext());
                     appLogo.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     appLogo.setPadding(5, 5, 5, 5);
