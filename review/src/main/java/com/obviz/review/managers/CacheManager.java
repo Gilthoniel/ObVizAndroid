@@ -2,12 +2,13 @@ package com.obviz.review.managers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import com.obviz.review.models.SuperCategory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ import java.util.regex.Pattern;
 public class CacheManager {
 
     private static CacheManager instance;
-    private static final int DISK_CACHE_SIZE = 1024 * 1024 * 20; // 20mo
+    private static final int DISK_CACHE_SIZE = 1024 * 1024 * 100; // 100mo
     private static final String DISK_CACHE_NAME = "webcache";
 
     private final Object mDiskCacheLock;
@@ -66,7 +67,7 @@ public class CacheManager {
      * @return the object
      */
     @SuppressWarnings("unchecked")
-    public <T> T get(String key) {
+    public <T extends Serializable> T get(String key) {
 
         synchronized (mDiskCacheLock) {
 
@@ -78,43 +79,14 @@ public class CacheManager {
             } catch (InterruptedException ignored) {}
 
             // Check that the cache's initialization has not failed
-            if (mDiskCache == null) {
+            if (mDiskCache == null || !mDiskCache.contains(key)) {
                 return null;
             }
 
-            DiskTimedCache.Accessor accessor = mDiskCache.get(key);
-
-            if (accessor != null) {
-
-                T object;
-                try {
-                    ObjectInputStream stream = new ObjectInputStream(accessor.getStream());
-
-                    // We know what we put in the cache
-                    object = (T) stream.readObject();
-                } catch (ClassNotFoundException | IOException e) {
-
-                    e.printStackTrace();
-
-                    object = null;
-
-                } finally {
-
-                    accessor.commit();
-                }
-
-                return object;
-            }
+            return (T) mDiskCache.get(key);
         }
-
-        return null;
     }
 
-    /**
-     * Get the image stores with the key, or get a null result
-     * @param key key of the image
-     * @return Bitmap or Null
-     */
     public Bitmap getImage(String key) {
 
         synchronized (mDiskCacheLock) {
@@ -124,24 +96,15 @@ public class CacheManager {
                 while (mDiskCacheStarting) {
                     mDiskCacheLock.wait();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ignored) {}
+
+            // Check that the cache's initialization has not failed
+            if (mDiskCache == null || !mDiskCache.contains(key)) {
+                return null;
             }
 
-            DiskTimedCache.Accessor accessor = mDiskCache.get(key);
-
-            if (accessor != null) {
-                InputStream stream = accessor.getStream();
-
-                Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                accessor.commit();
-
-                return bitmap;
-            }
-
+            return mDiskCache.getImage(key);
         }
-
-        return null;
     }
 
     /**
@@ -159,18 +122,21 @@ public class CacheManager {
                 }
             } catch (InterruptedException ignored) {}
 
+            mDiskCache.add(key, object, System.currentTimeMillis() + expiration);
+        }
+    }
+
+    public void add(String key, Bitmap bitmap) {
+
+        synchronized (mDiskCacheLock) {
             try {
-                DiskTimedCache.Editor editor = mDiskCache.edit(key, expiration);
-                if (editor != null) {
-                    ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-                    stream.writeObject(object);
-                    editor.commit();
+                // waiting for initialization of the cache
+                while (mDiskCacheStarting) {
+                    mDiskCacheLock.wait();
                 }
-            } catch (IOException e) {
+            } catch (InterruptedException ignored) {}
 
-                e.printStackTrace();
-            }
-
+            mDiskCache.add(key, bitmap);
         }
     }
 
@@ -184,11 +150,9 @@ public class CacheManager {
     }
 
     /**
-     * Store an image in the cache
-     * @param key Key of the image
-     * @param bitmap Bitmap format of the image
+     * Empty the cache
      */
-    public void add(String key, Bitmap bitmap) {
+    public void clear() {
 
         synchronized (mDiskCacheLock) {
             try {
@@ -196,18 +160,9 @@ public class CacheManager {
                 while (mDiskCacheStarting) {
                     mDiskCacheLock.wait();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } catch (InterruptedException ignored) {}
 
-            DiskTimedCache.Editor editor = mDiskCache.edit(key);
-            if (editor != null) {
-                OutputStream stream = editor.getStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-
-                editor.commit();
-            }
-
+            mDiskCache.clear();
         }
     }
 

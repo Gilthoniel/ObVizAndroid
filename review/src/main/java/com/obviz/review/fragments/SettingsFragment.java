@@ -3,6 +3,7 @@ package com.obviz.review.fragments;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import com.obviz.review.managers.CacheManager;
 import com.obviz.reviews.R;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
@@ -25,6 +26,16 @@ public class SettingsFragment extends PreferenceFragment {
                     public boolean onPreferenceClick(Preference preference) {
 
                         MaterialShowcaseView.resetAll(preference.getContext());
+                        return true;
+                    }
+                });
+
+        findPreference(getString(R.string.pref_key_cache_empty))
+                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+
+                        CacheManager.instance().clear();
                         return true;
                     }
                 });

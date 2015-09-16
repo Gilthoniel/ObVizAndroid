@@ -30,4 +30,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/pref_tutorial_cache"
+        android:key="pref_key_cache">
+
+        <Preference
+            android:key="@string/pref_key_cache_empty"
+            android:summary="@string/pref_cache_summary"
+            android:title="@string/pref_cache_empty_title" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

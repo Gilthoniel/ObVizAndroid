@@ -66,6 +66,8 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
         try {
             URL url = new URL(mUrl.build().toString());
             final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            // Timeout only for the connection, after that the data are computed depending of the device
+            connection.setConnectTimeout(Constants.TIMEOUT * 1000);
             Log.d("__INTERNET__", "Connection open for params:" + url);
 
             try {
@@ -93,7 +95,7 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
                     }
                 });
 
-                return mFuture.get(Constants.TIMEOUT, TimeUnit.SECONDS);
+                return mFuture.get();
 
             } catch (ExecutionException e) {
 
@@ -101,11 +103,6 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
                 for (StackTraceElement trace : e.getCause().getStackTrace()) {
                     Log.i("__FUTURE__", "-> "+trace);
                 }
-
-            } catch (TimeoutException e) {
-
-                Log.i("__FUTURE__", "Future timeout.");
-                error = RequestCallback.Errors.CONNECTION;
 
             } catch (InterruptedException | CancellationException ignored) {} finally {
 

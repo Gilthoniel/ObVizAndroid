@@ -1,5 +1,6 @@
 package com.obviz.review;
 
+import android.net.Uri;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.RequestCallback;
 import com.obviz.review.webservice.tasks.HttpTask;
@@ -18,18 +19,20 @@ public class WebServiceTest {
     @Test
     public void testRequestsSet() {
 
-        ConnectionService.instance.setRequestsSet(stacker);
+        ConnectionService.instance().setRequestsSet(stacker);
 
         fakeRequest(0);
     }
 
     private void fakeRequest(final int counter) {
-        HashMap<String, String> params = new HashMap<>();
 
-        ConnectionService.instance.execute("http://www.google.com", params, new RequestCallback<Void>() {
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath("http://www.google.com");
+
+        ConnectionService.instance().executeGetRequest(builder, new RequestCallback<String>() {
 
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(String result) {
                 manageCounter(counter);
             }
 
@@ -42,7 +45,7 @@ public class WebServiceTest {
             public Type getType() {
                 return Void.class;
             }
-        }, null, false);
+        }, null);
     }
 
     private void manageCounter(int counter) {

@@ -73,4 +73,8 @@
         When you watch an application in details, you can add it in favorite, and you will be able to retrieve them
         here !
     </string>
+    <string name="pref_tutorial_cache">Cache</string>
+    <string name="pref_key_cache_empty">PREF_KEY_CACHE_EMPTY</string>
+    <string name="pref_cache_summary">Empty the cache if you need to extra space or if the app have a strange behaviour</string>
+    <string name="pref_cache_empty_title">Clear</string>
 </resources>

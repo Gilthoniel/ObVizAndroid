@@ -1,18 +1,18 @@
 package com.obviz.review;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import com.obviz.review.managers.DiskTimedCache;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class DiskTimedCacheTest {
 
     private static final long CACHE_SIZE = 1024;
-    private static final int EXPIRATION_TIME = 100000;
-
-    private static final Random random = new Random();
 
     @Test
     public void testInitCache() {
@@ -26,220 +26,96 @@ public class DiskTimedCacheTest {
         } catch (IOException e) {
             Assert.fail("Can't initialize the cache");
         }
-
-        closeCache(cache);
-    }
-
-    @Test
-    public void testOpenCloseCache() throws IOException {
-        DiskTimedCache cache = initCache("open_close");
-
-        for (int i = 0; i < 10; i++) {
-            DiskTimedCache.Editor editor = cache.edit("string-"+i);
-            ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-            stream.writeObject("String-" + i);
-
-            editor.commit();
-        }
-
-        try {
-            cache = DiskTimedCache.Factory.instance.open(new File(cache.getDirectory().getName()), 0, CACHE_SIZE);
-        } catch (IOException e) {
-            Assert.fail("Can't initialize the cache");
-        }
-
-        Assert.assertEquals("Stack cache size after reopened", 10, cache.getStack().size());
-        for (int i = 0; i < 10; i++) {
-            Assert.assertEquals("Stack value in good order", "string-" + (9 - i), cache.getStack().get(i).getName());
-        }
-
-        closeCache(cache);
     }
 
     @Test
     public void testEditKey() throws IOException {
 
-        DiskTimedCache cache = initCache("edit");
+        File dir = new File("__edit");
+        DiskTimedCache cache = initCache(dir);
 
-        DiskTimedCache.Editor editor = cache.edit("test-edit");
-        ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-        stream.writeObject("Test string");
+        cache.add("test-edit", "Test string");
 
-        editor.commit();
-
-        File checkFile = new File(cache.getDirectory(), "test-edit");
+        File checkFile = new File("__edit", "test-edit");
         Assert.assertTrue("Cache file creation", checkFile.exists());
 
-        closeCache(cache);
+        deleteDirectory(dir);
     }
 
     @Test
     public void testAccessKey() throws IOException, ClassNotFoundException {
 
-        DiskTimedCache cache = initCache("access");
+        File dir = new File("__access");
+        DiskTimedCache cache = initCache(dir);
 
         for (int i = 0; i < 10; i++) {
-            DiskTimedCache.Editor editor = cache.edit("string-"+i);
-            ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-            stream.writeObject("String-" + i);
-
-            editor.commit();
+            cache.add("string-"+i, "string-"+i);
         }
 
         for (int i = 0; i < 10; i++) {
-            DiskTimedCache.Accessor accessor = cache.get("string-"+i);
-            ObjectInputStream stream = new ObjectInputStream(accessor.getStream());
-            String object = (String) stream.readObject();
 
-            Assert.assertTrue("Get value", object.equals("String-"+i));
-            accessor.commit();
+            Assert.assertTrue("Get value", cache.get("string-"+i).equals("string-"+i));
         }
 
-        closeCache(cache);
+        deleteDirectory(dir);
     }
 
     @Test
     public void testStackManagement() throws IOException {
-        DiskTimedCache cache = initCache("stack");
+
+        File dir = new File("__stack");
+        DiskTimedCache cache = initCache(dir);
+
+        LinkedList<String> stack = new LinkedList<>();
+        cache.setStack(stack);
 
         for (int i = 0; i < 10; i++) {
-            DiskTimedCache.Editor editor = cache.edit("string-"+i);
-            ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-            stream.writeObject("String-" + i);
-
-            editor.commit();
+            cache.add("string"+i, "string"+i);
         }
 
-        Assert.assertEquals("Stack size", 10, cache.getStack().size());
+        Assert.assertTrue("Must be in cache", cache.contains("string9"));
+        cache.get("string9");
+        Assert.assertTrue("Must be in cache", cache.contains("string7"));
+        cache.get("string7");
 
-        for (int i = 0; i < 10; i++) {
-
-            Assert.assertEquals("Stack value", cache.getStack().get(i).getName(), "string-" + (9-i));
-        }
-
-        DiskTimedCache.Accessor accessor = cache.get("string-5");
-        accessor.commit();
-
-        Assert.assertEquals("Stack get value", cache.getStack().get(0).getName(), "string-5");
-
-        closeCache(cache);
+        Assert.assertEquals("Invalid stack value", stack.get(0), "string7");
+        Assert.assertEquals("Invalid stack value", stack.get(1), "string9");
+        Assert.assertEquals("Invalid stack value", stack.get(9), "string0");
     }
 
     @Test
     public void testCacheSize() throws IOException {
-        DiskTimedCache cache = initCache("size");
 
-        for (int i = 0; i < 100; i++) {
-            DiskTimedCache.Editor editor = cache.edit("string-"+i);
-            ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-            stream.writeObject("String-" + i);
+        File dir = new File("__size");
+        DiskTimedCache cache = initCache(dir);
 
-            editor.commit();
+        for (int i = 0; i < 50; i++) {
+            cache.add("string"+i, "striiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiing");
         }
 
-        Assert.assertTrue("Cache size test", directorySize(cache) < CACHE_SIZE);
+        Assert.assertTrue("Cache size test", directorySize(dir) < CACHE_SIZE);
 
-        closeCache(cache);
+        deleteDirectory(dir);
     }
 
     @Test
     public void testExpirationTime() throws IOException, InterruptedException {
-        DiskTimedCache cache = initCache("expiration");
 
-        DiskTimedCache.Editor editor = cache.edit("test-expiration", 1000);
-        ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-        stream.writeObject("Test");
+        File dir = new File("__expiration");
+        DiskTimedCache cache = initCache(dir);
 
-        editor.commit();
+        cache.add("expiration", "expiration", System.currentTimeMillis() + 500);
+        Assert.assertTrue(cache.contains("expiration"));
 
-        Thread.sleep(2000);
+        Thread.sleep(600);
 
-        DiskTimedCache.Accessor accessor = cache.get("test-expiration");
-        Assert.assertNull("Expired object test", accessor);
+        Assert.assertFalse(cache.contains("expiration"));
 
-        editor = cache.edit("test-expiration", EXPIRATION_TIME);
-        stream = new ObjectOutputStream(editor.getStream());
-        stream.writeObject("Test2");
+        cache.add("immortal", "immortal");
 
-        editor.commit();
+        Assert.assertTrue(cache.contains("immortal"));
 
-        accessor = cache.get("test-expiration");
-        Assert.assertNotNull("Non expired object test", accessor);
-        accessor.commit();
-
-        closeCache(cache);
-    }
-
-    @Test
-    public void testMultipleAllocation() throws IOException {
-        DiskTimedCache cache = initCache("allocations");
-
-        DiskTimedCache.Editor editorTest = cache.edit("test-allocations");
-        ObjectOutputStream s = new ObjectOutputStream(editorTest.getStream());
-        s.writeObject("test");
-        editorTest.commit();
-
-        for (int i = 0; i < 100; i++) {
-            DiskTimedCache.Editor editor = cache.edit("string-"+i);
-            ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-            stream.writeObject("String-"+i);
-
-            editor.commit();
-
-            DiskTimedCache.Accessor accessor = cache.get("test-allocations");
-
-            accessor.commit();
-        }
-
-        DiskTimedCache.Accessor accessor = cache.get("test-allocations");
-        Assert.assertNotNull(accessor);
-        accessor.commit();
-
-        closeCache(cache);
-    }
-
-    @Test
-    public void testMultipleAllocationStates() throws IOException {
-        DiskTimedCache cache = initCache("states");
-
-        for (int i = 0; i < 100; i++) {
-            DiskTimedCache.Editor editor = cache.edit("string-"+i);
-            ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-            stream.writeObject("String-"+i);
-
-            editor.commit();
-        }
-
-        // -1 because of journal file
-        Assert.assertEquals("Stack size and files' number", cache.getStack().size(), cache.getDirectory().list().length - 1);
-
-        closeCache(cache);
-    }
-
-    @Test
-    public void testGeneralUsage() throws IOException {
-        DiskTimedCache cache = initCache("general");
-
-        for (int i = 0; i < 10; i++) {
-            DiskTimedCache.Editor editor = cache.edit("usage-"+i, 10000);
-            ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-            stream.writeObject("String-"+i);
-            editor.commit();
-        }
-
-        DiskTimedCache.Editor editor = cache.edit("usage-5", 10000);
-        ObjectOutputStream stream = new ObjectOutputStream(editor.getStream());
-        stream.writeObject("String-5");
-        editor.commit();
-
-        DiskTimedCache.Accessor accessor = cache.get("usage-2");
-        Assert.assertNotNull(accessor);
-        accessor.commit();
-
-        Assert.assertEquals("Value in stack", "usage-2", cache.getStack().get(0).getName());
-        Assert.assertEquals("Value in stack", "usage-5", cache.getStack().get(1).getName());
-
-        closeCache(cache);
+        deleteDirectory(dir);
     }
 
     @Test
@@ -248,23 +124,21 @@ public class DiskTimedCacheTest {
 
         for (int i = 0; i < 10; i++) {
 
-            DiskTimedCache.Editor editor = cache.edit("usage-"+i);
-            Assert.assertNull("Editor must be null", editor);
+            cache.add("string"+i, "string"+i);
         }
 
         for (int i = 0; i < 10; i++) {
 
-            DiskTimedCache.Accessor accessor = cache.get("usage-"+i);
-            Assert.assertNull("Editor must be null", accessor);
+            Assert.assertFalse("Editor must be null", cache.contains("string"+i));
         }
     }
 
-    private long directorySize(DiskTimedCache cache) {
+    private long directorySize(File dir) {
 
         long size = 0;
-        for (String filename : cache.getDirectory().list()) {
+        for (String filename : dir.list()) {
             if (!filename.equals("journal")) {
-                size += new File(cache.getDirectory(), filename).length();
+                size += new File(dir, filename).length();
             }
         }
 
@@ -282,8 +156,7 @@ public class DiskTimedCacheTest {
         return dir.delete();
     }
 
-    private DiskTimedCache initCache(String dirName) {
-        File file = new File("__" + dirName);
+    private DiskTimedCache initCache(File file) {
         file.mkdirs();
         DiskTimedCache cache;
         try {
@@ -294,10 +167,5 @@ public class DiskTimedCacheTest {
         }
 
         return cache;
-    }
-
-    private void closeCache(DiskTimedCache cache) {
-        cache.close();
-        Assert.assertTrue(deleteDirectory(cache.getDirectory()));
     }
 }
