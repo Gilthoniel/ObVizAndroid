@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.obviz.review.Constants;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.views.GaugeChart;
 import com.obviz.review.views.InfiniteScrollable;
@@ -27,7 +29,7 @@ import java.util.Map;
  * Created by gaylor on 05-Aug-15.
  * Adapter for AndroidApp in a RecyclerView
  */
-public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsManager.TopicsObserver, ImageObserver, InfiniteScrollable {
+public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements TopicsManager.TopicsObserver, ImageObserver, InfiniteScrollable {
 
     private Map<String,Bitmap> mImages;
     private int mPage;
@@ -35,9 +37,9 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
     private Category mCategory;
     private List<Integer> mTopicIDs;
 
-    public AppBoxAdapter() {
-        mPage = 1;
-        mMaxPage = 2;
+    public AppBoxFullAdapter() {
+        mPage = 0;
+        mMaxPage = 9;
         mImages = new HashMap<>();
         mTopicIDs = new ArrayList<>();
     }
@@ -67,7 +69,7 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
 
         if (viewType == TYPE_ITEM) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app_box, parent, false);
-            return new AppHolder(v);
+            return new AppFullHolder(v);
         } else {
 
             return super.onCreateViewHolder(parent, viewType);
@@ -102,8 +104,8 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
     public void onLoadMore() {
         if (mPage < mMaxPage) {
             // Load and update the page if we aren't at the last page
-
-            //GeneralWebService.instance().getApps(mCategory, mPage, Constants.NUMBER_APPS_PER_BLOCK, this, mTopicIDs);
+            Log.d("Getting apps", "");
+            GeneralWebService.instance().getApps(mCategory, mPage, Constants.NUMBER_APPS_PER_BLOCK, this, mTopicIDs);
 
             mPage++;
         }
@@ -114,26 +116,23 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
     /**
      * Child of the adapter
      */
-    public class AppHolder extends GridAdapter<AndroidApp>.ViewHolder {
+    public class AppFullHolder extends GridAdapter<AndroidFullApp>.ViewHolder {
 
         private View mView;
 
-        public AppHolder(View v) {
+        public AppFullHolder(View v) {
             super(v);
 
             mView = v;
         }
 
-
-
-
-
         /**
          * Populate an AndroidApp item of a RecyclerView
-         * @param app AndroidApp item for this child
+         * @param fullApp AndroidFullApp item for this child
          */
         @Override
-        public void onPopulate(AndroidApp app) {
+        public void onPopulate(AndroidFullApp fullApp) {
+            AndroidApp app = fullApp.getApp();
             TextView name = (TextView) mView.findViewById(R.id.app_name);
             name.setText(app.getName());
 
@@ -142,14 +141,14 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
                 logo.setImageBitmap(mImages.get(app.getLogo()));
             } else {
                 mImages.put(app.getLogo(), null);
-                ImagesManager.instance().get(app.getLogo(), AppBoxAdapter.this);
+                ImagesManager.instance().get(app.getLogo(), AppBoxFullAdapter.this);
             }
 
             TextView bestOpinion = (TextView) mView.findViewById(R.id.mostOpinion);
-            bestOpinion.setText(TopicsManager.instance().getTitle(app.getBestOpinion(), AppBoxAdapter.this));
+            bestOpinion.setText(TopicsManager.instance().getTitle(app.getBestOpinion(), AppBoxFullAdapter.this));
 
             TextView worstOpinion = (TextView) mView.findViewById(R.id.worstOpinion);
-            worstOpinion.setText(TopicsManager.instance().getTitle(app.getWorstOpinion(), AppBoxAdapter.this));
+            worstOpinion.setText(TopicsManager.instance().getTitle(app.getWorstOpinion(), AppBoxFullAdapter.this));
 
             GaugeChart.GaugeChartData gaugeData = new GaugeChart.GaugeChartData(100);
             gaugeData.setTextSize(8);

@@ -9,9 +9,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.obviz.review.adapters.AppBoxAdapter;
+import com.obviz.review.adapters.AppBoxFullAdapter;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
+import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.models.OpinionValue;
 import com.obviz.review.views.GridRecyclerView;
@@ -30,24 +32,26 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
 
     //list of criteria that matter to the user. e.g. design and network
     private ArrayList<Integer> topicIDs;
-    private ArrayList<AndroidApp> mbestApps;
-    private ArrayList<AndroidApp> mworstApps;
+    private ArrayList<AndroidFullApp> mApps;
 
     private HttpTask<?> request;
-    private AppBoxAdapter mAdapter;
+    private AppBoxFullAdapter mAdapter;
     private GridRecyclerView mGridView;
 
     @Override
     protected void onCreate(Bundle states) {
+
         super.onCreate(states);
+        mApps = new ArrayList<>();
+
         setContentView(R.layout.activity_apps_discover);
 
         // Get intent or states
         if (states != null) {
             mCategory = states.getParcelable(Constants.STATE_CATEGORY);
             topicIDs = states.getIntegerArrayList(Constants.STATE_TOPIC_IDS);
-            mbestApps = states.getParcelableArrayList(Constants.STATE_APPS_BEST);
-            mworstApps = states.getParcelableArrayList(Constants.STATE_APPS_WORST);
+            //mbestApps = states.getParcelableArrayList(Constants.STATE_APPS_BEST);
+            //mworstApps = states.getParcelableArrayList(Constants.STATE_APPS_WORST);
 
 
 
@@ -55,8 +59,8 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
             Intent intent = getIntent();
             mCategory = intent.getParcelableExtra(Constants.INTENT_CATEGORY);
             topicIDs = intent.getIntegerArrayListExtra(Constants.INTENT_TOPIC_IDS);
-            mbestApps = intent.getParcelableArrayListExtra(Constants.INTENT_APPS_BEST);
-            mworstApps = intent.getParcelableArrayListExtra(Constants.INTENT_APPS_WORST);
+            //mbestApps = intent.getParcelableArrayListExtra(Constants.INTENT_APPS_BEST);
+            //mworstApps = intent.getParcelableArrayListExtra(Constants.INTENT_APPS_WORST);
         }
 
 
@@ -76,7 +80,7 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
         // Copied from the Trending FragmentP:
         // Initiate the fragment list
         mGridView = (GridRecyclerView) findViewById(R.id.grid_view);
-        mAdapter= new AppBoxAdapter();
+        mAdapter= new AppBoxFullAdapter();
         mAdapter.setCategory(mCategory);
         mAdapter.setTopics(topicIDs);
 
@@ -93,10 +97,13 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
             }
         });
 
-        //new : populate the best grid:
+        //new : populate the grid:
         mAdapter.setState(GridAdapter.State.NONE);
-        mAdapter.addAll(mbestApps);
-        mAdapter.shuffle(); // Random selection of the trending apps
+
+        mAdapter.onLoadMore();
+
+        //mAdapter.addAll(mApps);
+        //mAdapter.shuffle(); // Random selection of the trending apps
 
         mGridView.setInfiniteAdapter(mAdapter);
     }

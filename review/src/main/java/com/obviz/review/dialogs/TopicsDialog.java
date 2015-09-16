@@ -10,6 +10,7 @@ import android.util.Log;
 import com.obviz.review.Constants;
 import com.obviz.review.models.Topic;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,8 +22,15 @@ import java.util.List;
 public class TopicsDialog extends DialogFragment {
 
     private List<Topic> mSelectedTopics = new LinkedList<>();
+
     private OnDismissListener mListener;
 
+    public List<Integer> getSelectedTopicIds(){
+        List<Integer> selectedTopicIds = new ArrayList<>();
+        for (Topic t: mSelectedTopics)
+            selectedTopicIds.add(t.getID());
+        return selectedTopicIds;
+    }
     public List<Topic> getSelectedTopics() {
         return mSelectedTopics;
     }
