@@ -26,10 +26,10 @@ public class Constants {
 
     public static final Type[] HOME_FRAGMENTS = new Type[] {
             TrendingFragment.class,
-            DiscoverFragment.class,
             PackageFragment.class,
             HistoryFragment.class,
-            FavoriteFragment.class
+            FavoriteFragment.class,
+            DiscoverFragment.class
     };
 
     /** Commands **/

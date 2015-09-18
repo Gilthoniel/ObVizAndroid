@@ -33,6 +33,23 @@ public class AndroidFullApp implements Serializable {
         public int nbTotalPages;
     }
 
+    public String getPolarizedOpinion(List<Integer> topics, String targetPolarity){
+        for (Review review:mostRelevantReviews){
+            for (Opinion.OpinionDetail opinion: review.opinions.opinions){
+                if(opinion.polarity.equals(targetPolarity) && opinion.phrase!=null){
+                    //return opinion.phrase;
+                    Sentence s = review.getSentence(opinion.sentenceID);
+                    if(s!=null){
+                        Clause c = s.getClause(opinion.clauseID);
+                        if(c!=null){
+                            return c.getText();
+                        }
+                    }
+                }
+            }
+        }
+        return "";
+    }
 
 
 }

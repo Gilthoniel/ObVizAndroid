@@ -30,8 +30,8 @@ public class Opinion implements Serializable {
         List<String> polarityWords;
         List<String> aspects;
         List<String> otherWords;
-        int sentenceID;
-        int clauseID;
+        public int sentenceID;
+        public int clauseID;
         String phrase;
 
         public List<String> getWords() {

@@ -50,7 +50,7 @@ public class DetailsOpinionsFragment extends Fragment {
             public void onClick(int position) {
                 OpinionValue opinion = adapter.getItem(position);
 
-                Intent intent = new Intent(grid.getContext(), DiscoverAppsActivity.class);
+                Intent intent = new Intent(grid.getContext(), ReviewsActivity.class);
 
                 intent.putExtra(Constants.INTENT_APP, (Parcelable) app);
                 intent.putExtra(Constants.INTENT_TOPIC_ID, opinion.topicID);

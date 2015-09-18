@@ -20,6 +20,13 @@ public class Sentence implements Serializable {
         return children;
     }
 
+    public Clause getClause(int clauseId){
+        for(Clause c: children)
+            if(c.getID()==clauseId)
+                return c;
+        return null;
+    }
+
     public boolean isHidden() {
         return isHidden;
     }

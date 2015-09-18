@@ -156,6 +156,42 @@ public class AndroidApp implements Parcelable, Serializable {
         }
     }
 
+    //  Claudiu, 16.09
+    // the best and worst, limited though to a list of topics:
+    public int getBestOpinion(List<Integer> topicIds) {
+
+        if (opinionsSummary != null && opinionsSummary.size() > 0) {
+
+            //return opinionsSummary.get(0).topicID;
+            int i=0;
+            while(i<opinionsSummary.size()){
+                if(topicIds.contains(opinionsSummary.get(i).topicID))
+                    return opinionsSummary.get(i).topicID;
+                i++;
+            }
+        }
+
+        return -1;
+
+    }
+
+    public int getWorstOpinion(List<Integer> topicIds) {
+        if (opinionsSummary != null && opinionsSummary.size() > 0) {
+
+            //return opinionsSummary.get(0).topicID;
+            int i=opinionsSummary.size()-1;
+            while(i>=0){
+                if(topicIds.contains(opinionsSummary.get(i).topicID))
+                    return opinionsSummary.get(i).topicID;
+                i--;
+            }
+        }
+
+        return -1;
+    }
+
+
+
     public boolean isParsed() {
 
         return opinionsSummary != null && opinionsSummary.size() > 0;

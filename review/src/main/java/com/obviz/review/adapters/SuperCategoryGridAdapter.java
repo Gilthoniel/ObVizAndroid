@@ -121,7 +121,9 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
                 super.add(category);
 
                 launchRequests(requestsBest, category, "best", mDialog.getSelectedTopicIds());
+
                 launchRequests(requestsWorst, category, "worst", mDialog.getSelectedTopicIds());
+
             }
         }
 

@@ -68,7 +68,7 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         if (viewType == TYPE_ITEM) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app_box, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app_rev_box, parent, false);
             return new AppFullHolder(v);
         } else {
 
@@ -144,11 +144,32 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
                 ImagesManager.instance().get(app.getLogo(), AppBoxFullAdapter.this);
             }
 
+            //best and worst opinions have to be among the topics we have selected, not all of them.
+
             TextView bestOpinion = (TextView) mView.findViewById(R.id.mostOpinion);
-            bestOpinion.setText(TopicsManager.instance().getTitle(app.getBestOpinion(), AppBoxFullAdapter.this));
+            //String bestTitle = TopicsManager.instance().getTitle(app.getBestOpinion(mTopicIDs), AppBoxFullAdapter.this);
+
+            String bestTitle = fullApp.getPolarizedOpinion(mTopicIDs, "positive");
+            if(bestTitle.length()>0)
+                bestOpinion.setText(bestTitle);
+            else
+                bestOpinion.setText("");
+
 
             TextView worstOpinion = (TextView) mView.findViewById(R.id.worstOpinion);
-            worstOpinion.setText(TopicsManager.instance().getTitle(app.getWorstOpinion(), AppBoxFullAdapter.this));
+            //String worstTitle = TopicsManager.instance().getTitle(app.getWorstOpinion(mTopicIDs), AppBoxFullAdapter.this);
+
+            String worstTitle = fullApp.getPolarizedOpinion(mTopicIDs, "negative");
+            if(worstTitle.length()>0)
+                worstOpinion.setText(worstTitle);
+            else
+                worstOpinion.setText("");
+
+            //worstOpinion.setText(TopicsManager.instance().getTitle(app.getWorstOpinion(), AppBoxFullAdapter.this));
+
+
+
+            // this has to reflect the topic choice too!
 
             GaugeChart.GaugeChartData gaugeData = new GaugeChart.GaugeChartData(100);
             gaugeData.setTextSize(8);

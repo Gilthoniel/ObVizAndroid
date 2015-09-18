@@ -41,6 +41,16 @@ public class Review implements Serializable {
         return _id.getValue();
     }
 
+    public Sentence getSentence(int sentenceId){
+        for (Sentence s:parsedBody)
+            if(s.getID()==sentenceId)
+                return s;
+        for (Sentence s:parsedTitle)
+            if(s.getID()==sentenceId)
+                return s;
+        return null;
+    }
+
     public SpannableStringBuilder getTitle() {
 
         if (parsedTitleContent != null) {

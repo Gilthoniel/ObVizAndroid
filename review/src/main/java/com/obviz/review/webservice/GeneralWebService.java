@@ -161,7 +161,8 @@ public class GeneralWebService extends WebService {
         Log.d("WEBSERVICE GET APPS", "PAGENO "+pageNo);
         adapter.setState(GridAdapter.State.LOADING);
 
-        builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", noAppsPerPage, pageNo);
+        //last param - review number:
+        builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", noAppsPerPage, pageNo, 3);
         final String key = null;
 
         get(builder, new RequestCallback<AndroidFullApp.Pager>() {
@@ -201,9 +202,9 @@ public class GeneralWebService extends WebService {
         Uri.Builder builder = new Uri.Builder();
 
         if(appType.equals("best"))
-            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", 7, -1);
+            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", 7, -1,0);
         if(appType.equals("worst"))
-            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "NEGATIVE", 7, -1);
+            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "NEGATIVE", 7, -1,0);
 
         final String key = null;
         // Here return the httpTask like below and update the map in the adapter
@@ -245,7 +246,7 @@ public class GeneralWebService extends WebService {
     }
 
 
-    private Uri.Builder constructBuilder(CategoryBase categoryBase, String command, List<Integer> topicIds, String posNeg, int nbPerPage, int pageNo){
+    private Uri.Builder constructBuilder(CategoryBase categoryBase, String command, List<Integer> topicIds, String posNeg, int nbPerPage, int pageNo, int revNo){
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(Constants.URL);
         builder.appendQueryParameter("cmd", command);
@@ -267,6 +268,10 @@ public class GeneralWebService extends WebService {
             builder.appendQueryParameter("nb_per_page", Integer.toString(nbPerPage));
         if(pageNo>=0)
             builder.appendQueryParameter("page_nr", Integer.toString(pageNo));
+
+        if(revNo>0)
+            builder.appendQueryParameter("nb_reviews", Integer.toString(revNo));
+
         Log.d("QUERY", builder.toString());
 
         return builder;

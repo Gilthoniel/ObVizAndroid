@@ -91,7 +91,7 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
             public void onClick(int position) {
                 //TODO: verify with Gaylor - is the below action correct"?
                 Intent intent = new Intent(getApplicationContext(), DetailsActivity.class);
-                intent.putExtra(Constants.INTENT_APP, (Parcelable) mAdapter.getItem(position));
+                intent.putExtra(Constants.INTENT_APP, (Parcelable) mAdapter.getItem(position).getApp());
 
                 startActivity(intent);
             }

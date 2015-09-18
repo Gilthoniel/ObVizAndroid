@@ -110,7 +110,16 @@ public class DiscoverFragment extends Fragment implements HomeFragment, TopicsMa
 
             // __FRIDAY_9112015__
             // get available topics or put the fragment in the observers list
+
             mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
+
+            //HERE - we have to ask the webservice again for the damn topics.
+            //        this must happen somehow before other stuff, that is why it does not work
+
+
+            //TODO: REMOVE THIS! HIGHLY EXPERIMENTAL
+            //while(mTopics.size()==0)
+            //    mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
 
             createDialog();
             populateSelectedTopics(DEFAULT_TOPICS);
