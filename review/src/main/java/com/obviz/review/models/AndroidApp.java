@@ -103,6 +103,14 @@ public class AndroidApp implements Parcelable, Serializable {
         return description;
     }
 
+    public String getDescription(int maxCharacters) {
+        if (description.length() > maxCharacters) {
+            return description.substring(0, maxCharacters) + " ...";
+        } else {
+            return description;
+        }
+    }
+
     public List<String> getRelatedIDs() {
         if (relatedIDs == null) {
             relatedIDs = new ArrayList<>();
@@ -117,6 +125,16 @@ public class AndroidApp implements Parcelable, Serializable {
         }
 
         return opinionsSummary;
+    }
+
+    public OpinionValue getOpinion(int topicID) {
+        for (OpinionValue opinion : opinionsSummary) {
+            if (opinion.topicID == topicID) {
+                return opinion;
+            }
+        }
+
+        return null;
     }
 
     public int getGlobalOpinion() {

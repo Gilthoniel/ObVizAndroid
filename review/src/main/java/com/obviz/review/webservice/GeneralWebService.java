@@ -192,6 +192,15 @@ public class GeneralWebService extends WebService {
         }, key);
     }
 
+    public HttpTask<?> getHeadline(RequestCallback<Headline> callback) {
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.encodedPath(Constants.URL);
+        builder.appendQueryParameter("cmd", Constants.GET_HEADLINE);
+
+        return get(builder, callback, null);
+    }
+
     /**
      * Load the list of topics for the opinions of the app
      */
