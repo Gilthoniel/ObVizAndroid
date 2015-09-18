@@ -23,13 +23,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Category name\Category Name"
+        android:text="Category name"
         android:id="@+id/cat_name"
         android:padding="5dp"
         android:textColor="#ff6e6e6e"
         android:gravity="center"
         android:minHeight="40dp"
-        android:textSize="12sp"
+        android:textSize="13sp"
         android:maxHeight="40dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -42,59 +42,63 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/cat_name"
         android:padding="5dp"
+        android:id="@+id/subcat_list"
         android:background="#ffededed">
 
 
         <ImageView
             android:layout_width="20dp"
             android:layout_height="25dp"
-            android:id="@+id/trending_up"
+            android:id="@+id/subcat_1"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:src="@drawable/trending_up" />
+             />
 
         <ImageView
             android:layout_width="20dp"
             android:layout_height="25dp"
-            android:id="@+id/trending_down"
+            android:id="@+id/subcat_2"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="false"
-            android:src="@drawable/trending_down"
+
             android:layout_alignParentTop="false"
             android:layout_alignParentBottom="false"
-            android:layout_below="@+id/trending_up" />
+            android:layout_below="@+id/subcat_1" />
 
-        <LinearLayout
-            android:id="@+id/best_apps"
-            android:orientation="horizontal"
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="25dp"
-            android:layout_alignBottom="@+id/trending_up"
-            android:layout_centerHorizontal="true"
-            android:layout_toRightOf="@+id/trending_up"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/trending_up">
+            android:layout_height="wrap_content"
+            android:id="@+id/cat1_name"
+            android:text="Cat 1 name"
 
-        </LinearLayout>
+            android:gravity="center_vertical"
+            android:textSize="11sp"
+            android:layout_toRightOf="@+id/subcat_1"
+            android:layout_marginLeft="10dp" />
 
-        <LinearLayout
-            android:id="@+id/worst_apps"
-            android:orientation="horizontal"
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="25dp"
-            android:layout_alignTop="@+id/trending_down"
-            android:layout_centerHorizontal="true"
-            android:layout_toRightOf="@+id/trending_down"
-            android:layout_alignParentRight="true"
-            android:layout_alignBottom="@+id/trending_down">
+            android:layout_height="wrap_content"
+            android:id="@+id/cat2_name"
+            android:text="Cat 2 name"
+            android:layout_below="@+id/cat1_name"
+            android:layout_toRightOf="@+id/subcat_2"
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/imageView"
-                android:scaleType="centerCrop"/>
-        </LinearLayout>
+
+            android:gravity="center_vertical"
+            android:textSize="11sp"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/more_categs"
+            android:text=". . ."
+            android:layout_below="@+id/cat2_name"
+            android:gravity="center_vertical"
+            android:textSize="20sp"
+            android:layout_marginLeft="10dp"/>
 
 
     </RelativeLayout>

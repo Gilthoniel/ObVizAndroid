@@ -189,6 +189,7 @@ public class GeneralWebService extends WebService {
     }
 
 
+    /*
     public HttpTask<?> getTopApps(final SuperCategoryGridAdapter adapter, final CategoryBase category, final String appType, List<Integer> topicIds) {
 
         // have to create the builder for each category!
@@ -230,7 +231,7 @@ public class GeneralWebService extends WebService {
             }
         }, key);
     }
-
+*/
     //
     ///
 

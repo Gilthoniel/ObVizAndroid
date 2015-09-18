@@ -15,9 +15,11 @@ import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
+import com.obviz.review.models.CategoryBase;
 import com.obviz.review.views.GaugeChart;
 import com.obviz.review.views.InfiniteScrollable;
 import com.obviz.review.webservice.GeneralWebService;
+import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.reviews.R;
 
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
     public void setCategory(Category c){
         mCategory=c;
     }
-    public void setTopics(ArrayList<Integer> topicIDs){ mTopicIDs=topicIDs;}
+
 
     /**
      * Maximum number of page to display with the infinite scroller
@@ -81,6 +83,7 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
      */
     @Override
     public void onTopicsLoaded() {
+
         notifyDataSetChanged();
     }
 
@@ -122,7 +125,6 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
 
         public AppFullHolder(View v) {
             super(v);
-
             mView = v;
         }
 
@@ -165,9 +167,6 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
             else
                 worstOpinion.setText("");
 
-            //worstOpinion.setText(TopicsManager.instance().getTitle(app.getWorstOpinion(), AppBoxFullAdapter.this));
-
-
 
             // this has to reflect the topic choice too!
 
@@ -197,4 +196,34 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
             }
         }
     }
+
+    public void setTopics(ArrayList<Integer> topicIDs){
+
+        /*if(mTopicIDs.size()==topicIDs.size()){
+            Boolean different=false;
+            for (Integer i:mTopicIDs)
+                if(!topicIDs.contains(i)){
+                    different=true;
+                    break;
+                }
+            if(!different)
+                return;
+        }*/
+
+        //if the new topics are actually new:
+        mTopicIDs=topicIDs;
+
+        getNewApps();
+    }
+
+    public void getNewApps(){
+
+        Log.d("AppBox FULL ADAPTER ","Getting new apps for the new topic selection");
+        this.clear();
+        mPage=0;
+        onLoadMore();
+
+        notifyDataSetChanged();
+    }
+
 }

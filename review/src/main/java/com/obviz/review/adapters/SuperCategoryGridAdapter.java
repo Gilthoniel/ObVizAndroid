@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.obviz.review.dialogs.TopicsDialog;
@@ -17,6 +18,7 @@ import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.models.CategoryBase;
+import com.obviz.review.models.Review;
 import com.obviz.review.models.SuperCategory;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.tasks.HttpTask;
@@ -35,69 +37,18 @@ import java.util.Map;
  * Created by gaylor on 08/31/2015.
  * Adapter for the super categories
  */
-public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implements TopicsManager.TopicsObserver, ImageObserver, CategoryManager.CategoryObserver {
+public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implements  ImageObserver, CategoryManager.CategoryObserver {
 
     private Map<String,Bitmap> mImages;
-    private Map<CategoryBase, List<AndroidFullApp>> mAppsBest;
-    private Map<CategoryBase, List<AndroidFullApp>> mAppsWorst;
-    private Map<CategoryBase, HttpTask<?>> requestsBest;
-    private Map<CategoryBase, HttpTask<?>> requestsWorst;
-    private TopicsDialog mDialog;
-
-    //private List<Integer> mTopicIds;
-
-    public List<AndroidFullApp> getBestApps(CategoryBase categoryBase){
-        return mAppsBest.get(categoryBase);
-    }
-
-    public List<AndroidFullApp> getWorstApps(CategoryBase categoryBase){
-        return mAppsWorst.get(categoryBase);
-    }
-
-    public void setTopicsDialog(TopicsDialog topicsDialog){mDialog=topicsDialog;}
-
-    //public void setTopics(List<Integer> topicIds){mTopicIds=topicIds;}
 
     public SuperCategoryGridAdapter() {
-        requestsBest = new HashMap<>();
-        requestsWorst = new HashMap<>();
-        mAppsBest = new HashMap<>();
-        mAppsWorst = new HashMap<>();
         mImages = new HashMap<>();
-        //mTopicIds = new ArrayList<>();
     }
 
-    public void addAlltoMap(List<AndroidFullApp> appList, CategoryBase category, String appType){
-        if(appType.equals("best"))
-            this.mAppsBest.put(category,appList);
-
-
-        if(appType.equals("worst"))
-            this.mAppsWorst.put(category, appList);
-
-        notifyDataSetChanged();
-    }
-
-
-    private void launchRequests(Map<CategoryBase, HttpTask<?>> requests, CategoryBase category, String requestType, List<Integer> topicIds){
-        HttpTask<?> request=null;
-        if(requests.containsKey(category)){
-            request = requests.get(category);
-        }
-        // If THIS category's request is already launched, we kill it before relaunching
-        if (request != null) {
-            request.cancel();
-        }
-
-        request = GeneralWebService.instance().getTopApps(this, category, requestType, topicIds);
-    }
-
-    public void getChildCategories(CategoryBase categoryBase, List<Integer> topicIds){
+    public void getChildCategories(CategoryBase categoryBase){
         //relaunch the adapter with the new contents
         for (Category category : categoryBase.getCategories()) {
             super.add(category);
-            launchRequests(requestsBest, category, "best", topicIds);
-            launchRequests(requestsWorst, category, "worst", topicIds);
         }
         notifyDataSetChanged();
     }
@@ -119,11 +70,6 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
         for (SuperCategory category : categoryList)  {
             if (category.active) {
                 super.add(category);
-
-                launchRequests(requestsBest, category, "best", mDialog.getSelectedTopicIds());
-
-                launchRequests(requestsWorst, category, "worst", mDialog.getSelectedTopicIds());
-
             }
         }
 
@@ -144,11 +90,6 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
     }
 
     @Override
-    public void onTopicsLoaded() {
-        notifyDataSetChanged();
-    }
-
-    @Override
     public void onImageLoaded(String url, Bitmap bitmap) {
         mImages.put(url, bitmap);
         notifyDataSetChanged();
@@ -166,33 +107,46 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
             mView = v;
         }
 
-        private void fillAppLogos(CategoryBase categoryBase, int viewId, Map<CategoryBase, List<AndroidFullApp>> mApps){
-            LinearLayout bestAppsSet = (LinearLayout) mView.findViewById(viewId);
-            bestAppsSet.removeAllViews();
-            if(mApps.containsKey(categoryBase)){
-                for (AndroidFullApp fullApp: mApps.get(categoryBase)){
-                    AndroidApp a = fullApp.getApp();
-                    ImageView appLogo = new ImageView(mView.getContext());
-                    appLogo.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    appLogo.setPadding(5, 5, 5, 5);
-                    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(bestAppsSet.getHeight(), bestAppsSet.getHeight());
-                    appLogo.setLayoutParams(params);
-                    if(mImages.containsKey(a.getLogo()))
-                        appLogo.setImageBitmap(mImages.get(a.getLogo()));
-                    else{
-                        mImages.put(a.getLogo(), null);
-                        ImagesManager.instance().get(a.getLogo(),SuperCategoryGridAdapter.this);
-                    }
-
-                    //TODO: tackle case click on each app:
-                    //bestAppsSet.setOnClickListener( ... );
-
-                    bestAppsSet.addView(appLogo);
-                }
-
+        private void fillSubCategoryImage(ImageView imageView, String icon){
+            if(mImages.containsKey(icon))
+                imageView.setImageBitmap(mImages.get(icon));
+            else{
+                mImages.put(icon, null);
+                ImagesManager.instance().get(icon, SuperCategoryGridAdapter.this);
             }
 
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setPadding(5, 5, 5, 5);
 
+            //older settings
+            //ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(bestAppsSet.getHeight(), bestAppsSet.getHeight());
+            //appLogo.setLayoutParams(params);
+        }
+
+        private void fillSubCategoryName(TextView textView, String text){
+            textView.setText(text);
+            textView.setPadding(5, 5, 5, 5);
+        }
+
+
+        private void fillSubCategoryList(CategoryBase categoryBase){
+            RelativeLayout relativeLayout = (RelativeLayout) mView.findViewById(R.id.subcat_list);
+            relativeLayout.setVisibility(View.VISIBLE);
+
+            if(categoryBase.getCategories().size()<2) {
+                TextView points = (TextView) mView.findViewById(R.id.more_categs);
+                points.setVisibility(View.INVISIBLE);
+            }
+
+            if(categoryBase.getCategories().size()>0) {
+                fillSubCategoryImage((ImageView) mView.findViewById(R.id.subcat_1), categoryBase.getCategories().get(0).getIcon());
+                fillSubCategoryName((TextView)mView.findViewById(R.id.cat1_name),categoryBase.getCategories().get(0).getTitle());
+            }
+
+            if(categoryBase.getCategories().size()>1) {
+                fillSubCategoryImage((ImageView) mView.findViewById(R.id.subcat_2), categoryBase.getCategories().get(1).getIcon());
+                fillSubCategoryName((TextView) mView.findViewById(R.id.cat2_name), categoryBase.getCategories().get(1).getTitle());
+            }
         }
 
         @Override
@@ -219,13 +173,13 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase> implemen
                 logo.setVisibility(View.INVISIBLE);
             }
 
-            //then we gotta fill in the best and worst performers:
-
-            fillAppLogos(categoryBase, R.id.best_apps, mAppsBest);
-            fillAppLogos(categoryBase, R.id.worst_apps, mAppsWorst);
-
-            //pre-fill the horizontal scroll with two topics from:
-            // http://ns3369837.ip-37-187-91.eu/ObVizServiceAdmin?cmd=Get_App_Topics&type=DEFINED
+            //then we gotta fill the sub categories:
+            if(categoryBase.getCategories().size()>1)
+                fillSubCategoryList(categoryBase);
+            else{
+                RelativeLayout relativeLayout = (RelativeLayout) mView.findViewById(R.id.subcat_list);
+                relativeLayout.setVisibility(View.INVISIBLE);
+            }
 
 
         }

@@ -23,7 +23,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/grid_view"
+        android:layout_below="@+id/scroll_view"
+        app:columnWidth="@dimen/fullapp_box_width"/>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scroll_view"
         android:layout_below="@+id/toolbar"
-        app:columnWidth="@dimen/app_box_width"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:focusable="true"
+        android:clickable="true">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/topics_container"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:focusable="true"
+            android:clickable="true"/>
+    </HorizontalScrollView>
 
 </RelativeLayout>

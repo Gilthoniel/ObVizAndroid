@@ -1,32 +1,41 @@
 package com.obviz.review;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.AppBoxFullAdapter;
 import com.obviz.review.adapters.GridAdapter;
+import com.obviz.review.dialogs.TopicsDialog;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.models.OpinionValue;
+import com.obviz.review.models.Topic;
 import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.reviews.R;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 
-public class DiscoverAppsActivity extends AppCompatActivity  {
+public class DiscoverAppsActivity extends AppCompatActivity implements TopicsManager.TopicsObserver{
 
     private Category mCategory;
 
@@ -38,29 +47,46 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
     private AppBoxFullAdapter mAdapter;
     private GridRecyclerView mGridView;
 
+    private TopicsDialog mDialog;
+    private final List<Integer> DEFAULT_TOPICS = new ArrayList<>();
+    private ArrayList<Topic> mTopics;
+
+    @Override
+    public void onTopicsLoaded() {
+        mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
+        topicIDs.clear();
+
+        Log.i("MTOPICS", "Size: " + mTopics.size());
+        createDialog();
+        populateSelectedTopics(topicIDs);
+
+    }
+
     @Override
     protected void onCreate(Bundle states) {
-
         super.onCreate(states);
+        setContentView(R.layout.activity_apps_discover);
+
+        topicIDs=new ArrayList<>();
+        mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
+
         mApps = new ArrayList<>();
 
-        setContentView(R.layout.activity_apps_discover);
+        createDialog();
+        DEFAULT_TOPICS.add(1);
+        DEFAULT_TOPICS.add(2);
+        topicIDs.add(1);
+        topicIDs.add(2);
+
+        populateSelectedTopics(DEFAULT_TOPICS);
+
 
         // Get intent or states
         if (states != null) {
             mCategory = states.getParcelable(Constants.STATE_CATEGORY);
-            topicIDs = states.getIntegerArrayList(Constants.STATE_TOPIC_IDS);
-            //mbestApps = states.getParcelableArrayList(Constants.STATE_APPS_BEST);
-            //mworstApps = states.getParcelableArrayList(Constants.STATE_APPS_WORST);
-
-
-
         } else {
             Intent intent = getIntent();
             mCategory = intent.getParcelableExtra(Constants.INTENT_CATEGORY);
-            topicIDs = intent.getIntegerArrayListExtra(Constants.INTENT_TOPIC_IDS);
-            //mbestApps = intent.getParcelableArrayListExtra(Constants.INTENT_APPS_BEST);
-            //mworstApps = intent.getParcelableArrayListExtra(Constants.INTENT_APPS_WORST);
         }
 
 
@@ -106,6 +132,16 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
         //mAdapter.shuffle(); // Random selection of the trending apps
 
         mGridView.setInfiniteAdapter(mAdapter);
+
+        // open the dialog when the user click on the scroll view
+        // TODO: tutorial for the user to explain how to open the dialog
+        findViewById(R.id.topics_container).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("__DIALOG__", "Dialog is called");
+                mDialog.show(getSupportFragmentManager(), "TOPICS");
+            }
+        });
     }
 
     @Override
@@ -120,11 +156,71 @@ public class DiscoverAppsActivity extends AppCompatActivity  {
 
         states.putParcelable(Constants.STATE_CATEGORY, mCategory);
         states.putIntegerArrayList(Constants.STATE_TOPIC_IDS, topicIDs);
-
-
         super.onSaveInstanceState(states);
     }
 
+
+    // __FRIDAY_9112015__
+
+    private void createDialog() {
+        // Instantiate the dialog
+        mDialog = new TopicsDialog();
+
+        Bundle args = new Bundle(); // put the list of topics for the dialog creation
+        args.putParcelableArrayList(Constants.STATE_TOPIC, mTopics);
+
+        mDialog.setArguments(args);
+        mDialog.setOnDismissListener(new TopicsDialog.OnDismissListener() {
+            @Override
+            public void dialogDismiss(List<Topic> selectedItems) {
+                // use the list to populate the Layout!
+                topicIDs.clear();
+                for (Topic t : selectedItems) {
+                    topicIDs.add(t.getID());
+                }
+                populateSelectedTopics(topicIDs);
+                mAdapter.setTopics(topicIDs);
+
+            }
+        });
+
+        Log.i("MTOPICS CREATE DIALOG", "Size: " + mTopics.size());
+        if(mTopics.size()>1)
+            for (int i=0; i<mTopics.size();i++) {
+                Topic t = mTopics.get(i);
+                if (DEFAULT_TOPICS.contains(t.getID()))
+                    mDialog.addSelectedTopic(t);
+
+            }
+    }
+
+    /**
+     * Fill the horizontal scroll view with the selected buttons
+     * @param ids IDs of the selected topics
+     */
+
+
+    private void populateSelectedTopics(List<Integer> ids) {
+
+            // Horizontal linear layout where we populate the buttons
+            LinearLayout layout = (LinearLayout) findViewById(R.id.topics_container);
+            layout.removeAllViews();
+            // Iteration over all the topics
+            for (Topic topic : mTopics) {
+                // We add the button only if the set contains the id
+                if (ids.contains(topic.getID())) {
+
+                    //TODO: I put base context here - is it ok!?
+                    TextView tv = (TextView) new TextView(getBaseContext());
+                    tv.setPadding(2,2,2,2);
+                    tv.setText(topic.getTitle());
+                    tv.setTextColor(Color.parseColor("#ffffff"));
+                    tv.setBackgroundResource(R.drawable.tags_rounded_corners);
+                    layout.addView(tv);
+                }
+            }
+
+    }
 
 
 }
