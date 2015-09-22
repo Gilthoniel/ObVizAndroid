@@ -7,9 +7,7 @@ import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -184,10 +182,8 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
             }
         });
 
-        Log.i("MTOPICS CREATE DIALOG", "Size: " + mTopics.size());
         if(mTopics.size()>1)
-            for (int i=0; i<mTopics.size();i++) {
-                Topic t = mTopics.get(i);
+            for (Topic t : mTopics) {
                 if (DEFAULT_TOPICS.contains(t.getID()))
                     mDialog.addSelectedTopic(t);
 
@@ -210,13 +206,10 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
                 // We add the button only if the set contains the id
                 if (ids.contains(topic.getID())) {
 
-                    //TODO: I put base context here - is it ok!?
-                    TextView tv = (TextView) new TextView(getBaseContext());
-                    tv.setPadding(2,2,2,2);
-                    tv.setText(topic.getTitle());
-                    tv.setTextColor(Color.parseColor("#ffffff"));
-                    tv.setBackgroundResource(R.drawable.tags_rounded_corners);
-                    layout.addView(tv);
+                    View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.label, layout, false);
+                    ((TextView) view.findViewById(R.id.label_text)).setText(topic.getTitle());
+
+                    layout.addView(view);
                 }
             }
 

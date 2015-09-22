@@ -40,7 +40,7 @@
             android:orientation="horizontal"
             android:id="@+id/topics_container"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:focusable="true"
             android:clickable="true"/>
     </HorizontalScrollView>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="@drawable/little_box">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="Text of the label"
+        android:id="@+id/label_text"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textColor="@color/ColorPrimaryDark"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+</LinearLayout>
