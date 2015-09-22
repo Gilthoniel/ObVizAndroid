@@ -5,6 +5,7 @@ import com.obviz.review.fragments.FavoriteFragment;
 import com.obviz.review.fragments.HistoryFragment;
 import com.obviz.review.fragments.PackageFragment;
 import com.obviz.review.fragments.TrendingFragment;
+import com.obviz.review.fragments.*;
 import com.obviz.review.views.GaugeChart;
 
 import java.lang.reflect.Type;
@@ -25,6 +26,7 @@ public class Constants {
     public static final int NUMBER_APPS_PER_BLOCK = 7;
 
     public static final Type[] HOME_FRAGMENTS = new Type[] {
+            HeadlineFragment.class,
             TrendingFragment.class,
             PackageFragment.class,
             HistoryFragment.class,
@@ -42,6 +44,7 @@ public class Constants {
     public static final String GET_TRENDING_APPS = "Get_Trending_Apps";
     public static final String GET_CATEGORIES = "Get_App_Categories";
     public static final String GET_CATEGORIES_TYPES = "Get_App_Categories_Types";
+    public static final String GET_HEADLINE = "Get_Random_Headline";
     public static final String GET_APPS_FILTERED = "Get_Apps_Filtered";
     public static final String GET_APP_TOPICS = "Get_App_Topics";
 

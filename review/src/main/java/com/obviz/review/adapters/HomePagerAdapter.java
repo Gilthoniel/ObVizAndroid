@@ -50,6 +50,9 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
             } else if (type == FavoriteFragment.class) {
 
                 mFragments.add(new FavoriteFragment());
+            } else if (type == HeadlineFragment.class) {
+
+                mFragments.add(new HeadlineFragment());
             }
             else if (type == DiscoverFragment.class) {
 
