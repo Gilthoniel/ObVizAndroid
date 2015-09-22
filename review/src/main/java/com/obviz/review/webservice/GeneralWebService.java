@@ -335,6 +335,11 @@ public class GeneralWebService extends WebService {
         }, key);
     }
 
+    /**
+     * Get the headline information
+     * @param callback action to perform after loading
+     * @return the task
+     */
     public HttpTask<?> getHeadline(RequestCallback<Headline> callback) {
 
         Uri.Builder builder = new Uri.Builder();

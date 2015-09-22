@@ -9,38 +9,49 @@
     android:focusable="true"
     android:clickable="true">
 
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:id="@+id/cat_image"
-        android:scaleType="fitCenter"
-        android:padding="5dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Category name"
-        android:id="@+id/cat_name"
-        android:padding="5dp"
-        android:textColor="#ff6e6e6e"
-        android:gravity="center"
-        android:minHeight="40dp"
-        android:textSize="13sp"
-        android:maxHeight="40dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/cat_image"
-        android:layout_alignBottom="@+id/cat_image" />
+        android:layout_centerHorizontal="true"
+        android:id="@+id/layout_title">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/cat_image"
+            android:scaleType="fitCenter"
+            android:padding="5dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:visibility="visible"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Category name"
+            android:id="@+id/cat_name"
+            android:padding="5dp"
+            android:textColor="#ff6e6e6e"
+            android:gravity="center"
+            android:minHeight="40dp"
+            android:textSize="13sp"
+            android:maxHeight="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/cat_image"
+            android:layout_alignBottom="@+id/cat_image"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/cat_name"
+        android:layout_below="@+id/layout_title"
         android:padding="5dp"
         android:id="@+id/subcat_list"
         android:background="#ffededed">
@@ -75,34 +86,81 @@
             android:gravity="center_vertical"
             android:textSize="11sp"
             android:layout_toRightOf="@+id/subcat_1"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            android:layout_alignTop="@+id/subcat_1"
+            android:layout_alignBottom="@+id/subcat_1"
+            android:layout_alignParentRight="true"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/cat2_name"
             android:text="Cat 2 name"
-            android:layout_below="@+id/cat1_name"
             android:layout_toRightOf="@+id/subcat_2"
 
 
             android:gravity="center_vertical"
             android:textSize="11sp"
-            android:layout_marginLeft="10dp"/>
+            android:layout_marginLeft="10dp"
+            android:layout_alignTop="@+id/subcat_2"
+            android:layout_alignBottom="@+id/subcat_2"
+            android:layout_alignParentRight="true"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/more_categs"
             android:text=". . ."
-            android:layout_below="@+id/cat2_name"
-            android:gravity="center_vertical"
+            android:layout_below="@+id/subcat_2"
             android:textSize="20sp"
-            android:layout_marginLeft="10dp"/>
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:gravity="center"/>
 
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/subcat_list"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/subcat_body"
+        android:background="#ffededed">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/know_title"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:textSize="12sp"
+            android:padding="5dp"/>
+
+        <com.obviz.review.views.GaugeChart
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_below="@+id/know_title"
+            android:id="@+id/gauge_chart"
+            android:padding="10dp"
+            app:angle="210"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:id="@+id/app_logo"
+            android:layout_alignTop="@+id/gauge_chart"
+            android:layout_toRightOf="@+id/gauge_chart"
+            android:layout_toEndOf="@+id/gauge_chart"
+            android:layout_alignParentRight="true"
+            android:scaleType="fitCenter"
+            android:padding="10dp"/>
+
+    </RelativeLayout>
 
 
 </RelativeLayout>
