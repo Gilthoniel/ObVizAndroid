@@ -1,9 +1,11 @@
 package com.obviz.review;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,6 +17,7 @@ import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.AppBoxFullAdapter;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.dialogs.TopicsDialog;
+import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.AndroidFullApp;
@@ -171,11 +174,19 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
         mDialog.setOnDismissListener(new TopicsDialog.OnDismissListener() {
             @Override
             public void dialogDismiss(List<Topic> selectedItems) {
+
                 // use the list to populate the Layout!
                 topicIDs.clear();
                 for (Topic t : selectedItems) {
                     topicIDs.add(t.getID());
                 }
+
+                // Populate the shared preferences
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor edit = prefs.edit();
+                edit.putString(Constants.PREFERENCES_SELECTED_TOPICS, MessageParser.toJson(topicIDs));
+                edit.apply();
+
                 populateSelectedTopics(topicIDs);
                 mAdapter.setTopics(topicIDs);
 

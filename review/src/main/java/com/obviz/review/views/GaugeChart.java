@@ -31,6 +31,25 @@ public class GaugeChart extends View {
     private Map<Arrow, Path> mArrowsPaths;
     private RectF mBounds;
 
+    public GaugeChart(Context context, float angle) {
+        super(context);
+
+        mMetrics = context.getResources().getDisplayMetrics();
+        mAngle = angle;
+
+        // Default values
+
+        if (mText == null) {
+            mText = "";
+        }
+
+        /* Initialization */
+        mOrigin = new Point(0, 0);
+
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+    }
+
     public GaugeChart(Context context, AttributeSet attributes) {
         super(context, attributes);
 

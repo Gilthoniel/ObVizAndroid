@@ -1,31 +1,31 @@
 package com.obviz.review.adapters;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
+import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
-import com.obviz.review.models.CategoryBase;
 import com.obviz.review.views.GaugeChart;
 import com.obviz.review.views.InfiniteScrollable;
 import com.obviz.review.webservice.GeneralWebService;
-import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.reviews.R;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by gaylor on 05-Aug-15.
@@ -149,50 +149,38 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
             //best and worst opinions have to be among the topics we have selected, not all of them.
 
             TextView bestOpinion = (TextView) mView.findViewById(R.id.mostOpinion);
-            //String bestTitle = TopicsManager.instance().getTitle(app.getBestOpinion(mTopicIDs), AppBoxFullAdapter.this);
 
-            String bestTitle = fullApp.getPolarizedOpinion(mTopicIDs, "positive");
+            SpannableStringBuilder bestTitle = fullApp.getPolarizedOpinion(mTopicIDs, "positive");
             if(bestTitle.length()>0)
                 bestOpinion.setText(bestTitle);
             else
-                bestOpinion.setText("");
+                bestOpinion.setVisibility(View.GONE);
 
 
             TextView worstOpinion = (TextView) mView.findViewById(R.id.worstOpinion);
-            //String worstTitle = TopicsManager.instance().getTitle(app.getWorstOpinion(mTopicIDs), AppBoxFullAdapter.this);
 
-            String worstTitle = fullApp.getPolarizedOpinion(mTopicIDs, "negative");
+            SpannableStringBuilder worstTitle = fullApp.getPolarizedOpinion(mTopicIDs, "negative");
             if(worstTitle.length()>0)
                 worstOpinion.setText(worstTitle);
             else
-                worstOpinion.setText("");
+                worstOpinion.setVisibility(View.GONE);
 
 
-            // this has to reflect the topic choice too!
+            // Fill the gauges with selected topics
+            LinearLayout gauges = (LinearLayout) mView.findViewById(R.id.gauges_container);
+            gauges.removeAllViews();
 
-            GaugeChart.GaugeChartData gaugeData = new GaugeChart.GaugeChartData(100);
-            gaugeData.setTextSize(8);
-            gaugeData.addSegments(Constants.CHART_SEGMENTS);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mView.getContext());
+            Set<Integer> topics = MessageParser.fromJson(prefs.getString(Constants.PREFERENCES_SELECTED_TOPICS, "[]"),
+                    new TypeToken<Set<Integer>>(){}.getType());
 
-            GaugeChart.Arrow arrow = new GaugeChart.Arrow();
-            arrow.setValue(app.getGlobalOpinion());
-            arrow.setHeight(1.0f);
-            arrow.setInnerRadius(0.2f);
-            arrow.setBaseLength(3);
-            arrow.setColor(0xff393939);
-            gaugeData.addArrow(arrow);
+            if (topics.size() < 4) {
+                createGaugeChart(gauges, app.getGlobalOpinion(), "Global");
+            }
 
-            GaugeChart chart = (GaugeChart) mView.findViewById(R.id.gauge_chart);
-            chart.setData(gaugeData);
-
-            if (!app.isParsed()) {
-                chart.setVisibility(View.INVISIBLE);
-                mView.findViewById(R.id.trending_up).setVisibility(View.INVISIBLE);
-                mView.findViewById(R.id.trending_down).setVisibility(View.INVISIBLE);
-            } else {
-                chart.setVisibility(View.VISIBLE);
-                mView.findViewById(R.id.trending_up).setVisibility(View.VISIBLE);
-                mView.findViewById(R.id.trending_down).setVisibility(View.VISIBLE);
+            for (Integer topicID : topics) {
+                createGaugeChart(gauges, app.getOpinion(topicID).percentage(),
+                        TopicsManager.instance().getTitle(topicID, AppBoxFullAdapter.this));
             }
         }
     }
@@ -224,6 +212,31 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
         onLoadMore();
 
         notifyDataSetChanged();
+    }
+
+    private void createGaugeChart(LinearLayout layout, int value, String title) {
+        GaugeChart chart = new GaugeChart(layout.getContext(), 210);
+        GaugeChart.GaugeChartData data = new GaugeChart.GaugeChartData(100);
+        data.addSegments(Constants.CHART_SEGMENTS);
+        data.setText(title);
+        data.setTextSize(10);
+
+        GaugeChart.Arrow arrow = new GaugeChart.Arrow();
+        arrow.setValue(value);
+        arrow.setHeight(1.0f);
+        arrow.setInnerRadius(0.2f);
+        arrow.setBaseLength(3);
+        arrow.setColor(0xff393939);
+        data.addArrow(arrow);
+
+        int size = (int) (layout.getContext().getResources().getDisplayMetrics().scaledDensity * 50);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+        params.weight = 1.0f;
+        chart.setLayoutParams(params);
+        chart.setPadding(5, 5, 5, 5);
+
+        chart.setData(data);
+        layout.addView(chart);
     }
 
 }

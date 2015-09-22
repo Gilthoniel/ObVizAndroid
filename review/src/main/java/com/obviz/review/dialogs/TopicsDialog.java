@@ -38,6 +38,7 @@ public class TopicsDialog extends DialogFragment {
     public void addSelectedTopic(Topic t){
         mSelectedTopics.add(t);
     }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle states) {
@@ -85,12 +86,7 @@ public class TopicsDialog extends DialogFragment {
             Log.d("__DIALOG__", "Don't receive the list of topics");
         }
 
-        AlertDialog dialog = builder.create();
-        /*for (Topic t: mSelectedTopics){
-            dialog.getListView().setItemChecked(mSelectedTopics.indexOf(t),true);
-        }*/
-
-        return dialog ;
+        return builder.create();
     }
 
     public void setOnDismissListener(OnDismissListener dismissListener){

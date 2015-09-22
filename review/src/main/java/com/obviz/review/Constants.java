@@ -81,6 +81,9 @@ public class Constants {
     public static final String STATE_SEARCH = "com.obviz.review.SEARCH";
     public static final String STATE_COMPARISON = "com.obviz.reviewe.COMPARISON";
 
+    /** Shared Preferences **/
+    public static final String PREFERENCES_SELECTED_TOPICS = "PREFS_SELECTED_TOPICS";
+
     /** Gauge **/
     public static final List<GaugeChart.Segment> CHART_SEGMENTS = new LinkedList<>();
 

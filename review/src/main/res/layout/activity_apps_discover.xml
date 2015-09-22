@@ -24,7 +24,7 @@
         android:layout_height="match_parent"
         android:id="@+id/grid_view"
         android:layout_below="@+id/scroll_view"
-        app:columnWidth="@dimen/fullapp_box_width"/>
+        app:numColumns="1"/>
 
     <HorizontalScrollView
         android:layout_width="match_parent"

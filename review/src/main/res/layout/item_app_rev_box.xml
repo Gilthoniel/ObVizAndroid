@@ -3,15 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_width="@dimen/app_box_width"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/box"
     android:focusable="true"
     android:clickable="true">
 
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:id="@+id/app_logo"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -23,25 +23,24 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Application name\nApplication Name"
+        android:text="Name"
         android:id="@+id/app_name"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/app_logo"
         android:padding="5dp"
         android:textColor="#ff6e6e6e"
         android:gravity="center"
         android:minHeight="40dp"
         android:textSize="12sp"
         android:maxHeight="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/app_logo"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignBottom="@+id/app_logo"
+        android:layout_alignTop="@+id/app_logo"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/app_name"
+        android:layout_below="@+id/gauges_container"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:padding="5dp"
@@ -55,9 +54,12 @@
             android:textSize="10sp"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/trending_up"
             android:textColor="#ff000000"
-            />
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:padding="10dp"
+            android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -68,47 +70,29 @@
             android:layout_below="@+id/mostOpinion"
             android:layout_alignStart="@+id/mostOpinion"
             android:layout_alignLeft="@+id/mostOpinion"
-            android:layout_alignParentLeft="false"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
-            android:layout_toRightOf="@+id/trending_down"
-            android:textColor="#ff000000"/>
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/trending_up"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:src="@drawable/trending_up"
-            android:layout_alignParentBottom="false"
-            android:layout_alignBottom="@+id/mostOpinion"/>
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/trending_down"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="false"
-            android:src="@drawable/trending_down"
-            android:layout_below="@+id/trending_up"
-            android:layout_alignBottom="@+id/worstOpinion"/>
+            android:textColor="#ff000000"
+            android:gravity="center"
+            android:padding="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"/>
 
     </RelativeLayout>
 
-    <com.obviz.review.views.GaugeChart
-        android:id="@+id/gauge_chart"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:angle="240"
-        app:text="Global"
-        android:padding="15dp"
-        android:minHeight="50dp"
-        android:layout_alignParentTop="true"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="false"
+        android:id="@+id/gauges_container"
+        android:layout_below="@+id/app_logo"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/app_logo"
-        android:layout_toEndOf="@+id/app_logo"
-        android:layout_alignBottom="@+id/app_logo"/>
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center">
+    </LinearLayout>
 
 </RelativeLayout>

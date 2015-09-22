@@ -3,6 +3,9 @@ package com.obviz.review.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.json.MessageParser;
@@ -33,7 +36,7 @@ public class AndroidFullApp implements Serializable {
         public int nbTotalPages;
     }
 
-    public String getPolarizedOpinion(List<Integer> topics, String targetPolarity){
+    public SpannableStringBuilder getPolarizedOpinion(List<Integer> topics, String targetPolarity){
         for (Review review:mostRelevantReviews){
             for (Opinion.OpinionDetail opinion: review.opinions.opinions){
                 if(opinion.polarity.equals(targetPolarity) && opinion.phrase!=null){
@@ -42,13 +45,23 @@ public class AndroidFullApp implements Serializable {
                     if(s!=null){
                         Clause c = s.getClause(opinion.clauseID);
                         if(c!=null){
-                            return c.getText();
+                            SpannableStringBuilder builder = new SpannableStringBuilder(c.getText());
+                            String text = c.getText().toLowerCase();
+
+                            for (String word : opinion.getWords()) {
+                                int index = text.indexOf(word.toLowerCase());
+                                if (index > 0) {
+                                    builder.setSpan(new ForegroundColorSpan(opinion.getColor()), index, index + word.length(), 0);
+                                }
+                            }
+
+                            return builder;
                         }
                     }
                 }
             }
         }
-        return "";
+        return new SpannableStringBuilder();
     }
 
 
