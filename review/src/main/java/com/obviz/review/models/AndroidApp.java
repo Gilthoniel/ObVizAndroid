@@ -5,11 +5,9 @@ import android.os.Parcelable;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.json.MessageParser;
-import com.obviz.review.managers.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +30,7 @@ public class AndroidApp implements Parcelable, Serializable {
     private Date publicationDate;
     private String category;
     private String description;
-    private List<String> relatedIDs;
+    private List<String> alternativeApps;
     private List<OpinionValue> opinionsSummary;
     private int nbParsedReviews;
 
@@ -51,8 +49,8 @@ public class AndroidApp implements Parcelable, Serializable {
         publicationDate = parcel.readParcelable(Date.class.getClassLoader());
         category = parcel.readString();
         description = parcel.readString();
-        relatedIDs = new ArrayList<>();
-        parcel.readStringList(relatedIDs);
+        alternativeApps = new ArrayList<>();
+        parcel.readStringList(alternativeApps);
         opinionsSummary = new ArrayList<>();
         parcel.readTypedList(opinionsSummary, OpinionValue.CREATOR);
         nbParsedReviews = parcel.readInt();
@@ -111,12 +109,12 @@ public class AndroidApp implements Parcelable, Serializable {
         }
     }
 
-    public List<String> getRelatedIDs() {
-        if (relatedIDs == null) {
-            relatedIDs = new ArrayList<>();
+    public List<String> getAlternativeApps() {
+        if (alternativeApps == null) {
+            alternativeApps = new ArrayList<>();
         }
 
-        return relatedIDs;
+        return alternativeApps;
     }
 
     public List<OpinionValue> getOpinions() {
@@ -247,7 +245,7 @@ public class AndroidApp implements Parcelable, Serializable {
         parcel.writeParcelable(publicationDate, -1);
         parcel.writeString(category);
         parcel.writeString(description);
-        parcel.writeStringList(relatedIDs);
+        parcel.writeStringList(alternativeApps);
         parcel.writeTypedList(opinionsSummary);
         parcel.writeInt(nbParsedReviews);
     }
@@ -282,11 +280,11 @@ public class AndroidApp implements Parcelable, Serializable {
         app.publicationDate = MessageParser.fromJson(object.get("publicationDate"), Date.class);
         app.category = object.get("category").getAsString();
         app.description = object.get("description").getAsString();
-        if (object.has("relatedIDs")) {
-            app.relatedIDs = MessageParser.fromJson(object.get("relatedIDs"), new TypeToken<List<String>>() {
+        if (object.has("alternativeApps")) {
+            app.alternativeApps = MessageParser.fromJson(object.get("alternativeApps"), new TypeToken<List<String>>() {
             }.getType());
         } else if (object.has("relatedUrls")) {
-            app.relatedIDs = MessageParser.fromJson(object.get("relatedUrls"), new TypeToken<List<String>>() {}.getType());
+            app.alternativeApps = MessageParser.fromJson(object.get("relatedUrls"), new TypeToken<List<String>>() {}.getType());
         }
         app.opinionsSummary = MessageParser.fromJson(object.get("opinionsSummary"), new TypeToken<List<OpinionValue>>(){}.getType());
 

@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.obviz.review.ComparisonActivity;
 import com.obviz.review.Constants;
-import com.obviz.review.DetailsActivity;
 import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.models.AndroidApp;
@@ -58,7 +57,7 @@ public class DetailsComparisonFragment extends Fragment {
         });
         grid.setAdapter(adapter);
 
-        final Iterator<String> it = application.getRelatedIDs().iterator();
+        final Iterator<String> it = application.getAlternativeApps().iterator();
         while (it.hasNext()) {
             String id = it.next();
 
