@@ -83,8 +83,7 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 12);
         calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        calendar.add(Calendar.DAY_OF_WEEK, 7);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 
         alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(),
                 1000 * 60 * 60 * 24 * 7, pending);

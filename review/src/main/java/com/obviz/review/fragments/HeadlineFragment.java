@@ -2,14 +2,12 @@ package com.obviz.review.fragments;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -37,6 +35,7 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
     private View mView;
     private GaugeChart mChart;
     private Headline mHeadline;
+    private SearchView mSearchView;
 
     @Override
     public void showTutorial() {
@@ -87,9 +86,10 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
 
         mView = inflater.inflate(R.layout.fragment_headline, parent, false);
 
-        SearchView search = (SearchView) mView.findViewById(R.id.searchView);
-        search.setSubmitButtonEnabled(true);
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        mSearchView = (SearchView) mView.findViewById(R.id.searchView);
+        mSearchView.setFocusable(false);
+        mSearchView.setSubmitButtonEnabled(true);
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
 
@@ -145,5 +145,13 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
         });
 
         return mView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (getView() != null)
+            getView().requestFocus();
     }
 }
