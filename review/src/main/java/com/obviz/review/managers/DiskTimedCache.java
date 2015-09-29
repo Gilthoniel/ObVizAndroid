@@ -327,8 +327,6 @@ public class DiskTimedCache {
 
             Log.e("__CACHE__", "Can't clean the cache directory");
         }
-
-        Log.i("__CACHE__", "Directory size after cleaning: "+mDirectory.list().length);
     }
 
     private CacheFile searchCacheFile(String key, long expiration) {

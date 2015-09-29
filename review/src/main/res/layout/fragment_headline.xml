@@ -50,7 +50,8 @@
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_margin="10dp">
+                android:layout_margin="10dp"
+                android:id="@+id/layout_headline">
 
                 <ImageView
                     android:layout_width="60dp"

@@ -35,11 +35,11 @@ public class FavoriteAdapter extends BaseAdapter
 
         mContext = context;
         mImages = new HashMap<>();
-        mFavorites = DatabaseService.instance().getFavorites();
     }
 
     public void update() {
         mFavorites = DatabaseService.instance().getFavorites();
+        notifyDataSetChanged();
     }
 
     @Override

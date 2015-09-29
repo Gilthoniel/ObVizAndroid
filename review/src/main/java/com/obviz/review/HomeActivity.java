@@ -179,6 +179,8 @@ public class HomeActivity extends AppCompatActivity {
     private class PageChangeListener implements ViewPager.OnPageChangeListener {
         @Override
         public void onPageSelected(int index) {
+            mPagerAdapter.getFragments().get(index).refresh();
+
             // Adapt title
             setTitle(mPagerAdapter.getPageTitle(index));
             mAdapter.setActiveItem(index);

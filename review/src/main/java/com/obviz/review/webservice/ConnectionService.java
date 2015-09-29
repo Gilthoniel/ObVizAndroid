@@ -25,11 +25,13 @@ public class ConnectionService {
 
     private ExecutorService executor;
     private Set<HttpTask<?>> requests;
+    private Set<HttpTask<?>> waitingRequests;
     private Context mContext;
 
     private ConnectionService(Context context) {
         executor = Executors.newCachedThreadPool();
         requests = new HashSet<>();
+        waitingRequests = new HashSet<>();
         mContext = context;
     }
 
@@ -65,13 +67,13 @@ public class ConnectionService {
         requests.remove(task);
     }
 
-    public void awakeAll() {
+    public synchronized void awakeAll() {
 
-        for (HttpTask<?> task : requests) {
-            if (!task.isCancelled()) {
-                task.executeOnExecutor(executor);
-            }
+        for (HttpTask<?> task : waitingRequests) {
+            requests.add(task);
+            task.executeOnExecutor(executor);
         }
+        waitingRequests.clear();
     }
 
     /**
@@ -97,13 +99,14 @@ public class ConnectionService {
     public <T extends Serializable> HttpTask<T> executeGetRequest(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
 
         GetTask<T> task = new GetTask<>(builder, callback, cacheKey);
-        addRequest(task);
 
         // Execute only if we have internet, else we know that the request will fail
         if (NetworkChangeReceiver.isInternetAvailable(mContext)) {
+            addRequest(task);
             task.executeOnExecutor(executor);
         } else {
-            task.getCallback().onFailure(RequestCallback.Errors.CONNECTION);
+            callback.onFailure(RequestCallback.Errors.CONNECTION);
+            waitingRequests.add(task);
         }
 
         return task;

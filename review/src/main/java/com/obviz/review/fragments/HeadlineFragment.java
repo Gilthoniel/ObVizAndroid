@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +40,45 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
     private SearchView mSearchView;
 
     @Override
-    public void showTutorial() {
+    public void showTutorial() {}
 
+    @Override
+    public void refresh() {
+        GeneralWebService.instance().getHeadline(new RequestCallback<Headline>() {
+            @Override
+            public void onSuccess(Headline result) {
+                final AndroidApp app = result.getApps().get(0);
+
+                ((TextView) mView.findViewById(R.id.headline_title)).setText(result.getTitle());
+                ((TextView) mView.findViewById(R.id.app_description)).setText(app.getDescription(128));
+
+                mView.findViewById(R.id.button_more).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getContext(), DetailsActivity.class);
+                        intent.putExtra(Constants.INTENT_APP, (Parcelable) app);
+
+                        startActivity(intent);
+                    }
+                });
+
+                ImagesManager.instance().get(app.getLogo(), HeadlineFragment.this);
+
+                mHeadline = result;
+                onTopicsLoaded();
+            }
+
+            @Override
+            public void onFailure(Errors error) {
+                Log.e("--HEADLINE--", "Message: " + error.name());
+                mView.findViewById(R.id.layout_headline).setVisibility(View.GONE);
+            }
+
+            @Override
+            public Type getType() {
+                return Headline.class;
+            }
+        });
     }
 
     @Override
@@ -113,42 +151,6 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
         });
 
         mChart = (GaugeChart) mView.findViewById(R.id.gauge_chart);
-
-        GeneralWebService.instance().getHeadline(new RequestCallback<Headline>() {
-            @Override
-            public void onSuccess(Headline result) {
-                final AndroidApp app = result.getApps().get(0);
-
-                ((TextView) mView.findViewById(R.id.headline_title)).setText(result.getTitle());
-                ((TextView) mView.findViewById(R.id.app_description)).setText(app.getDescription(128));
-
-                mView.findViewById(R.id.button_more).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(getContext(), DetailsActivity.class);
-                        intent.putExtra(Constants.INTENT_APP, (Parcelable) app);
-
-                        startActivity(intent);
-                    }
-                });
-
-                ImagesManager.instance().get(app.getLogo(), HeadlineFragment.this);
-
-                mHeadline = result;
-                onTopicsLoaded();
-            }
-
-            @Override
-            public void onFailure(Errors error) {
-                // TODO
-            }
-
-            @Override
-            public Type getType() {
-                return Headline.class;
-            }
-        });
-
         return mView;
     }
 

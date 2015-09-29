@@ -25,8 +25,11 @@ import java.lang.reflect.Type;
 public class PackageFragment extends ListFragment implements HomeFragment {
 
     @Override
-    public void showTutorial() {
+    public void showTutorial() {}
 
+    @Override
+    public void refresh() {
+        // All the information is local so ..
     }
 
     @Override

@@ -47,6 +47,11 @@ public class FavoriteFragment extends ListFragment implements HomeFragment {
     }
 
     @Override
+    public void refresh() {
+        mAdapter.update();
+    }
+
+    @Override
     public String getTitle() {
         return "Favorite";
     }
@@ -67,14 +72,6 @@ public class FavoriteFragment extends ListFragment implements HomeFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle states) {
 
         return inflater.inflate(R.layout.list_fragment, parent, false);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        mAdapter.update();
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override
