@@ -19,6 +19,7 @@ import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.Headline;
+import com.obviz.review.models.OpinionValue;
 import com.obviz.review.views.GaugeChart;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
@@ -64,9 +65,13 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
         arrow.setBaseLength(5);
         arrow.setColor(mView.getResources().getColor(R.color.appColor));
 
-        if (mHeadline.getTopicID() != null) {
-            arrow.setValue(mHeadline.getApps().get(0).getOpinion(mHeadline.getTopicID()).percentage());
+        OpinionValue opinion;
+        if (mHeadline.getTopicID() != null &&
+                (opinion = mHeadline.getApps().get(0).getOpinion(mHeadline.getTopicID())) != null) {
+
+            arrow.setValue(opinion.percentage());
             mChartData.setText(TopicsManager.instance().getTitle(mHeadline.getTopicID(), HeadlineFragment.this));
+
         } else {
             arrow.setValue(mHeadline.getApps().get(0).getGlobalOpinion());
             mChartData.setText("Global");

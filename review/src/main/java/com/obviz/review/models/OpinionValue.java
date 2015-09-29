@@ -3,7 +3,6 @@ package com.obviz.review.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.obviz.review.managers.TopicsManager;
 
 import java.io.Serializable;
@@ -26,6 +25,7 @@ public class OpinionValue implements Serializable, Parcelable, Comparable<Opinio
         nbNegativeOpinions = parcel.readInt();
         topicID = parcel.readInt();
         totalReviews = parcel.readInt();
+        percent = parcel.readInt();
     }
 
     public int percentage(boolean firstTry) {
@@ -33,7 +33,7 @@ public class OpinionValue implements Serializable, Parcelable, Comparable<Opinio
             return 0;
         }
 
-        if (percent < 0 && firstTry) {
+        if (percent <= 0 && firstTry) {
             Topic topic = TopicsManager.instance().getTopic(topicID, this);
             if (topic != null && topic.isSpecial()) {
                 percent = (int) (100 * (totalReviews - ((nbNegativeOpinions - nbPositiveOpinions) / topic.getThreshold())) / totalReviews);
@@ -96,6 +96,7 @@ public class OpinionValue implements Serializable, Parcelable, Comparable<Opinio
         parcel.writeInt(nbNegativeOpinions);
         parcel.writeInt(topicID);
         parcel.writeInt(totalReviews);
+        parcel.writeInt(percent);
     }
 
     /**

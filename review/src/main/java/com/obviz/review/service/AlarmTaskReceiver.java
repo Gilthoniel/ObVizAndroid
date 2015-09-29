@@ -76,19 +76,15 @@ public class AlarmTaskReceiver extends BroadcastReceiver {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pending = createPending(context);
 
-        // Remove the current alarm if it already exists
-        alarmManager.cancel(pending);
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        calendar.add(Calendar.SECOND, 60 * 60 * 24 * 7);
 
-        alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(),
-                1000 * 60 * 60 * 24 * 7, pending);
+        alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY * 7, pending);
 
-        Log.d("__ALARM__", "Notification Task planned");
+        Log.d("__ALARM__", "Notification Task planned for "+calendar.toString());
     }
 
     /**

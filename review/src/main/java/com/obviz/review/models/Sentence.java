@@ -20,11 +20,14 @@ public class Sentence implements Serializable {
         return children;
     }
 
-    public Clause getClause(int clauseId){
+    public String getGroupText(int clauseId){
+        StringBuilder builder = new StringBuilder();
+
         for(Clause c: children)
-            if(c.getID()==clauseId)
-                return c;
-        return null;
+            if(c.getGroupID()==clauseId)
+                builder.append(c.getText());
+
+        return builder.toString();
     }
 
     public boolean isHidden() {

@@ -41,12 +41,14 @@ public class AndroidFullApp implements Serializable {
             for (Opinion.OpinionDetail opinion: review.opinions.opinions){
                 if(opinion.polarity.equals(targetPolarity) && opinion.phrase!=null){
                     //return opinion.phrase;
-                    Sentence s = review.getSentence(opinion.sentenceID);
-                    if(s!=null){
-                        Clause c = s.getClause(opinion.clauseID);
-                        if(c!=null){
-                            SpannableStringBuilder builder = new SpannableStringBuilder(c.getText());
-                            String text = c.getText().toLowerCase();
+                    Sentence sentence = review.getSentence(opinion.sentenceID);
+                    if(sentence!=null){
+                        String clause = sentence.getGroupText(opinion.clauseID);
+                        if(clause!=null){
+                            String text = "... \""+clause+"\" ...";
+                            SpannableStringBuilder builder = new SpannableStringBuilder(text);
+
+                            text = text.toLowerCase();
 
                             for (String word : opinion.getWords()) {
                                 int index = text.indexOf(word.toLowerCase());
