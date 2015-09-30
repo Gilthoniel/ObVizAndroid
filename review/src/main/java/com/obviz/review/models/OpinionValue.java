@@ -11,52 +11,25 @@ import java.io.Serializable;
  * Created by gaylor on 08/19/2015.
  *
  */
-public class OpinionValue implements Serializable, Parcelable, Comparable<OpinionValue>, TopicsManager.TopicsObserver {
+public class OpinionValue implements Serializable, Parcelable, Comparable<OpinionValue> {
     private static final long serialVersionUID = -100817616366373955L;
 
     public int nbPositiveOpinions;
     public int nbNegativeOpinions;
     public int topicID;
-    public int percent = -1;
     public int totalReviews;
+    public Double generalOpinionValue;
 
     public OpinionValue(Parcel parcel) {
         nbPositiveOpinions = parcel.readInt();
         nbNegativeOpinions = parcel.readInt();
         topicID = parcel.readInt();
         totalReviews = parcel.readInt();
-        percent = parcel.readInt();
-    }
-
-    public int percentage(boolean firstTry) {
-        if (nbPositiveOpinions <= 0 && nbNegativeOpinions <= 0) {
-            return 0;
-        }
-
-        if (percent <= 0 && firstTry) {
-            Topic topic = TopicsManager.instance().getTopic(topicID, this);
-            if (topic != null && topic.isSpecial()) {
-                percent = (int) (100 * (totalReviews - ((nbNegativeOpinions - nbPositiveOpinions) / topic.getThreshold())) / totalReviews);
-                percent = Math.min(100, Math.max(0, percent));
-            } else {
-
-                int temp = Math.round(nbPositiveOpinions * 100 / (nbNegativeOpinions + nbPositiveOpinions));
-                if (topic == null) {
-                    // Invalidate if we couldn't get the topic
-                    percent = -1;
-                } else {
-                    percent = temp;
-                }
-
-                return temp;
-            }
-        }
-
-        return Math.max(0, percent);
+        generalOpinionValue = parcel.readDouble();
     }
 
     public int percentage() {
-        return percentage(true);
+        return (int) Math.floor(100 * generalOpinionValue);
     }
 
     public int getTotal() {
@@ -65,12 +38,7 @@ public class OpinionValue implements Serializable, Parcelable, Comparable<Opinio
 
     public boolean isValid() {
 
-        return topicID > 0 && (nbNegativeOpinions > 0 || nbPositiveOpinions > 0);
-    }
-
-    @Override
-    public void onTopicsLoaded() {
-        percentage(false);
+        return topicID > 0 && generalOpinionValue != null;
     }
 
     @Override
@@ -96,7 +64,7 @@ public class OpinionValue implements Serializable, Parcelable, Comparable<Opinio
         parcel.writeInt(nbNegativeOpinions);
         parcel.writeInt(topicID);
         parcel.writeInt(totalReviews);
-        parcel.writeInt(percent);
+        parcel.writeDouble(generalOpinionValue);
     }
 
     /**
