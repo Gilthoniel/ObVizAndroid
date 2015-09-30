@@ -15,10 +15,7 @@ import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.models.Favorite;
 import com.obviz.reviews.R;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by gaylor on 08/25/2015.
@@ -35,11 +32,12 @@ public class FavoriteAdapter extends BaseAdapter
 
         mContext = context;
         mImages = new HashMap<>();
-        mFavorites = DatabaseService.instance().getFavorites();
+        mFavorites = Collections.emptyList();
     }
 
     public void update() {
         mFavorites = DatabaseService.instance().getFavorites();
+        notifyDataSetChanged();
     }
 
     @Override

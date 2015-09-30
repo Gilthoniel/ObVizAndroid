@@ -1,16 +1,12 @@
 package com.obviz.review.webservice;
 
-import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
-import com.obviz.review.DiscoverAppsActivity;
-import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.AppBoxFullAdapter;
 import com.obviz.review.adapters.GridAdapter;
-import com.obviz.review.adapters.SuperCategoryGridAdapter;
 import com.obviz.review.adapters.ReviewsAdapter;
 import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.CacheManager;
@@ -23,7 +19,6 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 

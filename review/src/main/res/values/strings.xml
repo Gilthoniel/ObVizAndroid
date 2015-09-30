@@ -73,7 +73,7 @@
     </string>
 
     <string name="tutorial_fullapp_opinions">
-        A quick app overview, with sample review snippets. Click on app cards to see their details.
+        App overviews and review snippets. Click to see more details.
     </string>
 
     <string name="tutorial_discover_opinions">
@@ -83,8 +83,14 @@
 
 
     <string name="tutorial_favorite">
-        Add an app to your favorites, and you'll have them listed
+        Add an app to your favorites, and you\'ll have them listed
         here !
+    </string>
+    <string name="tutorial_headline_1">
+        Enter some keywords and look for applications on the Google Play Store
+    </string>
+    <string name="tutorial_headline_2">
+        Explore the opinions of the crowd about topics
     </string>
 
     <!-- Resources -->

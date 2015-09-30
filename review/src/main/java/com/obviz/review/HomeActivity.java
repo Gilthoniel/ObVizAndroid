@@ -55,6 +55,8 @@ public class HomeActivity extends AppCompatActivity {
         mPagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         mPager.addOnPageChangeListener(new PageChangeListener());
+        // Refresh the first fragment
+        mPagerAdapter.getFragments().get(0).refresh();
 
         /* Init Drawer Menu */
         ListView listView = (ListView) findViewById(R.id.nav_list);
@@ -111,7 +113,12 @@ public class HomeActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
         mDrawer.closeDrawers();
 
-        showTutorials(mPager.getCurrentItem());
+        mPager.post(new Runnable() {
+            @Override
+            public void run() {
+                showTutorials(mPager.getCurrentItem());
+            }
+        });
     }
 
     @Override
@@ -178,13 +185,20 @@ public class HomeActivity extends AppCompatActivity {
      */
     private class PageChangeListener implements ViewPager.OnPageChangeListener {
         @Override
-        public void onPageSelected(int index) {
+        public void onPageSelected(final int index) {
+            mPager.post(new Runnable() {
+                @Override
+                public void run() {
+                    mPagerAdapter.getFragments().get(index).refresh();
+
+                    // Tutorials
+                    showTutorials(index);
+                }
+            });
+
             // Adapt title
             setTitle(mPagerAdapter.getPageTitle(index));
             mAdapter.setActiveItem(index);
-
-            // Tutorials
-            showTutorials(index);
         }
 
         @Override

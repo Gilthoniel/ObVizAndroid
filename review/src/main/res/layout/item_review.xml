@@ -21,17 +21,6 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Author"
-            android:id="@+id/author"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentStart="false" android:textColor="#ff333333"
-            android:layout_alignParentBottom="false"
-            android:layout_below="@+id/review_content"
-            android:layout_marginTop="10dp"
-            android:textSize="12sp"/>
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="Date"
             android:id="@+id/date"
             android:textColor="#ff2f2f2f"
@@ -42,7 +31,7 @@
             android:textSize="12sp"
             android:gravity="center_vertical" android:textStyle="italic"
             android:layout_alignParentBottom="false"
-            android:layout_alignBottom="@+id/author"/>
+        android:layout_below="@+id/review_content" />
     <RatingBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -51,6 +40,6 @@
             android:layout_alignParentEnd="true"
             style="?android:ratingBarStyleSmall" android:numStars="5" android:rating="2.5"
             android:layout_alignParentBottom="false"
-            android:layout_alignBottom="@+id/author"/>
+        android:layout_alignTop="@+id/date" />
 
 </RelativeLayout>

@@ -37,7 +37,7 @@ public class SuperCategory implements CategoryBase{
         if (all == null) {
             all = new SuperCategory();
             all._id = 0;
-            all.title = "All";
+            all.title = "All apps";
             all.categories = new LinkedList<>();
         }
 

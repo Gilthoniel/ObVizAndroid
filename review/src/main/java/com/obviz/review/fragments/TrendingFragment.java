@@ -31,27 +31,34 @@ public class TrendingFragment extends Fragment implements HomeFragment {
 
     private HttpTask<?> request;
     private Context mContext;
-    private boolean mTutoRequested = false;
+    private Spinner mSpinner;
+    private boolean mFirstLoad = false;
 
     @Override
     public void showTutorial() {
         if (getView() == null) {
-            mTutoRequested = true;
             return;
-        } else {
-            mTutoRequested = false;
         }
 
         TutorialManager.single((Activity) mContext)
                 .setTarget(getView().findViewById(R.id.spinner))
                 .setContentText(getResources().getString(R.string.tutorial_home_content))
                 .singleUse(Constants.TUTORIAL_HOME_KEY)
+                .setDelay(500)
                 .show();
     }
 
     @Override
-    public String getTitle() {
+    public void refresh() {
+        if (!mFirstLoad && getView() != null) {
+            mSpinner.getOnItemSelectedListener().onItemSelected(mSpinner, mSpinner.getSelectedView(), 0, 0);
 
+            mFirstLoad = true;
+        }
+    }
+
+    @Override
+    public String getTitle() {
         return "Trending";
     }
 
@@ -111,34 +118,33 @@ public class TrendingFragment extends Fragment implements HomeFragment {
         grid.setAdapter(trendingAdapter);
 
         /* Categories selection */
-        final Spinner spinner = (Spinner) getView().findViewById(R.id.spinner);
+        mSpinner = (Spinner) getView().findViewById(R.id.spinner);
         final SuperCategoryAdapter adapter = new SuperCategoryAdapter(getActivity());
 
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mSpinner.setAdapter(adapter);
+        mSpinner.post(new Runnable() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+            public void run() {
+                mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
 
-                if (spinner.getTag() == null || (Integer) spinner.getTag() != position) {
-                    spinner.setTag(position);
+                        if (mSpinner.getTag() == null || (Integer) mSpinner.getTag() != position) {
+                            mSpinner.setTag(position);
 
-                    // If a request is already launch, we cancelled it before
-                    if (request != null) {
-                        request.cancel();
+                            // If a request is already launch, we cancelled it before
+                            if (request != null) {
+                                request.cancel();
+                            }
+                            request = GeneralWebService.instance().getTrendingApps(trendingAdapter, adapter.getItem(position));
+                        }
                     }
-                    request = GeneralWebService.instance().getTrendingApps(trendingAdapter, adapter.getItem(position));
-                }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+                    }
+                });
             }
         });
-
-        // If the tutorial has been called before the view is created
-        if (mTutoRequested) {
-            showTutorial();
-        }
     }
 }

@@ -97,7 +97,7 @@ public class ReviewsAdapter extends GridAdapter<Review> implements InfiniteScrol
     public class ReviewHolder extends GridAdapter<Review>.ViewHolder {
 
         public TextView body;
-        public TextView author;
+        //public TextView author;
         public TextView date;
         public RatingBar rating;
 
@@ -105,7 +105,7 @@ public class ReviewsAdapter extends GridAdapter<Review> implements InfiniteScrol
             super(v);
 
             body = (TextView) v.findViewById(R.id.review_content);
-            author = (TextView) v.findViewById(R.id.author);
+            //author = (TextView) v.findViewById(R.id.author);
             date = (TextView) v.findViewById(R.id.date);
             rating = (RatingBar) v.findViewById(R.id.rating);
         }
@@ -130,7 +130,7 @@ public class ReviewsAdapter extends GridAdapter<Review> implements InfiniteScrol
                     break;
             }
 
-            author.setText(review.authorName.trim());
+            //author.setText(review.authorName.trim());
 
             date.setText(review.reviewDate.toString());
 

@@ -42,8 +42,14 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
 
     @Override
     //TODO: @Gaylor the tutorial is just copied here. Must add relevant content - which?
-    public void showTutorial() {
+    public void showTutorial() {}
 
+    @Override
+    public void refresh() {
+
+        if (mDiscoverAdapter != null) {
+            mDiscoverAdapter.onCategoriesLoaded();
+        }
     }
 
     @Override
@@ -80,7 +86,6 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
             final GridRecyclerView grid = (GridRecyclerView) getView().findViewById(R.id.grid_view);
 
             mDiscoverAdapter = new SuperCategoryGridAdapter();
-            mDiscoverAdapter.onCategoriesLoaded();
 
             //final AppBoxAdapter trendingAdapter = new AppBoxAdapter();
 

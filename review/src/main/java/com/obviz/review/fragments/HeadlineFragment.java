@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.obviz.review.DetailsActivity;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
+import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.Headline;
 import com.obviz.review.models.OpinionValue;
@@ -24,6 +26,7 @@ import com.obviz.review.views.GaugeChart;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
 import com.obviz.reviews.R;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 
 import java.lang.reflect.Type;
 
@@ -41,6 +44,70 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
     @Override
     public void showTutorial() {
 
+        if (mSearchView != null) {
+            mSearchView.post(new Runnable() {
+                @Override
+                public void run() {
+                    MaterialShowcaseSequence sequence = TutorialManager.sequence(getActivity());
+                    sequence.addSequenceItem(
+                            mSearchView,
+                            getString(R.string.tutorial_headline_1),
+                            "Got it"
+                    );
+                    sequence.addSequenceItem(
+                            getView().findViewById(R.id.gauge_chart),
+                            getString(R.string.tutorial_headline_2),
+                            "Got it"
+                    );
+
+                    sequence.singleUse(Constants.TUTORIAL_HEADLINE_KEY);
+                    sequence.start();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void refresh() {
+        if (mView == null) {
+            return;
+        }
+
+        GeneralWebService.instance().getHeadline(null, new RequestCallback<Headline>() {
+            @Override
+            public void onSuccess(Headline result) {
+                final AndroidApp app = result.getApps().get(0);
+
+                ((TextView) mView.findViewById(R.id.headline_title)).setText(result.getTitle());
+                ((TextView) mView.findViewById(R.id.app_description)).setText(app.getDescription(128));
+
+                mView.findViewById(R.id.button_more).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getContext(), DetailsActivity.class);
+                        intent.putExtra(Constants.INTENT_APP, (Parcelable) app);
+
+                        startActivity(intent);
+                    }
+                });
+
+                ImagesManager.instance().get(app.getLogo(), HeadlineFragment.this);
+
+                mHeadline = result;
+                onTopicsLoaded();
+            }
+
+            @Override
+            public void onFailure(Errors error) {
+                Log.e("--HEADLINE--", "Message: " + error.name());
+                mView.findViewById(R.id.layout_headline).setVisibility(View.GONE);
+            }
+
+            @Override
+            public Type getType() {
+                return Headline.class;
+            }
+        });
     }
 
     @Override

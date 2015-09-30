@@ -64,6 +64,7 @@ public class AndroidFullApp implements Serializable {
                 }
             }
         }
+
         return new SpannableStringBuilder();
     }
 

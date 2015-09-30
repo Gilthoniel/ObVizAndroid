@@ -21,6 +21,9 @@ public class SettingsActivity extends AppCompatActivity {
         public void showTutorial() {}
 
         @Override
+        public void refresh() {}
+
+        @Override
         public String getTitle() {
             return "Settings";
         }

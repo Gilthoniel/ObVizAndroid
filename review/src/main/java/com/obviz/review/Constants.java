@@ -99,4 +99,5 @@ public class Constants {
     public static final String TUTORIAL_FULLAPP_KEY = "TUTORIAL_FULLAPP";
     public static final String TUTORIAL_TOPICS_KEY = "TUTORIAL_TOPICS";
 
+    public static final String TUTORIAL_HEADLINE_KEY = "TUTORIAL_HEADLINE";
 }

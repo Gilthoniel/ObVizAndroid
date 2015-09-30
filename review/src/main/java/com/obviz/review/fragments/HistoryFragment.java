@@ -27,8 +27,22 @@ public class HistoryFragment extends ListFragment implements HomeFragment {
     private HistoryAdapter mAdapter;
 
     @Override
-    public void showTutorial() {
+    public void showTutorial() {}
 
+    @Override
+    public void refresh() {
+        if (mAdapter != null) {
+            Cursor cursor = DatabaseService.instance().selectHistory();
+            if (cursor != null && cursor.getCount() > 0) {
+                mAdapter.clear();
+
+                while (!cursor.isLast()) {
+                    cursor.moveToNext();
+
+                    mAdapter.add(new HistoryItem(cursor));
+                }
+            }
+        }
     }
 
     @Override
@@ -66,24 +80,6 @@ public class HistoryFragment extends ListFragment implements HomeFragment {
         });
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if (mAdapter != null) {
-            Cursor cursor = DatabaseService.instance().selectHistory();
-            if (cursor != null && cursor.getCount() > 0) {
-                mAdapter.clear();
-
-                while (!cursor.isLast()) {
-                    cursor.moveToNext();
-
-                    mAdapter.add(new HistoryItem(cursor));
-                }
-            }
-        }
     }
 
     @Override
