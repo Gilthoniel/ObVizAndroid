@@ -50,7 +50,7 @@ public class TrendingFragment extends Fragment implements HomeFragment {
 
     @Override
     public void refresh() {
-        if (!mFirstLoad) {
+        if (!mFirstLoad && getView() != null) {
             mSpinner.getOnItemSelectedListener().onItemSelected(mSpinner, mSpinner.getSelectedView(), 0, 0);
 
             mFirstLoad = true;

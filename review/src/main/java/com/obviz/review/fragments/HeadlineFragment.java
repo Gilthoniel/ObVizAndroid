@@ -18,6 +18,7 @@ import com.obviz.review.DetailsActivity;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
+import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.Headline;
 import com.obviz.review.models.OpinionValue;
@@ -25,6 +26,7 @@ import com.obviz.review.views.GaugeChart;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
 import com.obviz.reviews.R;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 
 import java.lang.reflect.Type;
 
@@ -40,10 +42,37 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
     private SearchView mSearchView;
 
     @Override
-    public void showTutorial() {}
+    public void showTutorial() {
+
+        if (mSearchView != null) {
+            mSearchView.post(new Runnable() {
+                @Override
+                public void run() {
+                    MaterialShowcaseSequence sequence = TutorialManager.sequence(getActivity());
+                    sequence.addSequenceItem(
+                            mSearchView,
+                            getString(R.string.tutorial_headline_1),
+                            "Got it"
+                    );
+                    sequence.addSequenceItem(
+                            getView().findViewById(R.id.gauge_chart),
+                            getString(R.string.tutorial_headline_2),
+                            "Got it"
+                    );
+
+                    sequence.singleUse(Constants.TUTORIAL_HEADLINE_KEY);
+                    sequence.start();
+                }
+            });
+        }
+    }
 
     @Override
     public void refresh() {
+        if (mView == null) {
+            return;
+        }
+
         GeneralWebService.instance().getHeadline(new RequestCallback<Headline>() {
             @Override
             public void onSuccess(Headline result) {

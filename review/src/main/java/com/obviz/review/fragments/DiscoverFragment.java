@@ -46,7 +46,10 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
 
     @Override
     public void refresh() {
-        mDiscoverAdapter.onCategoriesLoaded();
+
+        if (mDiscoverAdapter != null) {
+            mDiscoverAdapter.onCategoriesLoaded();
+        }
     }
 
     @Override

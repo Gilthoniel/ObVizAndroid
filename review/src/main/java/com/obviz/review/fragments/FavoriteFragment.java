@@ -48,7 +48,9 @@ public class FavoriteFragment extends ListFragment implements HomeFragment {
 
     @Override
     public void refresh() {
-        mAdapter.update();
+        if (mAdapter != null) {
+            mAdapter.update();
+        }
     }
 
     @Override
