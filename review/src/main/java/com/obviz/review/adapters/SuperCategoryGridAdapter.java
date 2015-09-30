@@ -205,7 +205,8 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
                         arrow.setBaseLength(5);
                         arrow.setColor(mView.getResources().getColor(R.color.appColor));
 
-                        if (headline.getTopicID() != null) {
+                        if (headline.getTopicID() != null && app.getOpinion(headline.getTopicID())!=null) {
+                        //if (headline.getTopicID() != null ) {
                             data.setText(TopicsManager.instance().getTitle(headline.getTopicID(), SuperCategoryGridAdapter.this));
                             arrow.setValue(app.getOpinion(headline.getTopicID()).percentage());
                         } else {
@@ -226,7 +227,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
                     }
                 } else {
                     mHeadlines.put(categoryBase, null);
-                    GeneralWebService.instance().getHeadline(new RequestCallback<Headline>() {
+                    GeneralWebService.instance().getHeadline(categoryBase, new RequestCallback<Headline>() {
                         @Override
                         public void onSuccess(Headline result) {
                             mHeadlines.put(categoryBase, result);

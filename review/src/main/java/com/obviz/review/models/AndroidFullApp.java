@@ -39,11 +39,12 @@ public class AndroidFullApp implements Serializable {
     public SpannableStringBuilder getPolarizedOpinion(List<Integer> topics, String targetPolarity){
         for (Review review:mostRelevantReviews){
             for (Opinion.OpinionDetail opinion: review.opinions.opinions){
-                if(opinion.polarity.equals(targetPolarity) && opinion.phrase!=null){
+                if(opinion.polarity.equals(targetPolarity) ){//&& opinion.phrase!=null){
                     //return opinion.phrase;
-                    Sentence sentence = review.getSentence(opinion.sentenceID);
+                    Sentence sentence = review.getSentence(opinion.sentenceID, opinion.isInTitle);
                     if(sentence!=null){
                         String clause = sentence.getGroupText(opinion.clauseID);
+
                         if(clause!=null){
                             String text = "... \""+clause+"\" ...";
                             SpannableStringBuilder builder = new SpannableStringBuilder(text);

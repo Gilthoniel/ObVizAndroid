@@ -1,5 +1,7 @@
 package com.obviz.review.adapters;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
@@ -13,10 +15,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
+import com.obviz.review.DiscoverAppsActivity;
 import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
+import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
@@ -39,6 +43,10 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
     private Category mCategory;
     private List<Integer> mTopicIDs;
 
+
+
+
+
     public AppBoxFullAdapter() {
         mPage = 0;
         mMaxPage = 9;
@@ -46,9 +54,12 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
         mTopicIDs = new ArrayList<>();
     }
 
+
     public void setCategory(Category c){
         mCategory=c;
     }
+
+
 
 
     /**
@@ -179,26 +190,32 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
             }
 
             for (Integer topicID : topics) {
-                createGaugeChart(gauges, app.getOpinion(topicID).percentage(),
+                if(app.getOpinion(topicID)!=null)
+                    createGaugeChart(gauges, app.getOpinion(topicID).percentage(),
                         TopicsManager.instance().getTitle(topicID, AppBoxFullAdapter.this));
             }
+
+            if (position == 0) {
+                mView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //tutorial:
+                        TutorialManager.single((Activity) mView.getContext())
+                                .setTarget(mView)
+                                .setContentText(R.string.tutorial_fullapp_opinions)
+                                .singleUse(Constants.TUTORIAL_FULLAPP_KEY)
+                                .setDelay(500)
+                                .show();
+                    }
+                });
+            }
+
+
         }
     }
 
     public void setTopics(ArrayList<Integer> topicIDs){
-
-        /*if(mTopicIDs.size()==topicIDs.size()){
-            Boolean different=false;
-            for (Integer i:mTopicIDs)
-                if(!topicIDs.contains(i)){
-                    different=true;
-                    break;
-                }
-            if(!different)
-                return;
-        }*/
-
-        //if the new topics are actually new:
+       //if the new topics are actually new:
         mTopicIDs=topicIDs;
 
         getNewApps();

@@ -24,10 +24,11 @@ public class Sentence implements Serializable {
         StringBuilder builder = new StringBuilder();
 
         for(Clause c: children)
-            if(c.getGroupID()==clauseId)
+            if(c.getGroupID()==clauseId || clauseId==0)
                 builder.append(c.getText());
 
-        return builder.toString();
+
+        return builder.toString().trim();
     }
 
     public boolean isHidden() {

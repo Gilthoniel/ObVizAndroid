@@ -193,7 +193,7 @@ public abstract class GridAdapter<T> extends RecyclerView.Adapter<GridAdapter<T>
     public abstract class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         // position of the child in the grid view
-        private int position;
+        protected int position;
 
         public ViewHolder(View view) {
             super(view);

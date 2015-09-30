@@ -1,5 +1,6 @@
 package com.obviz.review;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,12 +14,14 @@ import android.view.*;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.reflect.TypeToken;
 import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.AppBoxFullAdapter;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.dialogs.TopicsDialog;
 import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.TopicsManager;
+import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
@@ -61,6 +64,21 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
         createDialog();
         populateSelectedTopics(topicIDs);
 
+
+        // tutorial for the user to explain how to open the dialog
+
+        ViewGroup vg = (ViewGroup)findViewById(R.id.scroll_view);
+        LinearLayout layout = (LinearLayout) vg.getChildAt(0);
+        if(layout.getChildCount()>0) {
+            TutorialManager.single((Activity) this)
+                    .setTarget(layout.getChildAt(0))
+                    .setContentText(R.string.tutorial_opinions)
+                    .singleUse(Constants.TUTORIAL_TOPICS_KEY)
+                    .setDelay(500)
+                    .show();
+        }
+
+
     }
 
     @Override
@@ -68,18 +86,29 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
         super.onCreate(states);
         setContentView(R.layout.activity_apps_discover);
 
+        //get the old IDs:
         topicIDs=new ArrayList<>();
-        mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
-
         mApps = new ArrayList<>();
-
-        createDialog();
         DEFAULT_TOPICS.add(1);
         DEFAULT_TOPICS.add(2);
-        topicIDs.add(1);
-        topicIDs.add(2);
 
-        populateSelectedTopics(DEFAULT_TOPICS);
+        //here: load the sharedPreferences:
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Set<Integer> topics = MessageParser.fromJson(prefs.getString(Constants.PREFERENCES_SELECTED_TOPICS, "[]"),
+                new TypeToken<Set<Integer>>(){}.getType());
+        if (topics.size() >0) {
+            topicIDs = new ArrayList<>(topics);
+        }
+        else{
+            topicIDs.add(1);
+            topicIDs.add(2);
+            SharedPreferences.Editor edit = prefs.edit();
+            edit.putString(Constants.PREFERENCES_SELECTED_TOPICS, MessageParser.toJson(topicIDs));
+            edit.apply();
+        }
+
+        mTopics = new ArrayList<>(TopicsManager.instance().getTopics(Topic.Type.DEFINED, this));
+        createDialog();
 
 
         // Get intent or states
@@ -106,10 +135,14 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
 
         // Copied from the Trending FragmentP:
         // Initiate the fragment list
-        mGridView = (GridRecyclerView) findViewById(R.id.grid_view);
+        mGridView = (GridRecyclerView) findViewById(R.id.grid_view_discover);
         mAdapter= new AppBoxFullAdapter();
         mAdapter.setCategory(mCategory);
         mAdapter.setTopics(topicIDs);
+
+
+        //the list of chosen topics:
+        populateSelectedTopics(topicIDs);
 
 
         // Launch the details activity when the user click on a app box
@@ -135,7 +168,6 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
         mGridView.setInfiniteAdapter(mAdapter);
 
         // open the dialog when the user click on the scroll view
-        // TODO: tutorial for the user to explain how to open the dialog
         findViewById(R.id.topics_container).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -143,6 +175,20 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
                 mDialog.show(getSupportFragmentManager(), "TOPICS");
             }
         });
+
+        // tutorial for the user to explain how to open the dialog
+
+        ViewGroup vg = (ViewGroup)findViewById(R.id.scroll_view);
+        LinearLayout layout = (LinearLayout) vg.getChildAt(0);
+        if(layout.getChildCount()>0) {
+            TutorialManager.single((Activity) this)
+                    .setTarget(layout.getChildAt(0))
+                    .setContentText(R.string.tutorial_discover_opinions)
+                    .singleUse(Constants.TUTORIAL_TOPICS_KEY)
+                    .setDelay(500)
+                    .show();
+        }
+
     }
 
     @Override
@@ -180,6 +226,11 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
                 for (Topic t : selectedItems) {
                     topicIDs.add(t.getID());
                 }
+                //if they deselected everything , add everything!
+                if(topicIDs.size()==0){
+                    for(Topic t: mTopics)
+                        topicIDs.add(t.getID());
+                }
 
                 // Populate the shared preferences
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -195,7 +246,7 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
 
         if(mTopics.size()>1)
             for (Topic t : mTopics) {
-                if (DEFAULT_TOPICS.contains(t.getID()))
+                if (topicIDs.contains(t.getID()))
                     mDialog.addSelectedTopic(t);
 
             }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ObViz Reviews</string>
+    <string name="app_name">ObViz App Comparison</string>
     <string name="search_button_name">Search</string>
-    <string name="logo_title">bViz</string>
+    <string name="logo_title">ObViz</string>
     <string name="main_menu_home">Home</string>
-    <string name="search_hint">Search an app…</string>
+    <string name="search_hint">Search for an app…</string>
 
     <string name="title_activity_discover_apps">Best and worst</string>
 
@@ -16,7 +16,7 @@
     <string name="image_description">Image</string>
     <string name="action_compare">Compare</string>
     <string name="list_empty">No items</string>
-    <string name="loading">Data are loading. Be patient or press back button.</string>
+    <string name="loading">Data is loading. ObVee is working hard.</string>
     <string name="spinner">Topics</string>
     <string name="action_install">Install</string>
     <string name="go_to">See more</string>
@@ -29,15 +29,15 @@
     <string name="title_activity_reviews">Reviews</string>
     <string name="title_activity_comparison">Comparison</string>
     <string name="title_activity_reviews_comparison">Comparison reviews</string>
-    <string name="title_activity_package">My Applications</string>
+    <string name="title_activity_package">My Apps</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Toast messages -->
-    <string name="app_not_found">Application not found</string>
+    <string name="app_not_found">App not found</string>
     <string name="list_error">Check your internet connection</string>
 
-    <string name="action_favorite">Add in favorite</string>
-    <string name="favorite_inserted">Successfully added in favorite!</string>
+    <string name="action_favorite">Add Favorite</string>
+    <string name="favorite_inserted">You have a new favorite app!</string>
     <string name="favorite_failed_insertion">Something goes wrong :(</string>
     <string name="action_remove_favorite">Remove from favorite</string>
     <string name="favorite_removed">Successfully removed the favorite</string>
@@ -54,25 +54,36 @@
     <string name="pref_key_notifs_enable">PREF_KEY_NOTIFS_ENABLE</string>
     <string name="pref_tutorial_title">Tutorial</string>
     <string name="pref_key_tutorial_enable">PREF_KEY_TUTORIAL_ENABLE</string>
-    <string name="pref_tutorial_enable_summary">Enable or disable the tutorial when you enter the first time in an activity</string>
+    <string name="pref_tutorial_enable_summary">Enable or disable the tutorial when you enter an activity for the first time</string>
     <string name="pref_tutorial_enable_title">Enable</string>
     <string name="pref_key_tutorial_refresh">PREF_KEY_TUTORIAL_REFRESH</string>
-    <string name="pref_tutorial_refresh_summary">Reset the watched state of the tutorial. Click here if you want to watch the tutorial again.</string>
+    <string name="pref_tutorial_refresh_summary"> Click here if you want to watch the tutorials again.</string>
     <string name="pref_tutorial_refresh_title">Refresh</string>
 
     <!-- Tutorial -->
     <string name="tutorial_accept">Got it!</string>
-    <string name="tutorial_home_content">You can choose a category to filter the trend applications</string>
+    <string name="tutorial_home_content">Choose a category to browse trending apps</string>
 
     <string name="tutorial_details_content">
-        Click here to compare the application with your choice. You will check the difference between the opinions
+        Compare the apps corresponding to your choice.
     </string>
     <string name="tutorial_opinions">
-        Each chart represent an aspect of the application and you can watch the opinions about it. If you click on a
-        chart, you\'ll see the reviews which speak about.
+        Each chart represents the public view about an aspect of the app. Click on them
+        to see the relevant reviews.
     </string>
+
+    <string name="tutorial_fullapp_opinions">
+        A quick app overview, with sample review snippets. Click on app cards to see their details.
+    </string>
+
+    <string name="tutorial_discover_opinions">
+        Click to set the aspects you care most about. Get the best apps for you.
+    </string>
+
+
+
     <string name="tutorial_favorite">
-        When you watch an application in details, you can add it in favorite, and you will be able to retrieve them
+        Add an app to your favorites, and you'll have them listed
         here !
     </string>
 

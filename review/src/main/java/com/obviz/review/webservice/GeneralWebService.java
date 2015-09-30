@@ -162,7 +162,7 @@ public class GeneralWebService extends WebService {
         adapter.setState(GridAdapter.State.LOADING);
 
         //last param - review number:
-        builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", noAppsPerPage, pageNo, 3);
+        builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", noAppsPerPage, pageNo, 1);
         final String key = null;
 
         get(builder, new RequestCallback<AndroidFullApp.Pager>() {
@@ -340,11 +340,20 @@ public class GeneralWebService extends WebService {
      * @param callback action to perform after loading
      * @return the task
      */
-    public HttpTask<?> getHeadline(RequestCallback<Headline> callback) {
+    public HttpTask<?> getHeadline(CategoryBase categoryBase, RequestCallback<Headline> callback) {
 
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(Constants.URL);
         builder.appendQueryParameter("cmd", Constants.GET_HEADLINE);
+        if(categoryBase!=null){
+            List<String> l = new ArrayList<>();
+            for (Category c:categoryBase.getCategories()){
+                l.add(c.category);
+            }
+            if(l.size()>0)
+                builder.appendQueryParameter("categories", MessageParser.toJson(l));
+        }
+
 
         return get(builder, callback, null);
     }

@@ -94,4 +94,9 @@ public class Constants {
     public static final String TUTORIAL_HOME_KEY = "TUTORIAL_HOME";
     public static final String TUTORIAL_FAVORITE_KEY = "TUTORIAL_FAVORITE";
     public static final String TUTORIAL_DETAILS_KEY = "TUTORIAL_DETAILS";
+
+
+    public static final String TUTORIAL_FULLAPP_KEY = "TUTORIAL_FULLAPP";
+    public static final String TUTORIAL_TOPICS_KEY = "TUTORIAL_TOPICS";
+
 }

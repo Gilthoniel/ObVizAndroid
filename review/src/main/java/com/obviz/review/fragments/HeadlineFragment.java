@@ -114,7 +114,7 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
 
         mChart = (GaugeChart) mView.findViewById(R.id.gauge_chart);
 
-        GeneralWebService.instance().getHeadline(new RequestCallback<Headline>() {
+        GeneralWebService.instance().getHeadline(null, new RequestCallback<Headline>() {
             @Override
             public void onSuccess(Headline result) {
                 final AndroidApp app = result.getApps().get(0);

@@ -22,7 +22,7 @@
     <com.obviz.review.views.GridRecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/grid_view"
+        android:id="@+id/grid_view_discover"
         android:layout_below="@+id/scroll_view"
         app:numColumns="1"/>
 
