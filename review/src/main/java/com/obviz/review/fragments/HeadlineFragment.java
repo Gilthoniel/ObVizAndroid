@@ -44,13 +44,13 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
     @Override
     public void showTutorial() {
 
-        if (mSearchView != null) {
-            mSearchView.post(new Runnable() {
+        if (mView != null) {
+            mView.post(new Runnable() {
                 @Override
                 public void run() {
                     MaterialShowcaseSequence sequence = TutorialManager.sequence(getActivity());
                     sequence.addSequenceItem(
-                            mSearchView,
+                            mView.findViewById(R.id.tutorial_target),
                             getString(R.string.tutorial_headline_1),
                             "Got it"
                     );
@@ -180,6 +180,8 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
         });
 
         mChart = (GaugeChart) mView.findViewById(R.id.gauge_chart);
+
+        refresh();
         return mView;
     }
 
