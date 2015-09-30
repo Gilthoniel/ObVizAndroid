@@ -44,13 +44,13 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
     @Override
     public void showTutorial() {
 
-        if (mSearchView != null) {
-            mSearchView.post(new Runnable() {
+        if (mView != null) {
+            mView.post(new Runnable() {
                 @Override
                 public void run() {
                     MaterialShowcaseSequence sequence = TutorialManager.sequence(getActivity());
                     sequence.addSequenceItem(
-                            mSearchView,
+                            mView.findViewById(R.id.tutorial_target),
                             getString(R.string.tutorial_headline_1),
                             "Got it"
                     );
@@ -181,41 +181,7 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
 
         mChart = (GaugeChart) mView.findViewById(R.id.gauge_chart);
 
-        GeneralWebService.instance().getHeadline(null, new RequestCallback<Headline>() {
-            @Override
-            public void onSuccess(Headline result) {
-                final AndroidApp app = result.getApps().get(0);
-
-                ((TextView) mView.findViewById(R.id.headline_title)).setText(result.getTitle());
-                ((TextView) mView.findViewById(R.id.app_description)).setText(app.getDescription(128));
-
-                mView.findViewById(R.id.button_more).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(getContext(), DetailsActivity.class);
-                        intent.putExtra(Constants.INTENT_APP, (Parcelable) app);
-
-                        startActivity(intent);
-                    }
-                });
-
-                ImagesManager.instance().get(app.getLogo(), HeadlineFragment.this);
-
-                mHeadline = result;
-                onTopicsLoaded();
-            }
-
-            @Override
-            public void onFailure(Errors error) {
-                // TODO
-            }
-
-            @Override
-            public Type getType() {
-                return Headline.class;
-            }
-        });
-
+        refresh();
         return mView;
     }
 
