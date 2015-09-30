@@ -24,12 +24,16 @@ import java.lang.reflect.Type;
 
 public class PackageFragment extends ListFragment implements HomeFragment {
 
+    private PackageAdapter adapter;
+
     @Override
     public void showTutorial() {}
 
     @Override
     public void refresh() {
-        // All the information is local so ..
+        if (adapter != null) {
+            adapter.update();
+        }
     }
 
     @Override
@@ -55,7 +59,7 @@ public class PackageFragment extends ListFragment implements HomeFragment {
         /* Populate views */
 
         // ListView
-        final PackageAdapter adapter = new PackageAdapter(getActivity());
+        adapter = new PackageAdapter(getActivity());
         setListAdapter(adapter);
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -93,5 +97,7 @@ public class PackageFragment extends ListFragment implements HomeFragment {
                 });
             }
         });
+
+        adapter.update();
     }
 }

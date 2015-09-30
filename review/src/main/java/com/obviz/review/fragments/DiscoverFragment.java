@@ -20,8 +20,6 @@ import com.obviz.review.models.Topic;
 import com.obviz.review.views.GridRecyclerView;
 import com.obviz.reviews.R;
 
-
-
 /**
  * Created by gaylor on 05-Aug-15.
  *
@@ -29,14 +27,8 @@ import com.obviz.reviews.R;
 public class DiscoverFragment extends Fragment implements HomeFragment {
     private SuperCategoryGridAdapter mDiscoverAdapter;
 
-
-    public DiscoverFragment() {
-        super();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle states) {
-        //Log.d("Pointer", "We are in the DiscoverFragment onCreateView");
         return inflater.inflate(R.layout.fragment_discover, parent, false);
     }
 
@@ -46,7 +38,6 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
 
     @Override
     public void refresh() {
-
         if (mDiscoverAdapter != null) {
             mDiscoverAdapter.onCategoriesLoaded();
         }
@@ -54,7 +45,6 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
 
     @Override
     public String getTitle() {
-
         return "Discover";
     }
 
@@ -111,7 +101,7 @@ public class DiscoverFragment extends Fragment implements HomeFragment {
             });
 
             grid.setAdapter(mDiscoverAdapter);
-
+            refresh();
         }
     }
 

@@ -58,7 +58,7 @@
 
 
         <ImageView
-            android:layout_width="20dp"
+            android:layout_width="25dp"
             android:layout_height="25dp"
             android:id="@+id/subcat_1"
             android:layout_alignParentTop="true"
@@ -67,7 +67,7 @@
              />
 
         <ImageView
-            android:layout_width="20dp"
+            android:layout_width="25dp"
             android:layout_height="25dp"
             android:id="@+id/subcat_2"
             android:layout_alignParentLeft="true"

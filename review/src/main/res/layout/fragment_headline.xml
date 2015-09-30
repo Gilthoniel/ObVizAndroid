@@ -32,7 +32,7 @@
                 android:iconifiedByDefault="false"
                 android:inputType="text"
                 android:queryHint="Search an app..."
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="50dp"
                 android:layout_marginBottom="30dp"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
@@ -60,9 +60,8 @@
                 android:id="@+id/layout_headline"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="false"
-                android:layout_marginTop="20dp"
                 android:layout_below="@+id/imageView"
-                android:layout_alignParentRight="true">
+                android:layout_alignParentRight="true" android:layout_margin="10dp">
 
                 <ImageView
                     android:layout_width="60dp"

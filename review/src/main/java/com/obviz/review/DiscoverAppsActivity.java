@@ -70,7 +70,7 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
         ViewGroup vg = (ViewGroup)findViewById(R.id.scroll_view);
         LinearLayout layout = (LinearLayout) vg.getChildAt(0);
         if(layout.getChildCount()>0) {
-            TutorialManager.single((Activity) this)
+            TutorialManager.single(this)
                     .setTarget(layout.getChildAt(0))
                     .setContentText(R.string.tutorial_opinions)
                     .singleUse(Constants.TUTORIAL_TOPICS_KEY)

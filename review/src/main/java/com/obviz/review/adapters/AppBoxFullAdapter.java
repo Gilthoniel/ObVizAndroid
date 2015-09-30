@@ -201,7 +201,7 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
                     public void run() {
                         //tutorial:
                         TutorialManager.single((Activity) mView.getContext())
-                                .setTarget(mView)
+                                .setTarget(mView.findViewById(R.id.app_logo))
                                 .setContentText(R.string.tutorial_fullapp_opinions)
                                 .singleUse(Constants.TUTORIAL_FULLAPP_KEY)
                                 .setDelay(500)
