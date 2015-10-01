@@ -138,18 +138,8 @@ public class AndroidApp implements Parcelable, Serializable {
     }
 
     public int getGlobalOpinion() {
-        if (opinionsSummary == null || opinionsSummary.isEmpty()) {
-            return -1;
-        }
 
-        int totalPositive = 0;
-        int totalNegative = 0;
-        for (OpinionValue value : opinionsSummary) {
-            totalNegative += value.nbNegativeOpinions;
-            totalPositive += value.nbPositiveOpinions;
-        }
-
-        return 100 * totalPositive / (totalNegative + totalPositive);
+        return (int) Math.floor(overallOpinionValue * 100);
     }
 
     public int getBestOpinion() {

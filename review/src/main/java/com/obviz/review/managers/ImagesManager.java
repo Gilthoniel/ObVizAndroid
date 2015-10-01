@@ -2,6 +2,7 @@ package com.obviz.review.managers;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 import com.obviz.review.webservice.GeneralWebService;
 
 import java.util.*;
@@ -109,6 +110,8 @@ public class ImagesManager {
             // If we found the image in the disk cache
             if (image != null) {
                 mObserver.onImageLoaded(mUrl, image);
+            } else {
+                Log.e("--IMAGE--", "Bitmap is null for " + mUrl);
             }
         }
     }
