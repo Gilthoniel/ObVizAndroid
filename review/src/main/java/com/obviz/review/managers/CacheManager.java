@@ -195,19 +195,6 @@ public class CacheManager {
             return "app_" + clean(appID);
         }
 
-        public static String forTrending(SuperCategory superCategory) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("trending_");
-
-            if (superCategory == null) {
-                builder.append("0");
-            } else {
-                builder.append(superCategory._id);
-            }
-
-            return builder.toString();
-        }
-
         /**
          *
          * @param url url of the image

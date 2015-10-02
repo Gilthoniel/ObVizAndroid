@@ -1,6 +1,5 @@
 package com.obviz.review.adapters;
 
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +15,7 @@ import com.obviz.review.views.InfiniteScrollable;
 import com.obviz.reviews.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by gaylor on 05-Aug-15.
@@ -26,7 +23,6 @@ import java.util.Map;
  */
 public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsManager.TopicsObserver, InfiniteScrollable {
 
-    private Map<String,Bitmap> mImages;
     private int mPage;
     private int mMaxPage;
     private Category mCategory;
@@ -35,7 +31,6 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
     public AppBoxAdapter() {
         mPage = 1;
         mMaxPage = 2;
-        mImages = new HashMap<>();
         mTopicIDs = new ArrayList<>();
     }
 
@@ -94,8 +89,6 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
         }
     }
 
-
-
     /**
      * Child of the adapter
      */
@@ -109,10 +102,6 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
             mView = v;
         }
 
-
-
-
-
         /**
          * Populate an AndroidApp item of a RecyclerView
          * @param app AndroidApp item for this child
@@ -123,6 +112,7 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
             name.setText(app.getName());
 
             ImageView logo = (ImageView) mView.findViewById(R.id.app_logo);
+            logo.setImageBitmap(null); // Clean before
             ImageLoader.instance().get(app.getLogo(), logo);
 
             TextView bestOpinion = (TextView) mView.findViewById(R.id.mostOpinion);

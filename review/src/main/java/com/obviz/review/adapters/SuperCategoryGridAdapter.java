@@ -92,6 +92,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
         }
 
         private void fillSubCategoryImage(ImageView imageView, String icon){
+            imageView.setImageBitmap(null);
             ImageLoader.instance().get(icon, imageView);
 
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -136,6 +137,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
             });
 
             ImageView logo = (ImageView) mView.findViewById(R.id.cat_image);
+            logo.setImageBitmap(null);
             ImageLoader.instance().get(categoryBase.getIcon(), logo);
 
             //if we still have no image -> make invisible
@@ -156,8 +158,8 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
                 fillSubCategoryList(categoryBase);
             } else {
 
-                subcatLayout.setVisibility(View.VISIBLE);
                 if (mHeadlines.containsKey(categoryBase)) {
+                    subcatLayout.setVisibility(View.VISIBLE);
 
                     Headline headline = mHeadlines.get(categoryBase);
                     if (headline != null) {
@@ -191,6 +193,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
                         chart.setData(data);
 
                         ImageView appLogo = (ImageView) mView.findViewById(R.id.app_logo);
+                        appLogo.setImageBitmap(null);
                         ImageLoader.instance().get(app.getLogo(), appLogo);
                     }
                 } else {

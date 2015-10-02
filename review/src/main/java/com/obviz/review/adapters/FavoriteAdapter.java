@@ -72,6 +72,7 @@ public class FavoriteAdapter extends BaseAdapter {
         name.setText(favorite.name);
 
         ImageView logo = (ImageView) layout.findViewById(R.id.app_logo);
+        logo.setImageBitmap(null);
         ImageLoader.instance().get(favorite.logo, logo);
 
         return layout;

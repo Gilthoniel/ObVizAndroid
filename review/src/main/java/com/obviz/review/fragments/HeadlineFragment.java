@@ -88,6 +88,7 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
                 });
 
                 ImageView image = (ImageView) mView.findViewById(R.id.app_logo);
+                image.setImageBitmap(null);
                 ImageLoader.instance().get(app.getLogo(), image);
 
                 mHeadline = result;

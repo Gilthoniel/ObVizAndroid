@@ -130,6 +130,7 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
             name.setText(app.getName());
 
             ImageView logo = (ImageView) mView.findViewById(R.id.app_logo);
+            logo.setImageBitmap(null);
             ImageLoader.instance().get(app.getLogo(), logo);
 
             //best and worst opinions have to be among the topics we have selected, not all of them.

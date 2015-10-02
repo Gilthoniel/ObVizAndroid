@@ -40,9 +40,6 @@ public class ImageLoader {
     }
 
     public void get(String url, ImageView view) {
-        view.setImageBitmap(null);
-        view.invalidate();
-
         get(url, new Wrapper(view));
     }
 
@@ -60,6 +57,11 @@ public class ImageLoader {
         if (mImages.containsKey(url)) {
             wrapper.setBitmap(mImages.get(url));
             return;
+        }
+
+        // Check if the view isn't already in waiting
+        for (Set<Wrapper> wrappers : mViews.values()) {
+            wrappers.remove(wrapper);
         }
 
         // Looking for a request already launched
@@ -156,6 +158,7 @@ public class ImageLoader {
 
             if (textView != null) {
                 textView.setCompoundDrawablesWithIntrinsicBounds(new BitmapDrawable(null, bitmap), null, null, null);
+                textView.invalidate();
             }
         }
 
@@ -165,11 +168,16 @@ public class ImageLoader {
 
         @Override
         public boolean equals(Object object) {
-            if (imageView != null) {
-                return imageView.equals(object);
+            if (object.getClass() == Wrapper.class) {
+
+                if (imageView != null) {
+                    return imageView.equals(((Wrapper) object).imageView);
+                }
+
+                return textView != null && textView.equals(((Wrapper) object).textView);
             }
 
-            return textView != null && textView.equals(object);
+            return false;
         }
 
         @Override
