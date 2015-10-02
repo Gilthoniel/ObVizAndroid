@@ -155,7 +155,6 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle states) {
-
         mView = inflater.inflate(R.layout.fragment_headline, parent, false);
 
         mSearchView = (SearchView) mView.findViewById(R.id.searchView);

@@ -55,6 +55,7 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
 
     @Override
     protected T doInBackground(Void... voids) {
+
         // Try to acquire from the cache
         if (mKey != null) {
             T object = CacheManager.instance().get(mKey);

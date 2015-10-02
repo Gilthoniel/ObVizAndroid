@@ -7,15 +7,19 @@ import com.obviz.review.managers.CategoryManager;
 import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.service.AlarmTaskReceiver;
+import com.obviz.review.service.JsonReportSender;
 import com.obviz.review.views.GaugeChart;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
+import org.acra.ACRA;
+import org.acra.annotation.ReportsCrashes;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
 /**
  * Created by gaylor on 08/11/2015.
  * Base application to initiate the singletons
  */
+@ReportsCrashes()
 public class ObvizApplication extends Application {
 
     @Override
@@ -39,5 +43,8 @@ public class ObvizApplication extends Application {
 
         // Set the alarm
         AlarmTaskReceiver.setAlarm(getApplicationContext());
+
+        ACRA.init(this);
+        ACRA.getErrorReporter().setReportSender(new JsonReportSender());
     }
 }
