@@ -1,7 +1,6 @@
 package com.obviz.review.fragments;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -15,8 +14,7 @@ import android.widget.TextView;
 import com.obviz.review.ActivitySearch;
 import com.obviz.review.Constants;
 import com.obviz.review.DetailsActivity;
-import com.obviz.review.managers.ImageObserver;
-import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.managers.ImageLoader;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
@@ -28,13 +26,11 @@ import com.obviz.review.webservice.RequestCallback;
 import com.obviz.reviews.R;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 
-import java.lang.reflect.Type;
-
 /**
  * Created by gaylor on 09/18/2015.
  * Search bar and headlines fragment
  */
-public class HeadlineFragment extends Fragment implements HomeFragment, TopicsManager.TopicsObserver, ImageObserver {
+public class HeadlineFragment extends Fragment implements HomeFragment, TopicsManager.TopicsObserver {
 
     private View mView;
     private GaugeChart mChart;
@@ -91,7 +87,8 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
                     }
                 });
 
-                ImagesManager.instance().get(app.getLogo(), HeadlineFragment.this);
+                ImageView image = (ImageView) mView.findViewById(R.id.app_logo);
+                ImageLoader.instance().get(app.getLogo(), image);
 
                 mHeadline = result;
                 onTopicsLoaded();
@@ -101,11 +98,6 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
             public void onFailure(Errors error) {
                 Log.e("--HEADLINE--", "Message: " + error.name());
                 mView.findViewById(R.id.layout_headline).setVisibility(View.GONE);
-            }
-
-            @Override
-            public Type getType() {
-                return Headline.class;
             }
         });
     }
@@ -146,11 +138,6 @@ public class HeadlineFragment extends Fragment implements HomeFragment, TopicsMa
 
         mChartData.addArrow(arrow);
         mChart.setData(mChartData);
-    }
-
-    @Override
-    public void onImageLoaded(String url, Bitmap bitmap) {
-        ((ImageView) mView.findViewById(R.id.app_logo)).setImageBitmap(bitmap);
     }
 
     @Override

@@ -110,11 +110,6 @@ public class FavoriteFragment extends ListFragment implements HomeFragment {
                         Toast.makeText(getActivity(), getResources().getString(R.string.internet_error), Toast.LENGTH_LONG)
                                 .show();
                     }
-
-                    @Override
-                    public Type getType() {
-                        return AndroidApp.class;
-                    }
                 });
             }
         });

@@ -1,6 +1,5 @@
 package com.obviz.review.adapters;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.obviz.review.Constants;
 import com.obviz.review.managers.CategoryManager;
-import com.obviz.review.managers.ImageObserver;
-import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.managers.ImageLoader;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.*;
 import com.obviz.review.views.GaugeChart;
@@ -19,7 +17,6 @@ import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
 import com.obviz.reviews.R;
 
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -27,14 +24,12 @@ import java.util.*;
  * Adapter for the super categories
  */
 public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
-        implements  ImageObserver, CategoryManager.CategoryObserver, TopicsManager.TopicsObserver
+        implements  CategoryManager.CategoryObserver, TopicsManager.TopicsObserver
 {
 
-    private Map<String,Bitmap> mImages;
     private Map<CategoryBase, Headline> mHeadlines;
 
     public SuperCategoryGridAdapter() {
-        mImages = new HashMap<>();
         mHeadlines = new HashMap<>();
     }
 
@@ -86,14 +81,6 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
         }
     }
 
-    @Override
-    public void onImageLoaded(String url, Bitmap bitmap) {
-        mImages.put(url, bitmap);
-        notifyDataSetChanged();
-    }
-
-
-
     public class SuperCategoryHolder extends GridAdapter<CategoryBase>.ViewHolder {
 
         private View mView;
@@ -105,19 +92,10 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
         }
 
         private void fillSubCategoryImage(ImageView imageView, String icon){
-            if(mImages.containsKey(icon))
-                imageView.setImageBitmap(mImages.get(icon));
-            else{
-                mImages.put(icon, null);
-                ImagesManager.instance().get(icon, SuperCategoryGridAdapter.this);
-            }
+            ImageLoader.instance().get(icon, imageView);
 
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(5, 5, 5, 5);
-
-            //older settings
-            //ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(bestAppsSet.getHeight(), bestAppsSet.getHeight());
-            //appLogo.setLayoutParams(params);
         }
 
         private void fillSubCategoryName(TextView textView, String text){
@@ -158,12 +136,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
             });
 
             ImageView logo = (ImageView) mView.findViewById(R.id.cat_image);
-            if (mImages.containsKey(categoryBase.getImage(mView.getContext()))) {
-                logo.setImageBitmap(mImages.get(categoryBase.getImage(mView.getContext())));
-            } else {
-                mImages.put(categoryBase.getImage(mView.getContext()), null);
-                ImagesManager.instance().get(categoryBase.getImage(mView.getContext()), SuperCategoryGridAdapter.this);
-            }
+            ImageLoader.instance().get(categoryBase.getIcon(), logo);
 
             //if we still have no image -> make invisible
             if (logo.getDrawable() == null) {
@@ -218,12 +191,7 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
                         chart.setData(data);
 
                         ImageView appLogo = (ImageView) mView.findViewById(R.id.app_logo);
-                        if (mImages.containsKey(app.getLogo())) {
-                            appLogo.setImageBitmap(mImages.get(app.getLogo()));
-                        } else {
-                            mImages.put(app.getLogo(), null);
-                            ImagesManager.instance().get(app.getLogo(), SuperCategoryGridAdapter.this);
-                        }
+                        ImageLoader.instance().get(app.getLogo(), appLogo);
                     }
                 } else {
                     mHeadlines.put(categoryBase, null);
@@ -237,11 +205,6 @@ public class SuperCategoryGridAdapter extends GridAdapter<CategoryBase>
                         @Override
                         public void onFailure(Errors error) {
                             Log.e("--HEADLINE--", "can't load headline: " + error.name());
-                        }
-
-                        @Override
-                        public Type getType() {
-                            return Headline.class;
                         }
                     });
                 }

@@ -1,21 +1,18 @@
 package com.obviz.review.adapters;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.obviz.review.Constants;
-import com.obviz.review.managers.ImageObserver;
-import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.managers.ImageLoader;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.Category;
 import com.obviz.review.views.GaugeChart;
 import com.obviz.review.views.InfiniteScrollable;
-import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
 import java.util.ArrayList;
@@ -27,7 +24,7 @@ import java.util.Map;
  * Created by gaylor on 05-Aug-15.
  * Adapter for AndroidApp in a RecyclerView
  */
-public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsManager.TopicsObserver, ImageObserver, InfiniteScrollable {
+public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsManager.TopicsObserver, InfiniteScrollable {
 
     private Map<String,Bitmap> mImages;
     private int mPage;
@@ -83,18 +80,6 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
     }
 
     /**
-     * Update the view when images are loaded
-     * @param url of the image
-     * @param bitmap the image itself
-     */
-    @Override
-    public void onImageLoaded(String url, Bitmap bitmap) {
-        mImages.put(url, bitmap); // fill the map
-        notifyDataSetChanged(); // update the view
-    }
-
-
-    /**
      * Implementation of the InfiniteScrollbar
      * Occurred when the user is at the end of the scrollbar
      */
@@ -138,12 +123,7 @@ public class AppBoxAdapter extends GridAdapter<AndroidApp> implements TopicsMana
             name.setText(app.getName());
 
             ImageView logo = (ImageView) mView.findViewById(R.id.app_logo);
-            if (mImages.containsKey(app.getLogo())) {
-                logo.setImageBitmap(mImages.get(app.getLogo()));
-            } else {
-                mImages.put(app.getLogo(), null);
-                ImagesManager.instance().get(app.getLogo(), AppBoxAdapter.this);
-            }
+            ImageLoader.instance().get(app.getLogo(), logo);
 
             TextView bestOpinion = (TextView) mView.findViewById(R.id.mostOpinion);
             bestOpinion.setText(TopicsManager.instance().getTitle(app.getBestOpinion(), AppBoxAdapter.this));

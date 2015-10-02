@@ -3,38 +3,32 @@ package com.obviz.review;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.google.gson.reflect.TypeToken;
-import com.obviz.review.adapters.AppBoxAdapter;
 import com.obviz.review.adapters.AppBoxFullAdapter;
 import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.dialogs.TopicsDialog;
 import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.managers.TutorialManager;
-import com.obviz.review.models.AndroidApp;
 import com.obviz.review.models.AndroidFullApp;
 import com.obviz.review.models.Category;
-import com.obviz.review.models.OpinionValue;
 import com.obviz.review.models.Topic;
 import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.ConnectionService;
-import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.reviews.R;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +41,6 @@ public class DiscoverAppsActivity extends AppCompatActivity implements TopicsMan
     private ArrayList<Integer> topicIDs;
     private ArrayList<AndroidFullApp> mApps;
 
-    private HttpTask<?> request;
     private AppBoxFullAdapter mAdapter;
     private GridRecyclerView mGridView;
 

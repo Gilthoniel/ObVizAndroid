@@ -76,11 +76,6 @@ public class DetailsComparisonFragment extends Fragment {
 
                 @Override
                 public void onFailure(Errors error) {}
-
-                @Override
-                public Type getType() {
-                    return AndroidApp.class;
-                }
             });
         }
     }

@@ -4,7 +4,6 @@ import android.app.Application;
 import com.obviz.review.database.DatabaseService;
 import com.obviz.review.managers.CacheManager;
 import com.obviz.review.managers.CategoryManager;
-import com.obviz.review.managers.ImagesManager;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.service.AlarmTaskReceiver;
 import com.obviz.review.service.JsonReportSender;
@@ -13,7 +12,6 @@ import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
-import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
 /**
  * Created by gaylor on 08/11/2015.
@@ -32,7 +30,6 @@ public class ObvizApplication extends Application {
         DatabaseService.init(getApplicationContext());
         CacheManager.init(getApplicationContext());
         TopicsManager.init(getApplicationContext());
-        ImagesManager.init();
 
         // Add segments for the gauges
         Constants.CHART_SEGMENTS.add(new GaugeChart.Segment(0, 20, 0xffcc4748, 0.8f));

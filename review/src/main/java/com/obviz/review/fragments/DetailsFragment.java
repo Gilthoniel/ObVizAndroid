@@ -1,6 +1,5 @@
 package com.obviz.review.fragments;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,10 +10,8 @@ import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.obviz.review.Constants;
-import com.obviz.review.DetailsActivity;
 import com.obviz.review.managers.CategoryManager;
-import com.obviz.review.managers.ImageObserver;
-import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.managers.ImageLoader;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.reviews.R;
 
@@ -22,9 +19,8 @@ import com.obviz.reviews.R;
  * Created by gaylor on 09/02/2015.
  * Fragment where you find the information about an app
  */
-public class DetailsFragment extends Fragment implements ImageObserver, CategoryManager.CategoryObserver {
+public class DetailsFragment extends Fragment implements CategoryManager.CategoryObserver {
 
-    private ImageView mImage;
     private TextView mCategory;
     private AndroidApp mApplication;
 
@@ -38,7 +34,6 @@ public class DetailsFragment extends Fragment implements ImageObserver, Category
 
         RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_details, parent, false);
 
-        mImage = (ImageView) view.findViewById(R.id.app_logo);
         mCategory = (TextView) view.findViewById(R.id.app_category);
 
         populateDetailsField(mApplication, view, this);
@@ -47,17 +42,13 @@ public class DetailsFragment extends Fragment implements ImageObserver, Category
     }
 
     @Override
-    public void onImageLoaded(String url, Bitmap bitmap) {
-        mImage.setImageBitmap(bitmap);
-    }
-
-    @Override
     public void onCategoriesLoaded() {
         mCategory.setText(CategoryManager.instance().getFrom(mApplication.getCategory(), this).title);
     }
 
-    public  static <T extends ImageObserver & CategoryManager.CategoryObserver> void populateDetailsField(AndroidApp app, View view, T activity) {
-        ImagesManager.instance().get(app.getLogo(), activity);
+    public  static <T extends CategoryManager.CategoryObserver> void populateDetailsField(AndroidApp app, View view, T activity) {
+        ImageView image = (ImageView) view.findViewById(R.id.app_logo);
+        ImageLoader.instance().get(app.getLogo(), image);
 
         TextView name = (TextView) view.findViewById(R.id.app_name);
         name.setText(app.getName());

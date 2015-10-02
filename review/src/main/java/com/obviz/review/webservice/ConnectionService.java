@@ -1,12 +1,10 @@
 package com.obviz.review.webservice;
 
 import android.content.Context;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 import com.obviz.review.service.NetworkChangeReceiver;
 import com.obviz.review.webservice.tasks.GetTask;
-import com.obviz.review.webservice.tasks.HttpTask;
-import com.obviz.review.webservice.tasks.ImageTask;
 import com.obviz.review.webservice.tasks.PostTask;
 
 import java.io.Serializable;
@@ -24,8 +22,8 @@ public class ConnectionService {
     private static ConnectionService instance;
 
     private ExecutorService executor;
-    private Set<HttpTask<?>> requests;
-    private Set<HttpTask<?>> waitingRequests;
+    private Set<AsyncTask<Void,?,?>> requests;
+    private Set<AsyncTask<Void,?,?>> waitingRequests;
     private Context mContext;
 
     private ConnectionService(Context context) {
@@ -55,21 +53,21 @@ public class ConnectionService {
      * Change the implementation of the stack of requests
      * @param set the set
      */
-    public synchronized void setRequestsSet(Set<HttpTask<?>> set) {
+    public synchronized void setRequestsSet(Set<AsyncTask<Void,?,?>> set) {
         requests = set;
     }
 
-    public synchronized void addRequest(HttpTask<?> task) {
+    public synchronized void addRequest(AsyncTask<Void,?,?> task) {
         requests.add(task);
     }
 
-    public synchronized void removeRequest(HttpTask<?> task) {
+    public synchronized void removeRequest(AsyncTask<Void,?,?> task) {
         requests.remove(task);
     }
 
     public synchronized void awakeAll() {
 
-        for (HttpTask<?> task : waitingRequests) {
+        for (AsyncTask<Void,?,?> task : waitingRequests) {
             requests.add(task);
             task.executeOnExecutor(executor);
         }
@@ -82,8 +80,8 @@ public class ConnectionService {
     public void cancel() {
         Log.i("__CONNECTION__", "Cancellation asked");
 
-        for (HttpTask<?> task : requests) {
-            task.cancel();
+        for (AsyncTask<?,?,?> task : requests) {
+            task.cancel(true);
         }
 
         requests.clear();
@@ -91,48 +89,27 @@ public class ConnectionService {
 
     /**
      * Execute an HTTP request
-     * @param builder URL of the request
-     * @param callback callback function when the request is over
+     * @param task GetTask
      * @param <T> Type of the return object
      * @return An instance of the task (cancellable)
      */
-    public <T extends Serializable> HttpTask<T> executeGetRequest(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
-
-        GetTask<T> task = new GetTask<>(builder, callback, cacheKey);
+    public <T extends Serializable> AsyncTask<Void,?,?> executeGetRequest(GetTask<T> task) {
 
         // Execute only if we have internet, else we know that the request will fail
         if (NetworkChangeReceiver.isInternetAvailable(mContext)) {
             addRequest(task);
             task.executeOnExecutor(executor);
         } else {
-            callback.onFailure(RequestCallback.Errors.CONNECTION);
             waitingRequests.add(task);
         }
 
         return task;
     }
 
-    public <T> HttpTask<T> executePostRequest(Uri.Builder builder, RequestCallback<Boolean> callback) {
+    public AsyncTask<Void,?,?> executePostRequest(PostTask task) {
 
-        PostTask task = new PostTask(builder, callback);
         addRequest(task);
 
-        return (HttpTask<T>) task.executeOnExecutor(executor);
-    }
-
-    /**
-     * Load an image from the url
-     * @param url URL of the image
-     * @return Task
-     */
-    public ImageTask loadImage(String url) {
-
-        Uri.Builder builder = new Uri.Builder();
-        builder.encodedPath(url);
-
-        ImageTask task = new ImageTask(builder);
-        requests.add(task);
-
-        return (ImageTask) task.executeOnExecutor(executor);
+        return task.executeOnExecutor(executor);
     }
 }

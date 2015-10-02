@@ -219,7 +219,8 @@ public class CacheManager {
             }
             Matcher matcher = mPattern.matcher(url);
 
-            if (matcher.find(url.lastIndexOf("/"))) {
+            int index = url.lastIndexOf("/");
+            if (matcher.find(index > -1 ? index : 0)) {
                 return matcher.group(1).toLowerCase();
             } else {
                 return null;

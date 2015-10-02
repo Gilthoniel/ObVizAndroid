@@ -11,7 +11,8 @@ import com.obviz.review.adapters.ReviewsAdapter;
 import com.obviz.review.json.MessageParser;
 import com.obviz.review.managers.CacheManager;
 import com.obviz.review.models.*;
-import com.obviz.review.webservice.tasks.HttpTask;
+import com.obviz.review.webservice.tasks.GetTask;
+import com.obviz.review.webservice.tasks.PostTask;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +27,7 @@ import java.util.List;
  * Created by gaylor on 26.06.15.
  * Requests to onSuccess information
  */
-public class GeneralWebService extends WebService {
+public class GeneralWebService {
 
     private static GeneralWebService instance;
 
@@ -55,7 +56,10 @@ public class GeneralWebService extends WebService {
         builder.appendQueryParameter("weight", "LIGHT");
         builder.appendQueryParameter("id", id);
 
-        get(builder, callback, key);
+        GetTask<AndroidApp> task = new GetTask<>(builder.build(), AndroidApp.class, callback);
+        task.setCacheKey(key);
+
+        ConnectionService.instance().executeGetRequest(task);
     }
 
     /**
@@ -93,14 +97,13 @@ public class GeneralWebService extends WebService {
 
                 adapter.setState(GridAdapter.State.ERRORS);
             }
-
-            @Override
-            public Type getType() {
-                return new TypeToken<LinkedList<AndroidApp>>(){}.getType();
-            }
         };
 
-        get(builder, callback, key);
+        Type type = new TypeToken<LinkedList<AndroidApp>>(){}.getType();
+        GetTask task = new GetTask<>(builder.build(), type, callback);
+        task.setCacheKey(key);
+
+        ConnectionService.instance().executeGetRequest(task);
     }
 
     /**
@@ -124,7 +127,7 @@ public class GeneralWebService extends WebService {
         builder.appendQueryParameter("nb_per_page", String.valueOf(size));
         builder.appendQueryParameter("page_nr", String.valueOf(page));
 
-        get(builder, new RequestCallback<Review.Pager>() {
+        GetTask task = new GetTask<>(builder.build(), Review.Pager.class, new RequestCallback<Review.Pager>() {
             @Override
             public void onSuccess(Review.Pager pager) {
 
@@ -138,11 +141,10 @@ public class GeneralWebService extends WebService {
                 adapter.setState(GridAdapter.State.ERRORS);
             }
 
-            @Override
-            public Type getType() {
-                return Review.Pager.class;
-            }
-        }, key);
+        });
+        task.setCacheKey(key);
+
+        ConnectionService.instance().executeGetRequest(task);
     }
 
     ///
@@ -150,17 +152,14 @@ public class GeneralWebService extends WebService {
     // get apps given a specific query (e.g. design) from a category or a type:
 
     public void getApps(final CategoryBase category, final int pageNo, final int noAppsPerPage, final AppBoxFullAdapter adapter, List<Integer> topicIds){
-        //for each element in the grid i want to do what is done in getTrendingApps.
-        Uri.Builder builder = new Uri.Builder();
 
-        Log.d("WEBSERVICE GET APPS", "PAGENO "+pageNo);
         adapter.setState(GridAdapter.State.LOADING);
 
         //last param - review number:
-        builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", noAppsPerPage, pageNo, 1);
+        Uri.Builder builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", noAppsPerPage, pageNo, 1);
         final String key = null;
 
-        get(builder, new RequestCallback<AndroidFullApp.Pager>() {
+        GetTask task = new GetTask<>(builder.build(), AndroidFullApp.Pager.class, new RequestCallback<AndroidFullApp.Pager>() {
             @Override
             public void onSuccess(AndroidFullApp.Pager result) {
 
@@ -175,72 +174,11 @@ public class GeneralWebService extends WebService {
 
                 adapter.setState(GridAdapter.State.ERRORS);
             }
+        });
+        task.setCacheKey(key);
 
-            @Override
-            public Type getType() {
-                return AndroidFullApp.Pager.class;
-            }
-        }, key);
+        ConnectionService.instance().executeGetRequest(task);
     }
-
-
-    /*
-    public HttpTask<?> getTopApps(final SuperCategoryGridAdapter adapter, final CategoryBase category, final String appType, List<Integer> topicIds) {
-
-        // have to create the builder for each category!
-
-        if(category.getTitle()!=null)
-            Log.d("BASE-CAT",category.getTitle());
-        else
-            Log.d("BASE-CAT", "Nameless Category - THIS SHOULD NOT HAPPEN");
-
-        //for each element in the grid i want to do what is done in getTrendingApps.
-        Uri.Builder builder = new Uri.Builder();
-
-        if(appType.equals("best"))
-            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "POSITIVE", 7, -1,0);
-        if(appType.equals("worst"))
-            builder = constructBuilder(category, Constants.GET_APPS_FILTERED, topicIds, "NEGATIVE", 7, -1,0);
-
-        final String key = null;
-        // Here return the httpTask like below and update the map in the adapter
-
-        return get(builder, new RequestCallback<AndroidFullApp.Pager>() {
-            @Override
-            public void onSuccess(AndroidFullApp.Pager result) {
-
-                // Display the empty text if there is no result
-
-                adapter.addAlltoMap(result.apps,category, appType);
-            }
-
-            @Override
-            public void onFailure(Errors error) {
-                Log.d("WEB getTopApps Failure", error.toString());
-                adapter.setState(GridAdapter.State.ERRORS);
-            }
-
-            @Override
-            public Type getType() {
-                return AndroidFullApp.Pager.class;
-            }
-        }, key);
-    }
-*/
-    //
-    ///
-
-
-    private Uri.Builder constructTopicBuilder(String command, String topicType){
-        Uri.Builder builder = new Uri.Builder();
-        builder.encodedPath(Constants.URL);
-        builder.appendQueryParameter("cmd", command);
-        builder.appendQueryParameter("type", topicType);
-        Log.d("QUERY", builder.toString());
-
-        return builder;
-    }
-
 
     private Uri.Builder constructBuilder(CategoryBase categoryBase, String command, List<Integer> topicIds, String posNeg, int nbPerPage, int pageNo, int revNo){
         Uri.Builder builder = new Uri.Builder();
@@ -291,22 +229,17 @@ public class GeneralWebService extends WebService {
         return builder;
     }
 
-    public HttpTask<?> getTrendingApps(final GridAdapter<AndroidApp> adapter, @Nullable SuperCategory superCategory) {
+    public void getTrendingApps(final GridAdapter<AndroidApp> adapter, @Nullable SuperCategory superCategory) {
 
         // Show the loading icon
         adapter.setState(GridAdapter.State.LOADING);
         // Clear the list to show the empty view
         adapter.clear();
 
-
-
-        final String key = null;
-                //CacheManager.KeyBuilder.forTrending(superCategory);
-
         Uri.Builder builder = constructBuilder(superCategory, Constants.GET_TRENDING_APPS);
 
-
-        return get(builder, new RequestCallback<LinkedList<AndroidApp>>() {
+        Type type = new TypeToken<LinkedList<AndroidApp>>(){}.getType();
+        GetTask task = new GetTask<>(builder.build(), type, new RequestCallback<LinkedList<AndroidApp>>() {
             @Override
             public void onSuccess(LinkedList<AndroidApp> result) {
 
@@ -322,20 +255,16 @@ public class GeneralWebService extends WebService {
 
                 adapter.setState(GridAdapter.State.ERRORS);
             }
+        });
 
-            @Override
-            public Type getType() {
-                return new TypeToken<LinkedList<AndroidApp>>(){}.getType();
-            }
-        }, key);
+        ConnectionService.instance().executeGetRequest(task);
     }
 
     /**
      * Get the headline information
      * @param callback action to perform after loading
-     * @return the task
      */
-    public HttpTask<?> getHeadline(CategoryBase categoryBase, RequestCallback<Headline> callback) {
+    public void getHeadline(CategoryBase categoryBase, RequestCallback<Headline> callback) {
 
         Uri.Builder builder = new Uri.Builder();
         builder.encodedPath(Constants.URL);
@@ -349,8 +278,7 @@ public class GeneralWebService extends WebService {
                 builder.appendQueryParameter("categories", MessageParser.toJson(l));
         }
 
-
-        return get(builder, callback, null);
+        ConnectionService.instance().executeGetRequest(new GetTask<>(builder.build(), Headline.class, callback));
     }
 
     /**
@@ -423,21 +351,17 @@ public class GeneralWebService extends WebService {
         builder.appendQueryParameter("cmd", Constants.APP_VIEWED);
         builder.appendQueryParameter("id", appID);
 
-        post(builder, new RequestCallback<Boolean>() {
+        PostTask task = new PostTask(builder.build(), new RequestCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                Log.d("__MARK_VIEWED__", "Mark as viewed successfully: "+result);
+                Log.d("__MARK_VIEWED__", "Mark as viewed successfully: " + result);
             }
 
             @Override
             public void onFailure(Errors error) {
                 Log.e("__MARK_VIEWED__", "An error occurred during the request: "+error.name());
             }
-
-            @Override
-            public Type getType() {
-                return Boolean.class;
-            }
         });
+        ConnectionService.instance().executePostRequest(task);
     }
 }
