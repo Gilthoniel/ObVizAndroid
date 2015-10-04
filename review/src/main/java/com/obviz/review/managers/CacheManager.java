@@ -184,28 +184,15 @@ public class CacheManager {
         }
 
         public static String forReviews(String appID, int topicID, int page, int size) {
-            return "reviews_" + clean(appID) + "_" + page + "_" + size + "_" + topicID;
+            return checkSize("reviews_" + clean(appID) + "_" + page + "_" + size + "_" + topicID);
         }
 
         public static String forSearch(String query) {
-            return "search_" + clean(query);
+            return checkSize("search_" + clean(query));
         }
 
         public static String forApps(String appID) {
-            return "app_" + clean(appID);
-        }
-
-        public static String forTrending(SuperCategory superCategory) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("trending_");
-
-            if (superCategory == null) {
-                builder.append("0");
-            } else {
-                builder.append(superCategory._id);
-            }
-
-            return builder.toString();
+            return checkSize("app_" + clean(appID));
         }
 
         /**
@@ -219,18 +206,26 @@ public class CacheManager {
             }
             Matcher matcher = mPattern.matcher(url);
 
-            if (matcher.find(url.lastIndexOf("/"))) {
-                return matcher.group(1).toLowerCase();
+            int index = url.lastIndexOf("/");
+            if (matcher.find(index > -1 ? index : 0)) {
+                return checkSize(matcher.group(1).toLowerCase());
             } else {
                 return null;
             }
         }
 
         private static String clean(String sequence) {
-
             Matcher matcher = mCleaner.matcher(sequence);
             // Clear the wrong characters, the key need to satisfy [a-z0-9]
             return matcher.replaceAll("").toLowerCase();
+        }
+
+        private static String checkSize(String sequence) {
+            if (sequence.length() > 64) {
+                return sequence.substring(0, 64);
+            } else {
+                return sequence;
+            }
         }
     }
 

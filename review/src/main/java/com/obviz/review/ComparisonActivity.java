@@ -1,9 +1,6 @@
 package com.obviz.review;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import com.obviz.review.adapters.GaugeAdapter;
 import com.obviz.review.adapters.GridAdapter;
-import com.obviz.review.managers.ImageObserver;
-import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.managers.ImageLoader;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.views.GridRecyclerView;
 import com.obviz.review.webservice.ConnectionService;
@@ -25,12 +21,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class ComparisonActivity extends AppCompatActivity implements GaugeAdapter.GaugeAdaptable, ImageObserver {
+public class ComparisonActivity extends AppCompatActivity implements GaugeAdapter.GaugeAdaptable {
 
     private AndroidApp mApplication;
     private AndroidApp mComparison;
-    private Button mAppButton;
-    private Button mComButton;
 
     @Override
     public List<AndroidApp> getListApplications() {
@@ -39,20 +33,6 @@ public class ComparisonActivity extends AppCompatActivity implements GaugeAdapte
         list.add(mComparison);
 
         return list;
-    }
-
-    @Override
-    public void onImageLoaded(String url, Bitmap bitmap) {
-
-        if (url.equals(mApplication.getLogo())) {
-            mAppButton.setCompoundDrawablesWithIntrinsicBounds(new BitmapDrawable(getResources(), bitmap), null, null, null);
-            mAppButton.setCompoundDrawablePadding(10);
-        }
-
-        if (url.equals(mComparison.getLogo())) {
-            mComButton.setCompoundDrawablesWithIntrinsicBounds(new BitmapDrawable(getResources(), bitmap), null, null, null);
-            mComButton.setCompoundDrawablePadding(10);
-        }
     }
 
     @Override
@@ -73,11 +53,7 @@ public class ComparisonActivity extends AppCompatActivity implements GaugeAdapte
 
         if (mApplication != null && mComparison != null) {
 
-            // Load images
-            ImagesManager.instance().get(mApplication.getLogo(), this);
-            ImagesManager.instance().get(mComparison.getLogo(), this);
-
-            mAppButton = (Button) findViewById(R.id.app_button);
+            Button mAppButton = (Button) findViewById(R.id.app_button);
             mAppButton.setText(mApplication.getName());
             mAppButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -85,8 +61,10 @@ public class ComparisonActivity extends AppCompatActivity implements GaugeAdapte
                     onBackPressed();
                 }
             });
+            mAppButton.setCompoundDrawablePadding(10);
+            ImageLoader.instance().get(mApplication.getLogo(), mAppButton);
 
-            mComButton = (Button) findViewById(R.id.comparison_button);
+            Button mComButton = (Button) findViewById(R.id.comparison_button);
             mComButton.setText(mComparison.getName());
             mComButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -97,6 +75,8 @@ public class ComparisonActivity extends AppCompatActivity implements GaugeAdapte
                     startActivity(intent);
                 }
             });
+            mComButton.setCompoundDrawablePadding(10);
+            ImageLoader.instance().get(mComparison.getLogo(), mComButton);
 
             GridRecyclerView grid = (GridRecyclerView) findViewById(R.id.grid_view);
             final GaugeAdapter adapter = new GaugeAdapter(this);

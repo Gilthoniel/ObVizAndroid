@@ -19,8 +19,8 @@ import com.obviz.review.adapters.GridAdapter;
 import com.obviz.review.adapters.SuperCategoryAdapter;
 import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.views.GridRecyclerView;
+import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
-import com.obviz.review.webservice.tasks.HttpTask;
 import com.obviz.reviews.R;
 
 /**
@@ -29,7 +29,6 @@ import com.obviz.reviews.R;
  */
 public class TrendingFragment extends Fragment implements HomeFragment {
 
-    private HttpTask<?> request;
     private Context mContext;
     private Spinner mSpinner;
     private boolean mFirstLoad = false;
@@ -122,29 +121,24 @@ public class TrendingFragment extends Fragment implements HomeFragment {
         final SuperCategoryAdapter adapter = new SuperCategoryAdapter(getActivity());
 
         mSpinner.setAdapter(adapter);
-        mSpinner.post(new Runnable() {
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void run() {
-                mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
 
-                        if (mSpinner.getTag() == null || (Integer) mSpinner.getTag() != position) {
-                            mSpinner.setTag(position);
+                if (mSpinner.getTag() == null || (Integer) mSpinner.getTag() != position) {
+                    mSpinner.setTag(position);
 
-                            // If a request is already launch, we cancelled it before
-                            if (request != null) {
-                                request.cancel();
-                            }
-                            request = GeneralWebService.instance().getTrendingApps(trendingAdapter, adapter.getItem(position));
-                        }
-                    }
+                    // If a request is already launch, we cancelled it before
+                    ConnectionService.instance().cancel();
+                    GeneralWebService.instance().getTrendingApps(trendingAdapter, adapter.getItem(position));
+                }
+            }
 
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-                    }
-                });
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
+        refresh();
     }
 }

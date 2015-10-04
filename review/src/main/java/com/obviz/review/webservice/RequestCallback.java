@@ -1,7 +1,5 @@
 package com.obviz.review.webservice;
 
-import java.lang.reflect.Type;
-
 /**
  * Created by gaylor on 26.06.15.
  * Action to perform when a request is over
@@ -20,10 +18,4 @@ public interface RequestCallback<T> {
      * Call if the request fails
      */
     void onFailure(Errors error);
-
-    /**
-     * Return the type of the result
-     * @return Type reflection
-     */
-    Type getType();
 }

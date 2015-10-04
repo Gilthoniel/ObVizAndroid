@@ -1,9 +1,7 @@
 package com.obviz.review.adapters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
@@ -15,10 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.gson.reflect.TypeToken;
 import com.obviz.review.Constants;
-import com.obviz.review.DiscoverAppsActivity;
 import com.obviz.review.json.MessageParser;
-import com.obviz.review.managers.ImageObserver;
-import com.obviz.review.managers.ImagesManager;
+import com.obviz.review.managers.ImageLoader;
 import com.obviz.review.managers.TopicsManager;
 import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
@@ -29,28 +25,24 @@ import com.obviz.review.views.InfiniteScrollable;
 import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.reviews.R;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by gaylor on 05-Aug-15.
  * Adapter for AndroidApp in a RecyclerView
  */
-public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements TopicsManager.TopicsObserver, ImageObserver, InfiniteScrollable {
+public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements TopicsManager.TopicsObserver, InfiniteScrollable {
 
-    private Map<String,Bitmap> mImages;
     private int mPage;
     private int mMaxPage;
     private Category mCategory;
     private List<Integer> mTopicIDs;
 
-
-
-
-
     public AppBoxFullAdapter() {
         mPage = 0;
         mMaxPage = 9;
-        mImages = new HashMap<>();
         mTopicIDs = new ArrayList<>();
     }
 
@@ -99,18 +91,6 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
     }
 
     /**
-     * Update the view when images are loaded
-     * @param url of the image
-     * @param bitmap the image itself
-     */
-    @Override
-    public void onImageLoaded(String url, Bitmap bitmap) {
-        mImages.put(url, bitmap); // fill the map
-        notifyDataSetChanged(); // update the view
-    }
-
-
-    /**
      * Implementation of the InfiniteScrollbar
      * Occurred when the user is at the end of the scrollbar
      */
@@ -150,12 +130,8 @@ public class AppBoxFullAdapter extends GridAdapter<AndroidFullApp> implements To
             name.setText(app.getName());
 
             ImageView logo = (ImageView) mView.findViewById(R.id.app_logo);
-            if (mImages.containsKey(app.getLogo())) {
-                logo.setImageBitmap(mImages.get(app.getLogo()));
-            } else {
-                mImages.put(app.getLogo(), null);
-                ImagesManager.instance().get(app.getLogo(), AppBoxFullAdapter.this);
-            }
+            logo.setImageBitmap(null);
+            ImageLoader.instance().get(app.getLogo(), logo);
 
             //best and worst opinions have to be among the topics we have selected, not all of them.
 

@@ -1,6 +1,7 @@
 package com.obviz.review.webservice.tasks;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 import com.google.gson.JsonSyntaxException;
 import com.obviz.review.Constants;
@@ -8,53 +9,42 @@ import com.obviz.review.managers.CacheManager;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.json.MessageParser;
 import com.obviz.review.webservice.RequestCallback;
+import org.acra.ACRA;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.*;
 
 /**
  * Created by gaylor on 27.07.15.
  * Execute an HTTP request to get JSON information and return into a java class
  */
-public class GetTask<T extends Serializable> extends HttpTask<T> {
+public class GetTask<T extends Serializable> extends AsyncTask<Void, Void, T> {
 
-    private Future<T> mFuture;
-    private RequestCallback<T> callback;
+    private Uri mUrl;
+    private RequestCallback<T> mCallback;
+    private Type mClass;
     private RequestCallback.Errors error;
     private String mKey;
 
-    public GetTask(Uri.Builder builder, RequestCallback<T> callback, String cacheKey) {
-        super(builder);
+    public GetTask(Uri url, Type type, RequestCallback<T> callback) {
 
-        this.callback = callback;
-
+        mCallback = callback;
+        mUrl = url;
+        mClass = type;
         error = RequestCallback.Errors.SUCCESS;
-        mKey = cacheKey;
-
-        mFuture = null;
     }
 
-    public RequestCallback<T> getCallback() {
-        return callback;
-    }
-
-    @Override
-    public void cancel() {
-
-        if (mFuture != null) {
-            mFuture.cancel(true);
-            Log.d("__FUTURE__", "Future cancelled");
-        }
-
-        super.cancel(true);
+    public void setCacheKey(String key) {
+        mKey = key;
     }
 
     @Override
     protected T doInBackground(Void... voids) {
+
         // Try to acquire from the cache
         if (mKey != null) {
             T object = CacheManager.instance().get(mKey);
@@ -64,50 +54,34 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
         }
 
         try {
-            URL url = new URL(mUrl.build().toString());
+            URL url = new URL(mUrl.toString());
             final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             // Timeout only for the connection, after that the data are computed depending of the device
             connection.setConnectTimeout(Constants.TIMEOUT * 1000);
             Log.d("__INTERNET__", "Connection open for params:" + url);
 
+            // Check before heavy action that the request isn't cancelled
+            if (isCancelled()) {
+                return null;
+            }
+
             try {
-                mFuture = ConnectionService.instance().getExecutor().submit(new Callable<T>() {
-                    @Override
-                    public T call() throws Exception {
 
-                        try {
-
-                            T object = MessageParser.fromJson(new InputStreamReader(connection.getInputStream()), callback.getType());
-                            if (object != null && mKey != null) {
-                                CacheManager.instance().add(mKey, object, Constants.CACHE_EXPIRATION_TIME);
-                            }
-
-                            return object;
-
-                        } catch (JsonSyntaxException e) {
-
-                            error = RequestCallback.Errors.JSON;
-                            Log.e("Json error", "Message: " + e.getMessage());
-
-                        }
-
-                        return null;
-                    }
-                });
-
-                return mFuture.get();
-
-            } catch (ExecutionException e) {
-
-                Log.i("__FUTURE__", "Future cancelled: "+e.getCause().getMessage());
-                for (StackTraceElement trace : e.getCause().getStackTrace()) {
-                    Log.i("__FUTURE__", "-> "+trace);
+                T object = MessageParser.fromJson(new InputStreamReader(connection.getInputStream()), mClass);
+                if (object != null && mKey != null) {
+                    CacheManager.instance().add(mKey, object, Constants.CACHE_EXPIRATION_TIME);
                 }
 
-            } catch (InterruptedException | CancellationException ignored) {} finally {
+                return object;
 
-                connection.disconnect();
+            } catch (JsonSyntaxException e) {
+
+                error = RequestCallback.Errors.JSON;
+                Log.e("Json error", "Message: " + e.getMessage());
+                ACRA.getErrorReporter().handleSilentException(e);
             }
+
+            return null;
 
         } catch (IOException e) {
 
@@ -124,12 +98,12 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
         // Remove from the active request list
         ConnectionService.instance().removeRequest(this);
 
-        // Use the callback here, because this function is executed in the UI Thread !
+        // Use the mCallback here, because this function is executed in the UI Thread !
         if (result != null) {
-            callback.onSuccess(result);
+            mCallback.onSuccess(result);
         } else {
             error = RequestCallback.Errors.NULL;
-            callback.onFailure(error);
+            mCallback.onFailure(error);
         }
     }
 
@@ -137,7 +111,9 @@ public class GetTask<T extends Serializable> extends HttpTask<T> {
     protected void onCancelled(T result) {
 
         error = RequestCallback.Errors.CANCELLATION;
-        callback.onFailure(error);
+        // Call the failure mCallback
+        mCallback.onFailure(error);
+        // Remove the task from the active requests list
         ConnectionService.instance().removeRequest(this);
     }
 }

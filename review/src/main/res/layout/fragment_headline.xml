@@ -44,15 +44,17 @@
                 android:layout_alignParentRight="true"/>
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:id="@+id/imageView"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/headline_title_background"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="false"
-                android:layout_below="@+id/searchView"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="false"
+                android:layout_toEndOf="@+id/textView12"
+                android:layout_toRightOf="@+id/textView12"
+                android:layout_alignBottom="@+id/textView12"
+                android:layout_marginLeft="10dp"/>
 
             <RelativeLayout
                 android:layout_width="fill_parent"
@@ -142,6 +144,30 @@
                 android:id="@+id/tutorial_target"
                 android:layout_alignTop="@+id/searchView"
                 android:layout_alignBottom="@+id/searchView"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Did You"
+                android:id="@+id/textView11"
+                android:layout_below="@+id/searchView"
+                android:textSize="40sp"
+                android:layout_alignParentTop="false"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Know"
+                android:id="@+id/textView12"
+                android:layout_alignBottom="@+id/textView11"
+                android:layout_toRightOf="@+id/textView11"
+                android:layout_toEndOf="@+id/textView11"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:layout_marginLeft="5dp"
+                android:textColor="#ff0b2a46"/>
         </RelativeLayout>
     </ScrollView>
 

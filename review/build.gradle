@@ -41,5 +41,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.android.support:recyclerview-v7:21.0.3'
     compile 'com.github.deano2390:MaterialShowcaseView:1.0.5@aar'
+    compile 'ch.acra:acra:4.6.2'
     testCompile 'junit:junit:4.12'
 }

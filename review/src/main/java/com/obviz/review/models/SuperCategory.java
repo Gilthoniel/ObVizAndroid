@@ -2,6 +2,7 @@ package com.obviz.review.models;
 
 import android.content.Context;
 
+import android.util.Log;
 import com.obviz.reviews.R;
 
 import java.util.LinkedList;
@@ -19,10 +20,6 @@ public class SuperCategory implements CategoryBase{
     public Integer _id;
     public String title;
     public String icon;
-    public String iconLink;
-    //private static final iconLinkTemplate = "http://ns3369837.ip-37-187-91.eu/assets/images/icons/colored/";
-
-    //http://ns3369837.ip-37-187-91.eu/assets/images/icons/colored/gamecontroller.png
 
     public boolean active;
     public List<Category> categories;

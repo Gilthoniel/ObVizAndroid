@@ -3,16 +3,13 @@ package com.obviz.review;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.obviz.review.adapters.DetailsPagerAdapter;
@@ -22,7 +19,6 @@ import com.obviz.review.fragments.DetailsComparisonFragment;
 import com.obviz.review.fragments.DetailsFragment;
 import com.obviz.review.fragments.DetailsOpinionsFragment;
 import com.obviz.review.managers.CategoryManager;
-import com.obviz.review.managers.ImageObserver;
 import com.obviz.review.managers.TutorialManager;
 import com.obviz.review.models.AndroidApp;
 import com.obviz.review.views.GridRecyclerView;
@@ -38,7 +34,7 @@ import java.util.List;
  * @intent INTENT_APP_ID id of the application
  */
 public class DetailsActivity extends AppCompatActivity
-        implements GaugeAdapter.GaugeAdaptable, ImageObserver, CategoryManager.CategoryObserver
+        implements GaugeAdapter.GaugeAdaptable, CategoryManager.CategoryObserver
 {
 
     private AndroidApp app;
@@ -210,11 +206,6 @@ public class DetailsActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onImageLoaded(String url, Bitmap bitmap) {
-        ((ImageView) findViewById(R.id.app_logo)).setImageBitmap(bitmap);
     }
 
     @Override

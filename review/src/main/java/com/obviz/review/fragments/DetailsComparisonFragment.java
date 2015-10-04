@@ -18,7 +18,6 @@ import com.obviz.review.webservice.GeneralWebService;
 import com.obviz.review.webservice.RequestCallback;
 import com.obviz.reviews.R;
 
-import java.lang.reflect.Type;
 import java.util.Iterator;
 
 /**
@@ -76,11 +75,6 @@ public class DetailsComparisonFragment extends Fragment {
 
                 @Override
                 public void onFailure(Errors error) {}
-
-                @Override
-                public Type getType() {
-                    return AndroidApp.class;
-                }
             });
         }
     }
