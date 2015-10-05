@@ -33,7 +33,7 @@ public class Score implements Parcelable, Serializable {
     }
 
     public float getTotal() {
-        return total / 2;
+        return total;
     }
 
     @Override
