@@ -35,7 +35,7 @@ public class Constants {
     };
 
     /** Commands **/
-    public static final String URL = "http://ns3369837.ip-37-187-91.eu/ObVizService";
+    public static final String URL = "http://apps.obviz.com/ObVizService";
 
     public static final String GET_APP = "Get_App";
     public static final String SEARCH_APP = "Search_Apps";

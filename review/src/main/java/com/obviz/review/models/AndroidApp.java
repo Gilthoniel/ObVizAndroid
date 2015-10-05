@@ -250,7 +250,7 @@ public class AndroidApp implements Parcelable, Serializable {
         } else {
             app.nbParsedReviews = 0;
         }
-        app.overallOpinionValue = object.has("overallopinionValue") ? object.get("overallOpinionValue").getAsDouble() : 0.0;
+        app.overallOpinionValue = object.has("overallOpinionValue") ? object.get("overallOpinionValue").getAsDouble() : 0.0;
 
         return app;
     }
