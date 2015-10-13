@@ -49,6 +49,7 @@ public class Constants {
     public static final String GET_APP_TOPICS = "Get_App_Topics";
 
     public static final String APP_VIEWED = "App_Viewed";
+    public static final String REPORT_BUG = "Report_Bug";
 
     public static final int TIMEOUT = 20;
 

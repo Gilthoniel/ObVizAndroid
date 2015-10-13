@@ -99,14 +99,6 @@ public class ReviewsActivity extends AppCompatActivity implements TopicsManager.
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-        ConnectionService.instance().cancel();
-        mAdapter.clear();
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle states) {
 
         states.putParcelable(Constants.STATE_APP, mApplication);

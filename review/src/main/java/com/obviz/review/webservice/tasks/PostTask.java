@@ -42,7 +42,7 @@ public class PostTask extends AsyncTask<Void, Void, Boolean> {
 
                 String body = mUrl.getEncodedQuery();
                 connection.setDoOutput(true);
-                connection.setFixedLengthStreamingMode(body.length());
+                connection.setRequestMethod("POST");
 
                 if (isCancelled()) {
                     return false;
@@ -57,7 +57,8 @@ public class PostTask extends AsyncTask<Void, Void, Boolean> {
 
             } catch (IOException e) {
 
-                Log.e("__POST__", "IOException during POST request : " + e.getMessage());
+                Log.e("__POST__", "IOException during POST request : " + e.toString());
+                Log.e("__POST__", "Cause: "+e.getCause().toString());
 
                 return false;
             } finally {

@@ -163,6 +163,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
         Boolean isDiscoverFragment = mPagerAdapter.onBackPressed(mPager.getCurrentItem());
         Log.d("HomeActivity", "isDiscoverFragment "+isDiscoverFragment.toString());
 

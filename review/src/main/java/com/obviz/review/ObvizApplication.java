@@ -11,13 +11,26 @@ import com.obviz.review.views.GaugeChart;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.review.webservice.GeneralWebService;
 import org.acra.ACRA;
+import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
 /**
  * Created by gaylor on 08/11/2015.
  * Base application to initiate the singletons
  */
-@ReportsCrashes()
+@ReportsCrashes(customReportContent = {
+        ReportField.ANDROID_VERSION,
+        ReportField.APP_VERSION_CODE,
+        ReportField.PHONE_MODEL,
+        ReportField.TOTAL_MEM_SIZE,
+        ReportField.AVAILABLE_MEM_SIZE,
+        ReportField.STACK_TRACE,
+        ReportField.INITIAL_CONFIGURATION,
+        ReportField.CRASH_CONFIGURATION,
+        ReportField.DISPLAY,
+        ReportField.USER_CRASH_DATE,
+        ReportField.SHARED_PREFERENCES
+})
 public class ObvizApplication extends Application {
 
     @Override

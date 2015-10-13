@@ -73,13 +73,13 @@ public class PackageAdapter extends BaseAdapter {
         return layout;
     }
 
-    private class PackageTask extends AsyncTask<Void, Void, Void> {
+    private class PackageTask extends AsyncTask<Void, Void, List<PackageInfo>> {
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected List<PackageInfo> doInBackground(Void... voids) {
 
-            mPackages = mContext.getPackageManager().getInstalledPackages(0);
-            Collections.sort(mPackages, new Comparator<PackageInfo>() {
+            List<PackageInfo> packages = mContext.getPackageManager().getInstalledPackages(0);
+            Collections.sort(packages, new Comparator<PackageInfo>() {
                 @Override
                 public int compare(PackageInfo info, PackageInfo other) {
 
@@ -90,7 +90,7 @@ public class PackageAdapter extends BaseAdapter {
                 }
             });
 
-            Iterator<PackageInfo> it = mPackages.iterator();
+            Iterator<PackageInfo> it = packages.iterator();
             while (it.hasNext()) {
                 PackageInfo info = it.next();
 
@@ -100,11 +100,12 @@ public class PackageAdapter extends BaseAdapter {
                 }
             }
 
-            return null;
+            return packages;
         }
 
         @Override
-        public void onPostExecute(Void aVoid) {
+        public void onPostExecute(List<PackageInfo> packages) {
+            mPackages = packages;
             notifyDataSetChanged();
         }
     }
