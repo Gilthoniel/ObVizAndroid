@@ -21,6 +21,7 @@ import org.acra.annotation.ReportsCrashes;
 @ReportsCrashes(customReportContent = {
         ReportField.ANDROID_VERSION,
         ReportField.APP_VERSION_CODE,
+        ReportField.APP_VERSION_NAME,
         ReportField.PHONE_MODEL,
         ReportField.TOTAL_MEM_SIZE,
         ReportField.AVAILABLE_MEM_SIZE,
