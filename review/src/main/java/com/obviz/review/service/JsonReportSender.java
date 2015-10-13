@@ -4,15 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 import com.obviz.review.Constants;
-import com.obviz.review.json.MessageParser;
 import org.acra.collector.CrashReportData;
 import org.acra.sender.ReportSender;
 import org.acra.sender.ReportSenderException;
 import org.acra.util.JSONReportBuilder;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -53,7 +53,6 @@ public class JsonReportSender implements ReportSender {
                 String body = uri.getEncodedQuery();
                 connection.setDoOutput(true);
                 connection.setRequestMethod("POST");
-                connection.setFixedLengthStreamingMode(body.length());
 
                 Writer writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
                 writer.write(body);
@@ -61,7 +60,7 @@ public class JsonReportSender implements ReportSender {
                 writer.close();
 
                 if (connection.getResponseCode() != 200) {
-                    Log.e("--REPORT--", "Bad response code: "+connection.getResponseCode());
+                    Log.e("--REPORT--", "Bad response code: " + connection.getResponseCode());
                     return;
                 }
 

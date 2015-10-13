@@ -20,7 +20,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import com.obviz.review.adapters.DrawerAdapter;
 import com.obviz.review.adapters.HomePagerAdapter;
-import com.obviz.review.fragments.HomeFragment;
 import com.obviz.review.webservice.ConnectionService;
 import com.obviz.reviews.R;
 
